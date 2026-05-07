@@ -237,25 +237,12 @@ export const artists: Artist[] = [
 
 export const projects: Project[] = [
   {
-    id: "grape-grooves",
-    title: "Grape Grooves",
-    category: "Video Series",
-    status: "Active",
-    accent: "Vineyards / Ismayilli",
-    column: 1,
-    description: [
-      "A musical journey blending RAAM residents, Azerbaijan's nature, and winemaking culture.",
-      "Atmospheric video sets are crafted around vineyards, wineries, and regional landscapes.",
-    ],
-    media: { label: "View series" },
-  },
-  {
     id: "raam-fomo",
     title: "RAAM x FOMO",
     category: "Collaboration",
     status: "Developing",
     accent: "Club / Interviews / Video Sets",
-    column: 2,
+    column: 1,
     description: [
       "A collaborative platform for RAAM residents at FOMO Baku, one of Azerbaijan's most known clubs.",
       "The first stage includes artist interviews, venue insight, and two full video sets for YouTube release.",
@@ -267,7 +254,7 @@ export const projects: Project[] = [
     category: "Audio Visual Series",
     status: "Active",
     accent: "High BPM / Visual Production",
-    column: 3,
+    column: 2,
     description: [
       "A high-BPM electronic music format recorded at Finestra del Aperitivo.",
       "The series highlights residents, wider community artists, and coaching graduates ready to present their sound.",
@@ -275,24 +262,12 @@ export const projects: Project[] = [
     media: { label: "Watch sessions" },
   },
   {
-    id: "raam-cassette",
-    title: "RAAM Cassette",
-    category: "Live Archive",
-    status: "Active",
-    accent: "Memory / Venue Atmosphere",
-    column: 1,
-    description: [
-      "An ode to memories born from the live sound of electronic music.",
-      "The format captures sets in the spaces where they happen, preserving place, mood, and time.",
-    ],
-  },
-  {
     id: "raam-live",
     title: "RAAM Live",
     category: "Audio Series",
     status: "Archive",
     accent: "Real-time DJ Performances",
-    column: 2,
+    column: 3,
     description: [
       "Audio sets recorded directly during live performances in RAAM venues.",
       "Each release documents the flow, energy, and atmosphere of the night as it actually happened.",
@@ -304,22 +279,10 @@ export const projects: Project[] = [
     category: "Education",
     status: "Developing",
     accent: "DJing / Production",
-    column: 3,
+    column: 4,
     description: [
       "Group and individual DJ sessions build technical and creative foundations for new artists.",
       "The production program guides each participant toward an original track and potential label support.",
-    ],
-  },
-  {
-    id: "additional-activities",
-    title: "Community Activities",
-    category: "Special Formats",
-    status: "Seasonal",
-    accent: "Game Summit / Pool Party",
-    column: 2,
-    description: [
-      "RAAM curates music and sound systems for cultural gatherings, private community events, and special projects.",
-      "These activities keep the community connected beyond the club night.",
     ],
   },
 ];

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { Mail, Phone, Send, Share2 } from "lucide-react";
+import { CalendarDays, Mail, Phone, Send, Share2 } from "lucide-react";
 import { FluidButton } from "@/components/FluidButton";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
@@ -19,18 +19,17 @@ const contactIcons = {
 
 export function ContactsSection() {
   const [status, setStatus] = useState<"idle" | "error" | "ready">("idle");
-  const [message, setMessage] = useState("");
 
   const statusText = useMemo(() => {
     if (status === "ready") {
-      return "Inquiry prepared. RAAM can receive this through the next connected channel.";
+      return "Booking request prepared for the next connected channel.";
     }
 
     if (status === "error") {
       return "Please add your name, a valid email, and a short message.";
     }
 
-    return "For bookings, collaborations, media formats, and coaching.";
+    return "Use this for bookings, collaborations, coaching, and media production.";
   }, [status]);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -46,52 +45,36 @@ export function ContactsSection() {
     }
 
     setStatus("ready");
-    setMessage(body);
     event.currentTarget.reset();
   }
 
   return (
     <SectionFrame
       id="contacts"
-      eyebrow="Contacts"
-      title="Open channel"
-      intro="For bookings, collaborations, media production, coaching, and cultural projects connected to the RAAM community."
+      eyebrow="Book / Contact"
+      title="Contacts"
+      intro="Two clear routes: book RAAM for formats and artists, or contact the team directly."
       className="pb-12"
     >
-      <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <MotionReveal className="space-y-4">
-          {contactLinks.map((link) => {
-            const Icon = contactIcons[link.kind] ?? Share2;
-            return (
-              <a
-                key={link.id}
-                href={link.href}
-                target={link.kind === "linktree" ? "_blank" : undefined}
-                rel={link.kind === "linktree" ? "noreferrer" : undefined}
-                className="group flex items-center gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065]"
-              >
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100">
-                  <Icon size={18} />
-                </span>
-                <span>
-                  <span className="block text-xs uppercase tracking-[0.32em] text-stone-300/50">
-                    {link.label}
-                  </span>
-                  <span className="mt-1 block text-stone-100">{link.value}</span>
-                </span>
-              </a>
-            );
-          })}
-        </MotionReveal>
+      <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 lg:grid-cols-2">
+        <MotionReveal className="bg-[#0b0a09]/92 p-6 sm:p-8">
+          <div className="mb-10 flex items-start justify-between gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
+                Book
+              </p>
+              <h3 className="mt-4 text-4xl font-semibold uppercase leading-[0.9] tracking-normal text-white">
+                Start a booking
+              </h3>
+            </div>
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100">
+              <CalendarDays size={18} />
+            </span>
+          </div>
 
-        <MotionReveal delay={0.08}>
-          <form
-            onSubmit={onSubmit}
-            className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_24px_100px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:p-7"
-            noValidate
-          >
+          <form onSubmit={onSubmit} noValidate>
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="group">
+              <label>
                 <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-stone-300/50">
                   Name
                 </span>
@@ -101,7 +84,7 @@ export function ContactsSection() {
                   placeholder="Your name"
                 />
               </label>
-              <label className="group">
+              <label>
                 <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-stone-300/50">
                   Email
                 </span>
@@ -116,13 +99,29 @@ export function ContactsSection() {
 
             <label className="mt-5 block">
               <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-stone-300/50">
-                Inquiry
+                Booking type
+              </span>
+              <select
+                name="type"
+                className="h-14 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-stone-100 outline-none transition focus:border-stone-100/35 focus:bg-black/40"
+                defaultValue="artist-booking"
+              >
+                <option value="artist-booking">Artist booking</option>
+                <option value="media-production">Media production</option>
+                <option value="coaching">Coaching</option>
+                <option value="collaboration">Collaboration</option>
+              </select>
+            </label>
+
+            <label className="mt-5 block">
+              <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-stone-300/50">
+                Message
               </span>
               <textarea
                 name="message"
-                rows={7}
+                rows={6}
                 className="w-full resize-none rounded-3xl border border-white/10 bg-black/25 px-4 py-4 text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40"
-                placeholder="Tell RAAM what you want to build together."
+                placeholder="Tell RAAM the date, place, format, and idea."
               />
             </label>
 
@@ -143,13 +142,47 @@ export function ContactsSection() {
                 </span>
               </FluidButton>
             </div>
-
-            {message ? (
-              <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm leading-6 text-stone-300/58">
-                Latest prepared message: {message}
-              </p>
-            ) : null}
           </form>
+        </MotionReveal>
+
+        <MotionReveal delay={0.08} className="bg-[#0b0a09]/92 p-6 sm:p-8">
+          <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
+            Contact
+          </p>
+          <h3 className="mt-4 text-4xl font-semibold uppercase leading-[0.9] tracking-normal text-white">
+            Direct channel
+          </h3>
+          <p className="mt-6 max-w-md text-sm leading-6 text-stone-200/60">
+            Reach the team for resident portfolios, event details, press, and
+            community inquiries.
+          </p>
+
+          <div className="mt-10 space-y-4">
+            {contactLinks.map((link) => {
+              const Icon = contactIcons[link.kind] ?? Share2;
+              return (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  target={link.kind === "linktree" ? "_blank" : undefined}
+                  rel={link.kind === "linktree" ? "noreferrer" : undefined}
+                  className="group flex items-center gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065]"
+                >
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100">
+                    <Icon size={18} />
+                  </span>
+                  <span>
+                    <span className="block text-xs uppercase tracking-[0.32em] text-stone-300/50">
+                      {link.label}
+                    </span>
+                    <span className="mt-1 block text-stone-100">
+                      {link.value}
+                    </span>
+                  </span>
+                </a>
+              );
+            })}
+          </div>
         </MotionReveal>
       </div>
     </SectionFrame>

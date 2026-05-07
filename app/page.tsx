@@ -1,5 +1,6 @@
 import { CursorAtmosphere } from "@/components/CursorAtmosphere";
 import { Header } from "@/components/Header";
+import { ScrollReturnIndicator } from "@/components/ScrollReturnIndicator";
 import { ArtistsSection } from "@/sections/ArtistsSection";
 import { ContactsSection } from "@/sections/ContactsSection";
 import { EcosystemSection } from "@/sections/EcosystemSection";
@@ -11,6 +12,7 @@ export default function Home() {
     <>
       <CursorAtmosphere />
       <Header />
+      <ScrollReturnIndicator />
       <main className="relative overflow-hidden bg-[#080706]">
         <HeroSection />
         <EcosystemSection />

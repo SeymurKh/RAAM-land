@@ -66,7 +66,7 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
             exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             onMouseDown={(event) => event.stopPropagation()}
-            className="relative mx-auto min-h-[82vh] max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b0a09]/90 shadow-[0_30px_140px_rgba(0,0,0,0.72)]"
+            className="relative mx-auto min-h-[70vh] max-w-4xl overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#0b0a09]/92 shadow-[0_30px_140px_rgba(0,0,0,0.72)]"
           >
             <button
               type="button"
@@ -89,20 +89,20 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
             </div>
 
             <div className="relative grid gap-0 lg:grid-cols-[0.88fr_1.12fr]">
-              <div className="flex min-h-[360px] flex-col justify-between border-b border-white/10 p-8 sm:p-10 lg:border-b-0 lg:border-r">
+              <div className="flex min-h-[300px] flex-col justify-between border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r">
                 <div>
                   <p className="text-xs uppercase tracking-[0.45em] text-stone-300/55">
                     {artist.role} / {artist.origin}
                   </p>
                   <h3
                     id={`${artist.id}-title`}
-                    className="mt-5 text-6xl font-semibold uppercase leading-[0.86] tracking-normal text-white sm:text-8xl"
+                    className="mt-5 text-5xl font-semibold uppercase leading-[0.86] tracking-normal text-white sm:text-7xl"
                   >
                     {artist.name}
                   </h3>
                 </div>
 
-                <div className="relative mt-12 aspect-[4/3] overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.22),transparent_28%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(74,58,42,0.12),transparent)]" />
                   <div className="absolute inset-x-8 top-12 h-px bg-white/20" />
                   <div className="absolute bottom-8 left-8 text-[6rem] font-semibold uppercase leading-none tracking-normal text-white/10 sm:text-[9rem]">
@@ -114,7 +114,7 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                 </div>
               </div>
 
-              <div className="max-h-none overflow-y-auto p-8 sm:p-10 lg:max-h-[82vh]">
+              <div className="max-h-none overflow-y-auto p-6 sm:p-8 lg:max-h-[70vh]">
                 <div className="flex flex-wrap gap-2">
                   {artist.genres.map((genre) => (
                     <span

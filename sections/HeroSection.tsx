@@ -21,7 +21,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_var(--cursor-x,50%)_var(--cursor-y,45%),rgba(120,96,72,0.2),transparent_23%)]" />
       <div className="absolute inset-0 vignette" />
 
-      <div className="hero-copy relative z-10 flex w-full max-w-[calc(100vw-2.5rem)] flex-col items-center text-center sm:max-w-3xl">
+      <div className="hero-copy absolute inset-x-0 top-1/2 z-10 mx-auto flex w-[calc(100%-40px)] max-w-[44rem] -translate-y-1/2 flex-col items-center text-center">
         <LogoMark className="h-24 w-24 text-base sm:h-28 sm:w-28" />
         <p className="mt-8 text-xs uppercase tracking-[0.58em] text-stone-200/58">
           {siteConfig.expandedName}
@@ -29,7 +29,7 @@ export function HeroSection() {
         <h1 className="mt-6 text-5xl font-semibold uppercase leading-[0.88] tracking-normal text-white sm:text-7xl lg:text-8xl">
           RAAM
         </h1>
-        <p className="mt-7 w-full max-w-full px-1 text-base leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">
+        <p className="mt-7 w-full max-w-[19rem] px-1 text-sm leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">
           {siteConfig.description}
         </p>
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
@@ -40,9 +40,6 @@ export function HeroSection() {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 h-16 w-px -translate-x-1/2 overflow-hidden bg-white/10">
-        <span className="block h-8 w-px bg-stone-100/80 motion-safe:animate-scroll-line" />
-      </div>
     </section>
   );
 }

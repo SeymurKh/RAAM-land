@@ -59,7 +59,7 @@ export function Header({ modalOpen }: HeaderProps) {
             aria-label="RAAM home"
           >
             <Image
-              src="/assets/images/logo.png"
+              src="/assets/images/logoheader.png"
               alt="RAAM"
               width={176}
               height={56}
@@ -101,7 +101,7 @@ export function Header({ modalOpen }: HeaderProps) {
             <div className="flex items-center justify-between px-5 py-5">
               <a href="#hero" onClick={close} className="flex items-center gap-3">
                 <Image
-                  src="/assets/images/logo.png"
+                  src="/assets/images/logoheader.png"
                   alt="RAAM"
                   width={176}
                   height={56}

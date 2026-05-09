@@ -19,6 +19,7 @@ export async function GET() {
     url.searchParams.set("channelId", channelId);
     url.searchParams.set("eventType", "live");
     url.searchParams.set("type", "video");
+    url.searchParams.set("order", "date");
     url.searchParams.set("key", apiKey);
 
     const res = await fetch(url.toString(), { next: { revalidate: 60 } });

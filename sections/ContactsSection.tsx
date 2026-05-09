@@ -22,7 +22,7 @@ export function ContactsSection() {
 
   const statusText = useMemo(() => {
     if (status === "ready") {
-      return "Booking request prepared for the next connected channel.";
+      return "Your email client should open with a pre-filled booking request.";
     }
 
     if (status === "error") {
@@ -38,11 +38,18 @@ export function ContactsSection() {
     const name = String(form.get("name") ?? "").trim();
     const email = String(form.get("email") ?? "").trim();
     const body = String(form.get("message") ?? "").trim();
+    const type = String(form.get("type") ?? "").trim();
 
     if (!name || !/^\S+@\S+\.\S+$/.test(email) || body.length < 10) {
       setStatus("error");
       return;
     }
+
+    const subject = encodeURIComponent(`RAAM Booking: ${type} — from ${name}`);
+    const mailBody = encodeURIComponent(
+      `Name: ${name}\nEmail: ${email}\nType: ${type}\n\n${body}`,
+    );
+    window.location.href = `mailto:roomallaboutmusic@gmail.com?subject=${subject}&body=${mailBody}`;
 
     setStatus("ready");
     event.currentTarget.reset();
@@ -101,16 +108,23 @@ export function ContactsSection() {
               <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-stone-300/50">
                 Booking type
               </span>
-              <select
-                name="type"
-                className="h-14 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-stone-100 outline-none transition focus:border-stone-100/35 focus:bg-black/40"
-                defaultValue="artist-booking"
-              >
-                <option value="artist-booking">Artist booking</option>
-                <option value="media-production">Media production</option>
-                <option value="coaching">Coaching</option>
-                <option value="collaboration">Collaboration</option>
-              </select>
+              <div className="relative">
+                <select
+                  name="type"
+                  className="h-14 w-full appearance-none rounded-2xl border border-white/10 bg-black/25 px-4 pr-10 text-stone-100 outline-none transition focus:border-stone-100/35 focus:bg-black/40"
+                  defaultValue="artist-booking"
+                >
+                  <option value="artist-booking" className="bg-[#0b0a09] text-stone-100">Artist booking</option>
+                  <option value="media-production" className="bg-[#0b0a09] text-stone-100">Media production</option>
+                  <option value="coaching" className="bg-[#0b0a09] text-stone-100">Coaching</option>
+                  <option value="collaboration" className="bg-[#0b0a09] text-stone-100">Collaboration</option>
+                </select>
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-stone-300/50">
+                  <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1.5L7 6.5L13 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+              </div>
             </label>
 
             <label className="mt-5 block">

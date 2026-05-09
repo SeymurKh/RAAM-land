@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { Artist, SocialKind } from "@/types/content";
 import { cn } from "@/lib/utils";
+import { useScrollLock } from "@/lib/useScrollLock";
 
 const socialIcons: Partial<Record<SocialKind, typeof Camera>> = {
   instagram: Camera,
@@ -28,6 +29,8 @@ interface ArtistModalProps {
 }
 
 export function ArtistModal({ artist, onClose }: ArtistModalProps) {
+  useScrollLock(!!artist);
+
   useEffect(() => {
     if (!artist) {
       return;
@@ -39,10 +42,8 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
       }
     };
 
-    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
   }, [artist, onClose]);
@@ -150,22 +151,49 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                   <div className="mt-5 grid gap-3">
                     {artist.portfolio.map((item) => {
                       const Icon = item.kind === "video" ? Play : Radio;
-                      return (
-                        <a
-                          key={item.id}
-                          href={item.url ?? "#contacts"}
-                          className="group flex items-center justify-between rounded-3xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-stone-200/24 hover:bg-white/[0.07]"
-                        >
+                      const hasUrl = !!item.url;
+                      const sharedInner = (
+                        <>
                           <span className="flex items-center gap-3 text-stone-100">
                             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-stone-100/10">
                               <Icon size={16} />
                             </span>
                             {item.title}
                           </span>
-                          <span className="text-xs uppercase tracking-[0.25em] text-stone-300/45">
-                            {item.kind}
+                          <span className="flex items-center gap-2">
+                            {hasUrl ? null : (
+                              <span className="rounded-full border border-white/8 bg-white/[0.03] px-2 py-0.5 text-[0.6rem] uppercase tracking-[0.2em] text-stone-400/60">
+                                Soon
+                              </span>
+                            )}
+                            <span className="text-xs uppercase tracking-[0.25em] text-stone-300/45">
+                              {item.kind}
+                            </span>
                           </span>
-                        </a>
+                        </>
+                      );
+
+                      if (hasUrl) {
+                        return (
+                          <a
+                            key={item.id}
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="group flex items-center justify-between rounded-3xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-stone-200/24 hover:bg-white/[0.07]"
+                          >
+                            {sharedInner}
+                          </a>
+                        );
+                      }
+
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between rounded-3xl border border-white/6 bg-white/[0.02] p-4 opacity-60"
+                        >
+                          {sharedInner}
+                        </div>
                       );
                     })}
                   </div>

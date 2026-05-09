@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { LogoMark } from "@/components/LogoMark";
 import { cn } from "@/lib/utils";
+import { useScrollLock } from "@/lib/useScrollLock";
 
 const navItems = [
   { label: "Artists", href: "#artists" },
@@ -26,12 +27,7 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  useScrollLock(open);
 
   const close = () => setOpen(false);
 

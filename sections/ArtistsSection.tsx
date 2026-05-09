@@ -8,14 +8,6 @@ import { artists } from "@/data/site";
 import type { Artist } from "@/types/content";
 import { cn } from "@/lib/utils";
 
-const namePositions = [
-  "left-[7%] top-[17%]",
-  "right-[7%] top-[24%]",
-  "left-[14%] top-[43%]",
-  "right-[13%] top-[56%]",
-  "left-1/2 top-[73%] -translate-x-1/2",
-];
-
 export function ArtistsSection() {
   const [activeArtist, setActiveArtist] = useState<Artist>();
 
@@ -64,9 +56,9 @@ export function ArtistsSection() {
                 ease: "easeInOut",
               },
             }}
+            style={{ top: `${14 + (index / artists.length) * 68}%`, ...(index % 2 === 0 ? { left: `${7 + (index % 3) * 3}%` } : { right: `${7 + (index % 3) * 3}%` }), ...(index === artists.length - 1 && artists.length > 1 ? { left: '50%', right: 'auto', transform: 'translateX(-50%)' } : {}) }}
             className={cn(
               "artist-name-3d group absolute max-w-[86vw] text-left text-5xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition duration-500 hover:text-white focus:text-white sm:text-7xl lg:text-[7.5rem]",
-              namePositions[index],
             )}
             aria-label={`Open ${artist.name} profile`}
           >

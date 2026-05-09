@@ -60,6 +60,7 @@ export function ContactsSection() {
       id="contacts"
       eyebrow="Contact Us"
       intro="Two clear routes: book RAAM for formats and artists, or contact the team directly."
+      bgImage="/assets/images/contact.png"
       className="pb-12"
     >
       <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 lg:grid-cols-2">

@@ -4,16 +4,16 @@ import { SectionFrame } from "@/components/SectionFrame";
 import { projects } from "@/data/site";
 
 export function ProjectsSection() {
-  const columns = [1, 2, 3, 4] as const;
+  const columns = [1, 2, 3, 4, 5] as const;
 
   return (
     <SectionFrame
       id="projects"
       eyebrow="Projects"
-      title="Four directions"
+      title="Five directions"
       intro="A tighter view of the formats that currently define RAAM's public platform."
     >
-      <div className="grid gap-px overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-px overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {columns.map((column, index) => {
           const project = projects.find((item) => item.column === column);
 

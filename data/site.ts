@@ -285,6 +285,18 @@ export const projects: Project[] = [
       "The production program guides each participant toward an original track and potential label support.",
     ],
   },
+  {
+    id: "cassette-series",
+    title: "Cassette Series",
+    category: "Audio Visual Series",
+    status: "Active",
+    accent: "Intimate Sets / Vinyl Aesthetic",
+    column: 5,
+    description: [
+      "An intimate audio-visual format recorded in close settings with a warm, analog aesthetic.",
+      "Each episode captures a resident in a focused, personal set — raw sound, real atmosphere.",
+    ],
+  },
 ];
 
 export const contactLinks: ContactLink[] = [

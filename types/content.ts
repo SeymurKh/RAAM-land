@@ -51,7 +51,7 @@ export interface Project {
   status: "Active" | "Developing" | "Archive" | "Seasonal";
   description: string[];
   accent: string;
-  column: 1 | 2 | 3 | 4;
+  column: 1 | 2 | 3 | 4 | 5;
   media?: {
     label: string;
     url?: string;

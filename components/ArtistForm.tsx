@@ -1,0 +1,385 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { Artist, SocialKind, MediaKind } from "@/types/content";
+
+const mediaKinds: MediaKind[] = ["image", "video", "audio"];
+const socialKinds: SocialKind[] = [
+  "instagram",
+  "soundcloud",
+  "spotify",
+  "youtube",
+  "linktree",
+  "email",
+  "phone",
+];
+
+interface ArtistFormProps {
+  artist?: Artist;
+  mode: "create" | "edit";
+}
+
+export function ArtistForm({ artist, mode }: ArtistFormProps) {
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
+
+  const [form, setForm] = useState<Artist>(
+    artist ?? {
+      id: "",
+      name: "",
+      origin: "",
+      role: "",
+      genres: [],
+      bio: [""],
+      highlights: [""],
+      portfolio: [],
+      socials: [],
+      visual: { initials: "", position: "high", tone: "from-stone-300/20" },
+    },
+  );
+
+  function updateField<K extends keyof Artist>(key: K, value: Artist[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function updateBio(index: number, value: string) {
+    const bio = [...form.bio];
+    bio[index] = value;
+    updateField("bio", bio);
+  }
+
+  function updateHighlight(index: number, value: string) {
+    const highlights = [...form.highlights];
+    highlights[index] = value;
+    updateField("highlights", highlights);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+
+    const url =
+      mode === "create"
+        ? "/api/artists"
+        : `/api/artists/${form.id}`;
+    const method = mode === "create" ? "POST" : "PUT";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    setSaving(false);
+    if (res.ok) {
+      router.push("/admin/artists");
+      router.refresh();
+    }
+  }
+
+  const inputClass =
+    "h-12 w-full rounded-xl border border-white/10 bg-black/25 px-4 text-stone-100 outline-none transition focus:border-stone-100/35";
+  const labelClass =
+    "mb-2 block text-xs uppercase tracking-[0.28em] text-stone-300/50";
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className={labelClass}>ID (slug)</label>
+          <input
+            className={inputClass}
+            value={form.id}
+            onChange={(e) => updateField("id", e.target.value)}
+            disabled={mode === "edit"}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Name</label>
+          <input
+            className={inputClass}
+            value={form.name}
+            onChange={(e) => updateField("name", e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Origin</label>
+          <input
+            className={inputClass}
+            value={form.origin}
+            onChange={(e) => updateField("origin", e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Role</label>
+          <input
+            className={inputClass}
+            value={form.role}
+            onChange={(e) => updateField("role", e.target.value)}
+            required
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className={labelClass}>Genres (comma-separated)</label>
+        <input
+          className={inputClass}
+          value={form.genres.join(", ")}
+          onChange={(e) =>
+            updateField(
+              "genres",
+              e.target.value.split(",").map((g) => g.trim()),
+            )
+          }
+        />
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className={labelClass}>Bio paragraphs</label>
+          <button
+            type="button"
+            onClick={() => updateField("bio", [...form.bio, ""])}
+            className="text-xs uppercase tracking-[0.2em] text-stone-400 hover:text-white"
+          >
+            + Add
+          </button>
+        </div>
+        {form.bio.map((paragraph, i) => (
+          <textarea
+            key={i}
+            className="w-full resize-none rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-stone-100 outline-none transition focus:border-stone-100/35"
+            rows={3}
+            value={paragraph}
+            onChange={(e) => updateBio(i, e.target.value)}
+          />
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className={labelClass}>Highlights</label>
+          <button
+            type="button"
+            onClick={() => updateField("highlights", [...form.highlights, ""])}
+            className="text-xs uppercase tracking-[0.2em] text-stone-400 hover:text-white"
+          >
+            + Add
+          </button>
+        </div>
+        {form.highlights.map((item, i) => (
+          <input
+            key={i}
+            className={inputClass}
+            value={item}
+            onChange={(e) => updateHighlight(i, e.target.value)}
+          />
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className={labelClass}>Portfolio items</label>
+          <button
+            type="button"
+            onClick={() =>
+              updateField("portfolio", [
+                ...form.portfolio,
+                { id: `item-${Date.now()}`, title: "", kind: "audio" },
+              ])
+            }
+            className="text-xs uppercase tracking-[0.2em] text-stone-400 hover:text-white"
+          >
+            + Add
+          </button>
+        </div>
+        {form.portfolio.map((item, i) => (
+          <div key={item.id} className="flex gap-3">
+            <input
+              className={inputClass}
+              placeholder="Title"
+              value={item.title}
+              onChange={(e) => {
+                const portfolio = [...form.portfolio];
+                portfolio[i] = { ...portfolio[i], title: e.target.value };
+                updateField("portfolio", portfolio);
+              }}
+            />
+            <select
+              className={`${inputClass} w-32`}
+              value={item.kind}
+              onChange={(e) => {
+                const portfolio = [...form.portfolio];
+                portfolio[i] = {
+                  ...portfolio[i],
+                  kind: e.target.value as MediaKind,
+                };
+                updateField("portfolio", portfolio);
+              }}
+            >
+              {mediaKinds.map((k) => (
+                <option key={k} value={k}>
+                  {k}
+                </option>
+              ))}
+            </select>
+            <input
+              className={inputClass}
+              placeholder="URL (optional)"
+              value={item.url ?? ""}
+              onChange={(e) => {
+                const portfolio = [...form.portfolio];
+                portfolio[i] = {
+                  ...portfolio[i],
+                  url: e.target.value || undefined,
+                };
+                updateField("portfolio", portfolio);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const portfolio = [...form.portfolio];
+                portfolio.splice(i, 1);
+                updateField("portfolio", portfolio);
+              }}
+              className="text-red-400/70 hover:text-red-400"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className={labelClass}>Socials</label>
+          <button
+            type="button"
+            onClick={() =>
+              updateField("socials", [
+                ...form.socials,
+                { kind: "instagram", label: "", url: "" },
+              ])
+            }
+            className="text-xs uppercase tracking-[0.2em] text-stone-400 hover:text-white"
+          >
+            + Add
+          </button>
+        </div>
+        {form.socials.map((social, i) => (
+          <div key={i} className="flex gap-3">
+            <select
+              className={`${inputClass} w-36`}
+              value={social.kind}
+              onChange={(e) => {
+                const socials = [...form.socials];
+                socials[i] = { ...socials[i], kind: e.target.value as SocialKind };
+                updateField("socials", socials);
+              }}
+            >
+              {socialKinds.map((k) => (
+                <option key={k} value={k}>
+                  {k}
+                </option>
+              ))}
+            </select>
+            <input
+              className={inputClass}
+              placeholder="Label"
+              value={social.label}
+              onChange={(e) => {
+                const socials = [...form.socials];
+                socials[i] = { ...socials[i], label: e.target.value };
+                updateField("socials", socials);
+              }}
+            />
+            <input
+              className={inputClass}
+              placeholder="URL"
+              value={social.url}
+              onChange={(e) => {
+                const socials = [...form.socials];
+                socials[i] = { ...socials[i], url: e.target.value };
+                updateField("socials", socials);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const socials = [...form.socials];
+                socials.splice(i, 1);
+                updateField("socials", socials);
+              }}
+              className="text-red-400/70 hover:text-red-400"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div>
+          <label className={labelClass}>Visual Initials</label>
+          <input
+            className={inputClass}
+            value={form.visual.initials}
+            onChange={(e) =>
+              updateField("visual", { ...form.visual, initials: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <label className={labelClass}>Position</label>
+          <select
+            className={inputClass}
+            value={form.visual.position}
+            onChange={(e) =>
+              updateField("visual", {
+                ...form.visual,
+                position: e.target.value as "high" | "middle" | "low",
+              })
+            }
+          >
+            <option value="high">High</option>
+            <option value="middle">Middle</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div>
+          <label className={labelClass}>Tone class</label>
+          <input
+            className={inputClass}
+            value={form.visual.tone}
+            onChange={(e) =>
+              updateField("visual", { ...form.visual, tone: e.target.value })
+            }
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-4 pt-4">
+        <button
+          type="submit"
+          disabled={saving}
+          className="rounded-full border border-white/15 bg-white/[0.06] px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10 disabled:opacity-50"
+        >
+          {saving ? "Saving..." : mode === "create" ? "Create Artist" : "Save Changes"}
+        </button>
+        <button
+          type="button"
+          onClick={() => router.push("/admin/artists")}
+          className="rounded-full border border-white/10 px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-400 transition hover:text-white"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}

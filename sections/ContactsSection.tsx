@@ -58,8 +58,8 @@ export function ContactsSection() {
   return (
     <SectionFrame
       id="contacts"
-      eyebrow="Book / Contact"
-      title="Contacts"
+      eyebrow="Contact Us"
+      title="Contact Us"
       intro="Two clear routes: book RAAM for formats and artists, or contact the team directly."
       className="pb-12"
     >

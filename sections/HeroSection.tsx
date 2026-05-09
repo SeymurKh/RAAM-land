@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { FluidButton } from "@/components/FluidButton";
-import { LogoMark } from "@/components/LogoMark";
 import { siteConfig } from "@/data/site";
 
 export function HeroSection() {
@@ -22,18 +21,22 @@ export function HeroSection() {
       <div className="absolute inset-0 vignette" />
 
       <div className="hero-copy absolute inset-x-0 top-1/2 z-10 mx-auto flex w-[calc(100%-40px)] max-w-[44rem] -translate-y-1/2 flex-col items-center text-center">
-        <LogoMark className="h-24 w-24 text-base sm:h-28 sm:w-28" />
-        <p className="mt-8 text-xs uppercase tracking-[0.58em] text-stone-200/58">
+        <p className="text-xs uppercase tracking-[0.58em] text-stone-200/58">
           {siteConfig.expandedName}
         </p>
-        <h1 className="mt-6 text-5xl font-semibold uppercase leading-[0.88] tracking-normal text-white sm:text-7xl lg:text-8xl">
-          RAAM
-        </h1>
+        <Image
+          src="/assets/images/logo.png"
+          alt="RAAM"
+          width={280}
+          height={120}
+          className="mt-8 h-24 w-auto sm:h-28"
+          priority
+        />
         <p className="mt-7 w-full max-w-[19rem] px-1 text-sm leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">
           {siteConfig.description}
         </p>
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
-          <FluidButton href="#artists">Residents</FluidButton>
+          <FluidButton href="#artists">Artists</FluidButton>
           <FluidButton href="#projects" className="bg-black/20">
             Projects
           </FluidButton>

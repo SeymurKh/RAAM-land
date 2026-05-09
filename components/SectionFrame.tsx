@@ -22,7 +22,7 @@ export function SectionFrame({
   return (
     <section
       id={id}
-      className={cn("relative isolate scroll-mt-28 px-5 py-24 sm:px-8 lg:px-12", className)}
+      className={cn("relative isolate scroll-mt-36 px-5 py-24 sm:px-8 lg:px-12", className)}
     >
       <div className="mx-auto max-w-7xl">
         <MotionReveal className="mb-12 grid gap-6 md:grid-cols-[0.72fr_1.28fr] md:items-end">

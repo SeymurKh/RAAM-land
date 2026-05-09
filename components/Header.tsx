@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { LogoMark } from "@/components/LogoMark";
 import { cn } from "@/lib/utils";
 import { useScrollLock } from "@/lib/useScrollLock";
 
@@ -11,7 +11,7 @@ const navItems = [
   { label: "Artists", href: "#artists" },
   { label: "Live", href: "#live" },
   { label: "Projects", href: "#projects" },
-  { label: "Contacts", href: "#contacts" },
+  { label: "Contact Us", href: "#contacts" },
 ];
 
 interface HeaderProps {
@@ -55,11 +55,16 @@ export function Header({ modalOpen }: HeaderProps) {
         <nav className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-black/45 px-4 py-3 shadow-[0_16px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
           <a
             href="#hero"
-            className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.24em] text-white"
+            className="flex items-center gap-3"
             aria-label="RAAM home"
           >
-            <LogoMark className="h-10 w-10" />
-            <span>RAAM</span>
+            <Image
+              src="/assets/images/logo.png"
+              alt="RAAM"
+              width={40}
+              height={40}
+              className="h-10 w-auto"
+            />
           </a>
 
           <div className="hidden items-center gap-9 md:flex">
@@ -95,10 +100,13 @@ export function Header({ modalOpen }: HeaderProps) {
           >
             <div className="flex items-center justify-between px-5 py-5">
               <a href="#hero" onClick={close} className="flex items-center gap-3">
-                <LogoMark />
-                <span className="text-sm font-semibold uppercase tracking-[0.28em] text-white">
-                  RAAM
-                </span>
+                <Image
+                  src="/assets/images/logo.png"
+                  alt="RAAM"
+                  width={40}
+                  height={40}
+                  className="h-10 w-auto"
+                />
               </a>
               <button
                 type="button"

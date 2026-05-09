@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ExternalLink,
@@ -104,14 +105,25 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                 </div>
 
                 <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.22),transparent_28%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(74,58,42,0.12),transparent)]" />
-                  <div className="absolute inset-x-8 top-12 h-px bg-white/20" />
-                  <div className="absolute bottom-8 left-8 text-[6rem] font-semibold uppercase leading-none tracking-normal text-white/10 sm:text-[9rem]">
-                    {artist.visual.initials}
-                  </div>
-                  <div className="absolute bottom-8 right-8 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/35 text-stone-200 backdrop-blur-xl">
-                    <Headphones size={28} />
-                  </div>
+                  {artist.bannerImage ? (
+                    <Image
+                      src={artist.bannerImage}
+                      alt={`${artist.name} banner`}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.22),transparent_28%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(74,58,42,0.12),transparent)]" />
+                      <div className="absolute inset-x-8 top-12 h-px bg-white/20" />
+                      <div className="absolute bottom-8 left-8 text-[6rem] font-semibold uppercase leading-none tracking-normal text-white/10 sm:text-[9rem]">
+                        {artist.visual.initials}
+                      </div>
+                      <div className="absolute bottom-8 right-8 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/35 text-stone-200 backdrop-blur-xl">
+                        <Headphones size={28} />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 

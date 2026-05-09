@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Artist, SocialKind, MediaKind } from "@/types/content";
 
@@ -23,6 +24,10 @@ interface ArtistFormProps {
 export function ArtistForm({ artist, mode }: ArtistFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(
+    artist?.bannerImage ?? null,
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState<Artist>(
     artist ?? {
@@ -35,6 +40,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
       highlights: [""],
       portfolio: [],
       socials: [],
+      bannerImage: undefined,
       visual: { initials: "", position: "high", tone: "from-stone-300/20" },
     },
   );
@@ -55,9 +61,28 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
     updateField("highlights", highlights);
   }
 
+  async function handleBannerUpload(file: File) {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("artistId", form.id || `new-${Date.now()}`);
+
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    if (res.ok) {
+      const { url } = await res.json();
+      updateField("bannerImage", url);
+      setBannerPreview(url);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+
+    // Upload banner if a new file was selected
+    const file = fileInputRef.current?.files?.[0];
+    if (file) {
+      await handleBannerUpload(file);
+    }
 
     const url =
       mode === "create"
@@ -85,6 +110,36 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Banner Image */}
+      <div>
+        <label className={labelClass}>Banner Image</label>
+        <div className="mt-2 flex items-start gap-4">
+          {bannerPreview ? (
+            <div className="relative h-32 w-48 overflow-hidden rounded-xl border border-white/10">
+              <Image
+                src={bannerPreview}
+                alt="Banner preview"
+                fill
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <div className="flex h-32 w-48 items-center justify-center rounded-xl border border-dashed border-white/15 bg-black/20 text-xs text-stone-500">
+              No image
+            </div>
+          )}
+          <div className="flex flex-col gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              className="text-sm text-stone-300 file:mr-3 file:rounded-full file:border file:border-white/10 file:bg-white/[0.06] file:px-4 file:py-2 file:text-xs file:uppercase file:tracking-[0.2em] file:text-stone-100"
+            />
+            <p className="text-xs text-stone-500">PNG, JPEG, WebP or GIF. Max 5MB.</p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>ID (slug)</label>

@@ -7,11 +7,19 @@ export default function AdminStreamPage() {
   const [config, setConfig] = useState<StreamConfig | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [hasYoutubeEnv, setHasYoutubeEnv] = useState(false);
 
   useEffect(() => {
     fetch("/api/stream")
       .then((r) => r.json())
       .then((data) => setConfig(data));
+
+    // Check if YouTube API is configured
+    fetch("/api/stream/status")
+      .then((r) => r.json())
+      .then((data) => {
+        setHasYoutubeEnv(data.source !== "none");
+      });
   }, []);
 
   async function handleSave(e: React.FormEvent) {
@@ -42,28 +50,42 @@ export default function AdminStreamPage() {
   const labelClass =
     "mb-2 block text-xs uppercase tracking-[0.28em] text-stone-300/50";
 
+  // Convert ISO date to datetime-local format (local time, no timezone shift)
+  function toDatetimeLocal(iso?: string): string {
+    if (!iso) return "";
+    const d = new Date(iso);
+    // Format as YYYY-MM-DDTHH:mm in local timezone
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-semibold uppercase tracking-normal">
         Stream Control
       </h1>
 
-      <form onSubmit={handleSave} className="max-w-lg space-y-6">
-        <div className="flex items-center gap-4">
-          <label className={labelClass}>Live Status</label>
-          <button
-            type="button"
-            onClick={() => setConfig({ ...config, isLive: !config.isLive })}
-            className={`rounded-full px-5 py-2 text-xs font-medium uppercase tracking-[0.2em] transition ${
-              config.isLive
-                ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                : "bg-white/[0.04] text-stone-400 border border-white/10"
-            }`}
-          >
-            {config.isLive ? "● Live" : "○ Offline"}
-          </button>
-        </div>
+      {/* YouTube API status */}
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+        <p className="text-xs uppercase tracking-[0.28em] text-stone-300/50">
+          YouTube API Status
+        </p>
+        <p className="mt-2 text-sm text-stone-200/70">
+          {hasYoutubeEnv ? (
+            <span className="text-green-400">
+              ✓ YOUTUBE_API_KEY and YOUTUBE_CHANNEL_ID are configured. Live
+              status is auto-detected.
+            </span>
+          ) : (
+            <span className="text-amber-400">
+              ⚠ YOUTUBE_API_KEY or YOUTUBE_CHANNEL_ID not set. Set them in
+              your environment to enable auto-detection.
+            </span>
+          )}
+        </p>
+      </div>
 
+      <form onSubmit={handleSave} className="max-w-lg space-y-6">
         <div>
           <label className={labelClass}>Stream Title</label>
           <input
@@ -76,7 +98,7 @@ export default function AdminStreamPage() {
         </div>
 
         <div>
-          <label className={labelClass}>YouTube URL</label>
+          <label className={labelClass}>YouTube URL (fallback)</label>
           <input
             className={inputClass}
             value={config.youtubeUrl ?? ""}
@@ -88,6 +110,9 @@ export default function AdminStreamPage() {
             }
             placeholder="https://www.youtube.com/watch?v=..."
           />
+          <p className="mt-1 text-xs text-stone-500">
+            Used as fallback when YouTube API is not configured.
+          </p>
         </div>
 
         <div>
@@ -95,20 +120,22 @@ export default function AdminStreamPage() {
           <input
             type="datetime-local"
             className={inputClass}
-            value={
-              config.nextStreamDate
-                ? new Date(config.nextStreamDate).toISOString().slice(0, 16)
-                : ""
-            }
-            onChange={(e) =>
-              setConfig({
-                ...config,
-                nextStreamDate: e.target.value
-                  ? new Date(e.target.value).toISOString()
-                  : undefined,
-              })
-            }
+            value={toDatetimeLocal(config.nextStreamDate)}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (!val) {
+                setConfig({ ...config, nextStreamDate: undefined });
+                return;
+              }
+              // Parse the datetime-local value as local time and store as ISO
+              // datetime-local gives "YYYY-MM-DDTHH:mm" which Date() parses as local
+              const iso = new Date(val).toISOString();
+              setConfig({ ...config, nextStreamDate: iso });
+            }}
           />
+          <p className="mt-1 text-xs text-stone-500">
+            Countdown timer will show when a date is set and stream is offline.
+          </p>
         </div>
 
         <div className="flex items-center gap-4 pt-4">

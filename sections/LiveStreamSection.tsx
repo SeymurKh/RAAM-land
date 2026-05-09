@@ -7,21 +7,43 @@ import { SectionFrame } from "@/components/SectionFrame";
 import { getYouTubeEmbed } from "@/lib/utils";
 import type { StreamConfig } from "@/data/stream";
 
+interface LiveStatus {
+  isLive: boolean;
+  videoId: string | null;
+  title?: string;
+  source: string;
+}
+
 export function LiveStreamSection() {
   const [config, setConfig] = useState<StreamConfig | null>(null);
+  const [liveStatus, setLiveStatus] = useState<LiveStatus | null>(null);
 
   useEffect(() => {
     fetch("/api/stream")
       .then((r) => r.json())
       .then((data) => setConfig(data));
+
+    fetch("/api/stream/status")
+      .then((r) => r.json())
+      .then((data) => setLiveStatus(data));
   }, []);
 
   if (!config) {
     return null;
   }
 
-  const { isLive, youtubeUrl, streamTitle, nextStreamDate } = config;
-  const embedUrl = getYouTubeEmbed(youtubeUrl);
+  const { nextStreamDate, streamTitle } = config;
+  const isLive = liveStatus?.isLive ?? false;
+  const liveVideoId = liveStatus?.videoId;
+  const liveTitle = liveStatus?.title ?? streamTitle;
+
+  // Build embed URL: prefer auto-detected videoId, fall back to manual youtubeUrl
+  let embedUrl: string | null = null;
+  if (isLive && liveVideoId) {
+    embedUrl = `https://www.youtube.com/embed/${liveVideoId}`;
+  } else if (isLive && config.youtubeUrl) {
+    embedUrl = getYouTubeEmbed(config.youtubeUrl) ?? null;
+  }
 
   return (
     <SectionFrame
@@ -36,7 +58,7 @@ export function LiveStreamSection() {
             <div className="relative aspect-video w-full bg-black">
               <iframe
                 src={`${embedUrl}?autoplay=0`}
-                title={streamTitle}
+                title={liveTitle}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="absolute inset-0 h-full w-full"
@@ -48,8 +70,13 @@ export function LiveStreamSection() {
                 <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500" />
               </span>
               <span className="text-sm uppercase tracking-[0.2em] text-stone-200/70">
-                {streamTitle}
+                {liveTitle}
               </span>
+              {liveStatus?.source === "youtube" && (
+                <span className="ml-auto text-xs uppercase tracking-[0.16em] text-stone-400/50">
+                  Auto-detected
+                </span>
+              )}
             </div>
           </MotionReveal>
         ) : nextStreamDate ? (

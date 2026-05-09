@@ -26,7 +26,7 @@ export function HeroSection() {
           alt="RAAM"
           width={800}
           height={340}
-          className="h-64 w-auto sm:h-80 lg:h-[28rem]"
+          className="h-64 w-auto sm:h-80 lg:h-[28rem] -mb-4 sm:-mb-6 lg:-mb-8"
           priority
         />
         <p className="mt-3 text-xs uppercase tracking-[0.58em] text-stone-200/58">

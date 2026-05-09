@@ -10,7 +10,6 @@ import { EcosystemSection } from "@/sections/EcosystemSection";
 import { HeroSection } from "@/sections/HeroSection";
 import { LiveStreamSection } from "@/sections/LiveStreamSection";
 import { ProjectsSection } from "@/sections/ProjectsSection";
-import { TransitionSection } from "@/sections/TransitionSection";
 import type { Artist } from "@/types/content";
 
 export default function Home() {
@@ -23,7 +22,6 @@ export default function Home() {
       <ScrollReturnIndicator />
       <main id="main-content" className="relative overflow-hidden bg-[#080706]">
         <HeroSection />
-        <TransitionSection />
         <EcosystemSection />
         <ArtistsSection
           activeArtist={activeArtist}

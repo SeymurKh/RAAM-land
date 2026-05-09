@@ -31,7 +31,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
       className="relative isolate min-h-screen overflow-hidden px-5 py-24 sm:px-8 lg:px-12"
     >
       <Image
-        src="/assets/images/artists.png"
+        src="/assets/images/lilbl.png"
         alt="RAAM artists background"
         fill
         sizes="100vw"
@@ -79,7 +79,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
                 ? { left: "50%", right: "auto", transform: "translateX(-50%)" }
                 : {}),
             }}
-            className="artist-name-3d group absolute max-w-[86vw] origin-left text-left text-2xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition-all duration-700 ease-out hover:scale-[1.6] hover:text-white focus:text-white sm:text-4xl lg:text-5xl lg:hover:scale-[2.2]"
+            className="artist-name-3d group absolute max-w-[86vw] origin-left text-left text-2xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition-all duration-700 ease-out hover:scale-[1.4] hover:text-white focus:text-white sm:text-4xl lg:text-5xl lg:hover:scale-[1.8]"
             aria-label={`Open ${artist.name} profile`}
           >
             <span className="block transition duration-500 group-hover:-translate-y-2">

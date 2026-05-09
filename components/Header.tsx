@@ -61,9 +61,9 @@ export function Header({ modalOpen }: HeaderProps) {
             <Image
               src="/assets/images/logo.png"
               alt="RAAM"
-              width={40}
-              height={40}
-              className="h-10 w-auto"
+              width={176}
+              height={56}
+              className="h-10 w-36 sm:w-44"
             />
           </a>
 
@@ -103,9 +103,9 @@ export function Header({ modalOpen }: HeaderProps) {
                 <Image
                   src="/assets/images/logo.png"
                   alt="RAAM"
-                  width={40}
-                  height={40}
-                  className="h-10 w-auto"
+                  width={176}
+                  height={56}
+                  className="h-10 w-36 sm:w-44"
                 />
               </a>
               <button

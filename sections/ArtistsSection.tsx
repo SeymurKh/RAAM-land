@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArtistModal } from "@/components/ArtistModal";
+import { MotionReveal } from "@/components/MotionReveal";
 import type { Artist } from "@/types/content";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -28,7 +29,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
   return (
     <section
       id="artists"
-      className="relative isolate min-h-screen scroll-mt-36 overflow-hidden px-5 py-24 sm:px-8 lg:px-12"
+      className="relative isolate min-h-screen scroll-mt-24 overflow-hidden px-5 pt-10 pb-24 sm:px-8 lg:px-12"
     >
       <Image
         src="/assets/images/lilbl.png"
@@ -41,6 +42,12 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
       <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
 
       <div className="relative mx-auto min-h-[760px] max-w-7xl">
+        <MotionReveal className="mb-12">
+          <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
+            Artists
+          </p>
+        </MotionReveal>
+
         {artists.map((artist, index) => (
           <motion.button
             key={artist.id}

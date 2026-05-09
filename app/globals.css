@@ -120,6 +120,30 @@ select {
   }
 }
 
+/* Dark thin scrollbar for modals */
+.artist-modal-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.artist-modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.artist-modal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(120, 100, 80, 0.25);
+  border-radius: 999px;
+}
+
+.artist-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 100, 80, 0.45);
+}
+
+/* Firefox */
+.artist-modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 100, 80, 0.25) transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

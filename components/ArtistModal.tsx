@@ -127,7 +127,7 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                 </div>
               </div>
 
-              <div className="max-h-none overflow-y-auto p-6 sm:p-8 lg:max-h-[70vh]">
+              <div className="artist-modal-scroll max-h-none overflow-y-auto p-6 sm:p-8 lg:max-h-[70vh]">
                 <div className="flex flex-wrap gap-2">
                   {artist.genres.map((genre) => (
                     <span

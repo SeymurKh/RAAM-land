@@ -61,7 +61,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
     updateField("highlights", highlights);
   }
 
-  async function handleBannerUpload(file: File) {
+  async function handleBannerUpload(file: File): Promise<string | null> {
     const fd = new FormData();
     fd.append("file", file);
     fd.append("artistId", form.id || `new-${Date.now()}`);
@@ -71,17 +71,23 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
       const { url } = await res.json();
       updateField("bannerImage", url);
       setBannerPreview(url);
+      return url;
     }
+    return null;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
 
-    // Upload banner if a new file was selected
+    // Upload banner if a new file was selected — capture URL directly
     const file = fileInputRef.current?.files?.[0];
+    let bannerUrl = form.bannerImage;
     if (file) {
-      await handleBannerUpload(file);
+      const uploadedUrl = await handleBannerUpload(file);
+      if (uploadedUrl) {
+        bannerUrl = uploadedUrl;
+      }
     }
 
     const url =
@@ -90,10 +96,12 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
         : `/api/artists/${form.id}`;
     const method = mode === "create" ? "POST" : "PUT";
 
+    const payload = { ...form, bannerImage: bannerUrl };
+
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(payload),
     });
 
     setSaving(false);

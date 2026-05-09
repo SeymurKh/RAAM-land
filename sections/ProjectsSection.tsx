@@ -10,7 +10,6 @@ export function ProjectsSection() {
     <SectionFrame
       id="projects"
       eyebrow="Projects"
-      title="Five directions"
       intro="A tighter view of the formats that currently define RAAM's public platform."
     >
       <div className="grid gap-px overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">

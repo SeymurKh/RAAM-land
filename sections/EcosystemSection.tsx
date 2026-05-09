@@ -4,7 +4,7 @@ import { MotionReveal } from "@/components/MotionReveal";
 
 export function EcosystemSection() {
   return (
-    <section id="ecosystem" className="relative isolate scroll-mt-36 overflow-hidden px-5 py-20 sm:px-8 lg:px-12">
+    <section id="ecosystem" className="relative isolate scroll-mt-24 overflow-hidden px-5 pt-10 pb-20 sm:px-8 lg:px-12">
       <Image
         src="/assets/images/artists.png"
         alt="RAAM ecosystem background"

@@ -59,7 +59,6 @@ export function ContactsSection() {
     <SectionFrame
       id="contacts"
       eyebrow="Contact Us"
-      title="Contact Us"
       intro="Two clear routes: book RAAM for formats and artists, or contact the team directly."
       className="pb-12"
     >

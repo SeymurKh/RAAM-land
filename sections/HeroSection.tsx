@@ -20,18 +20,18 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_var(--cursor-x,50%)_var(--cursor-y,45%),rgba(120,96,72,0.2),transparent_23%)]" />
       <div className="absolute inset-0 vignette" />
 
-      <div className="hero-copy absolute inset-x-0 top-1/2 z-10 mx-auto flex w-[calc(100%-40px)] max-w-[44rem] -translate-y-1/2 flex-col items-center text-center">
-        <p className="text-xs uppercase tracking-[0.58em] text-stone-200/58">
-          {siteConfig.expandedName}
-        </p>
+      <div className="hero-copy absolute inset-x-0 top-1/2 z-10 mx-auto flex w-[calc(100%-40px)] max-w-[56rem] -translate-y-1/2 flex-col items-center text-center">
         <Image
           src="/assets/images/logo.png"
           alt="RAAM"
-          width={280}
-          height={120}
-          className="mt-8 h-24 w-auto sm:h-28"
+          width={800}
+          height={340}
+          className="h-56 w-auto sm:h-72 lg:h-96"
           priority
         />
+        <p className="mt-6 text-xs uppercase tracking-[0.58em] text-stone-200/58">
+          {siteConfig.expandedName}
+        </p>
         <p className="mt-7 w-full max-w-[19rem] px-1 text-sm leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">
           {siteConfig.description}
         </p>

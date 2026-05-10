@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { MotionReveal } from "@/components/MotionReveal";
+import { SectionSkeleton } from "@/components/SectionSkeleton";
 import { SectionFrame } from "@/components/SectionFrame";
 import { getYouTubeEmbed } from "@/lib/utils";
 import type { StreamConfig } from "@/data/stream";
@@ -29,7 +30,7 @@ export function LiveStreamSection() {
   }, []);
 
   if (!config) {
-    return null;
+    return <SectionSkeleton className="min-h-[500px]" />;
   }
 
   const { nextStreamDate, streamTitle } = config;

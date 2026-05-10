@@ -64,7 +64,7 @@ export function ContactsSection() {
       className="pb-12"
     >
       <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 lg:grid-cols-2">
-        <MotionReveal className="bg-[#0b0a09]/92 p-6 sm:p-8">
+        <MotionReveal direction="left" className="bg-[#0b0a09]/92 p-6 sm:p-8">
           <div className="mb-10 flex items-start justify-between gap-6">
             <div>
               <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
@@ -159,7 +159,7 @@ export function ContactsSection() {
           </form>
         </MotionReveal>
 
-        <MotionReveal delay={0.08} className="bg-[#0b0a09]/92 p-6 sm:p-8">
+        <MotionReveal direction="right" delay={0.08} className="bg-[#0b0a09]/92 p-6 sm:p-8">
           <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
             Contact
           </p>

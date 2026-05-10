@@ -1,8 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 
-const secret = new TextEncoder().encode(
-  process.env.ADMIN_PASSWORD ?? "raam-admin-secret-2026",
-);
+const secret = new TextEncoder().encode(process.env.ADMIN_PASSWORD ?? "");
 
 export async function createToken(): Promise<string> {
   return new SignJWT({ role: "admin" })
@@ -24,5 +22,10 @@ export async function verifyToken(
 }
 
 export function validatePassword(password: string): boolean {
-  return password === (process.env.ADMIN_PASSWORD ?? "raam-admin-secret-2026");
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminPassword) {
+    console.error("ADMIN_PASSWORD environment variable is not set");
+    return false;
+  }
+  return password === adminPassword;
 }

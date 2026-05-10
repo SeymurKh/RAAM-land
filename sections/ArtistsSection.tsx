@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArtistModal } from "@/components/ArtistModal";
 import { MotionReveal } from "@/components/MotionReveal";
+import { SectionSkeleton } from "@/components/SectionSkeleton";
 import type { Artist } from "@/types/content";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -15,6 +16,7 @@ interface ArtistsSectionProps {
 
 export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSectionProps) {
   const [artists, setArtists] = useState<Artist[]>([]);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/artists")
@@ -23,7 +25,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
   }, []);
 
   if (artists.length === 0) {
-    return null;
+    return <SectionSkeleton />;
   }
 
   return (
@@ -48,51 +50,61 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
           </p>
         </MotionReveal>
 
-        {artists.map((artist, index) => (
-          <motion.button
-            key={artist.id}
-            type="button"
-            onClick={() => onSetActiveArtist(artist)}
-            initial={{ opacity: 0, y: 40, rotateX: 18 }}
-            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            viewport={{ once: true, margin: "-12% 0px" }}
-            animate={{
-              y: [0, index % 2 ? -10 : 10, 0],
-              rotateZ: [0, index % 2 ? 1 : -0.8, 0],
-            }}
-            transition={{
-              opacity: { duration: 0.8, delay: index * 0.08 },
-              y: {
-                duration: 5.5 + index * 0.35,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
-              rotateZ: {
-                duration: 6 + index * 0.4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              },
-            }}
-            style={{
-              top: `${14 + (index / artists.length) * 68}%`,
-              ...(index % 2 === 0
-                ? { left: `${7 + (index % 3) * 3}%` }
-                : { right: `${7 + (index % 3) * 3}%` }),
-              ...(index === artists.length - 1 && artists.length > 1
-                ? { left: "50%", right: "auto", transform: "translateX(-50%)" }
-                : {}),
-            }}
-            className="artist-name-3d group absolute max-w-[86vw] origin-left text-left text-2xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition-all duration-700 ease-out hover:scale-[1.4] hover:text-white focus:text-white sm:text-4xl lg:text-5xl lg:hover:scale-[1.8]"
-            aria-label={`Open ${artist.name} profile`}
-          >
-            <span className="block transition duration-500 group-hover:-translate-y-2">
-              {artist.name}
-            </span>
-            <span className="mt-2 block text-xs font-normal uppercase tracking-[0.36em] text-stone-300/45 opacity-0 transition duration-500 group-hover:opacity-100 group-focus:opacity-100">
-              {artist.origin} / {artist.genres.slice(0, 2).join(" / ")}
-            </span>
-          </motion.button>
-        ))}
+        {artists.map((artist, index) => {
+          const isHovered = hoveredId === artist.id;
+          const isOtherHovered = hoveredId !== null && !isHovered;
+
+          return (
+            <motion.button
+              key={artist.id}
+              type="button"
+              onClick={() => onSetActiveArtist(artist)}
+              onMouseEnter={() => setHoveredId(artist.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              initial={{ opacity: 0, y: 40, rotateX: 18 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={{ once: true, margin: "-12% 0px" }}
+              animate={{
+                y: [0, index % 2 ? -10 : 10, 0],
+                rotateZ: [0, index % 2 ? 1 : -0.8, 0],
+                opacity: isOtherHovered ? 0.3 : 1,
+                scale: isHovered ? 1.15 : 1,
+              }}
+              transition={{
+                opacity: { duration: 0.5 },
+                scale: { duration: 0.5, ease: "easeOut" },
+                y: {
+                  duration: 5.5 + index * 0.35,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                },
+                rotateZ: {
+                  duration: 6 + index * 0.4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                },
+              }}
+              style={{
+                top: `${14 + (index / artists.length) * 68}%`,
+                ...(index % 2 === 0
+                  ? { left: `${7 + (index % 3) * 3}%` }
+                  : { right: `${7 + (index % 3) * 3}%` }),
+                ...(index === artists.length - 1 && artists.length > 1
+                  ? { left: "50%", right: "auto", transform: "translateX(-50%)" }
+                  : {}),
+              }}
+              className="artist-name-3d group absolute max-w-[86vw] origin-center text-left text-2xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition-all duration-700 ease-out hover:scale-[1.4] hover:text-white focus:text-white sm:text-4xl lg:text-5xl lg:hover:scale-[1.8]"
+              aria-label={`Open ${artist.name} profile`}
+            >
+              <span className="block transition duration-500 group-hover:-translate-y-2">
+                {artist.name}
+              </span>
+              <span className="mt-2 block text-xs font-normal uppercase tracking-[0.36em] text-stone-300/45 opacity-0 transition delay-150 duration-500 group-hover:opacity-100 group-focus:opacity-100">
+                {artist.origin} / {artist.genres.slice(0, 2).join(" / ")}
+              </span>
+            </motion.button>
+          );
+        })}
       </div>
 
       <ArtistModal artist={activeArtist} onClose={() => onSetActiveArtist(undefined)} />

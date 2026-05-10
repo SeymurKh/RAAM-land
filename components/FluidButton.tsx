@@ -1,4 +1,7 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
+"use client";
+
+import { motion, type HTMLMotionProps } from "framer-motion";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const baseClass =
@@ -14,34 +17,49 @@ function Inner({ children }: { children: ReactNode }) {
   );
 }
 
-type AnchorProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
+interface AnchorFluidProps extends HTMLMotionProps<"a"> {
   href: string;
   children: ReactNode;
-};
+  className?: string;
+}
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+interface ButtonFluidProps extends HTMLMotionProps<"button"> {
   href?: never;
   children: ReactNode;
-};
+  className?: string;
+}
 
 export function FluidButton({
   children,
   className,
   ...props
-}: AnchorProps | ButtonProps) {
-  if ("href" in props) {
-    const anchorProps = props as AnchorProps;
+}: AnchorFluidProps | ButtonFluidProps) {
+  if ("href" in props && props.href) {
+    const { href, ...rest } = props as AnchorFluidProps;
     return (
-      <a className={cn(baseClass, className)} {...anchorProps}>
+      <motion.a
+        href={href}
+        className={cn(baseClass, className)}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        {...rest}
+      >
         <Inner>{children}</Inner>
-      </a>
+      </motion.a>
     );
   }
 
-  const buttonProps = props as ButtonProps;
+  const buttonProps = props as ButtonFluidProps;
   return (
-    <button className={cn(baseClass, className)} {...buttonProps}>
+    <motion.button
+      className={cn(baseClass, className)}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      {...buttonProps}
+    >
       <Inner>{children}</Inner>
-    </button>
+    </motion.button>
   );
 }

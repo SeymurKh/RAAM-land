@@ -1,20 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Artist, SocialKind, MediaKind } from "@/types/content";
-
-const mediaKinds: MediaKind[] = ["image", "video", "audio"];
-const socialKinds: SocialKind[] = [
-  "instagram",
-  "soundcloud",
-  "spotify",
-  "youtube",
-  "linktree",
-  "email",
-  "phone",
-];
+import Image from "next/image";
+import type { Artist } from "@/types/content";
+import { BannerUpload } from "@/components/artist-form/BannerUpload";
+import { PortfolioEditor } from "@/components/artist-form/PortfolioEditor";
+import { SocialsEditor } from "@/components/artist-form/SocialsEditor";
 
 interface ArtistFormProps {
   artist?: Artist;
@@ -128,6 +120,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
                 src={bannerPreview}
                 alt="Banner preview"
                 fill
+                sizes="192px"
                 className="object-cover"
               />
             </div>
@@ -245,147 +238,15 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
         ))}
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className={labelClass}>Portfolio items</label>
-          <button
-            type="button"
-            onClick={() =>
-              updateField("portfolio", [
-                ...form.portfolio,
-                { id: `item-${Date.now()}`, title: "", kind: "audio" },
-              ])
-            }
-            className="text-xs uppercase tracking-[0.2em] text-stone-400 hover:text-white"
-          >
-            + Add
-          </button>
-        </div>
-        {form.portfolio.map((item, i) => (
-          <div key={item.id} className="flex gap-3">
-            <input
-              className={inputClass}
-              placeholder="Title"
-              value={item.title}
-              onChange={(e) => {
-                const portfolio = [...form.portfolio];
-                portfolio[i] = { ...portfolio[i], title: e.target.value };
-                updateField("portfolio", portfolio);
-              }}
-            />
-            <select
-              className={`${inputClass} w-32`}
-              value={item.kind}
-              onChange={(e) => {
-                const portfolio = [...form.portfolio];
-                portfolio[i] = {
-                  ...portfolio[i],
-                  kind: e.target.value as MediaKind,
-                };
-                updateField("portfolio", portfolio);
-              }}
-            >
-              {mediaKinds.map((k) => (
-                <option key={k} value={k}>
-                  {k}
-                </option>
-              ))}
-            </select>
-            <input
-              className={inputClass}
-              placeholder="URL (optional)"
-              value={item.url ?? ""}
-              onChange={(e) => {
-                const portfolio = [...form.portfolio];
-                portfolio[i] = {
-                  ...portfolio[i],
-                  url: e.target.value || undefined,
-                };
-                updateField("portfolio", portfolio);
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                const portfolio = [...form.portfolio];
-                portfolio.splice(i, 1);
-                updateField("portfolio", portfolio);
-              }}
-              className="text-red-400/70 hover:text-red-400"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-      </div>
+      <PortfolioEditor
+        items={form.portfolio}
+        onChange={(portfolio) => updateField("portfolio", portfolio)}
+      />
 
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className={labelClass}>Socials</label>
-          <button
-            type="button"
-            onClick={() =>
-              updateField("socials", [
-                ...form.socials,
-                { kind: "instagram", label: "", url: "" },
-              ])
-            }
-            className="text-xs uppercase tracking-[0.2em] text-stone-400 hover:text-white"
-          >
-            + Add
-          </button>
-        </div>
-        {form.socials.map((social, i) => (
-          <div key={i} className="flex gap-3">
-            <select
-              className={`${inputClass} w-36`}
-              value={social.kind}
-              onChange={(e) => {
-                const socials = [...form.socials];
-                socials[i] = { ...socials[i], kind: e.target.value as SocialKind };
-                updateField("socials", socials);
-              }}
-            >
-              {socialKinds.map((k) => (
-                <option key={k} value={k}>
-                  {k}
-                </option>
-              ))}
-            </select>
-            <input
-              className={inputClass}
-              placeholder="Label"
-              value={social.label}
-              onChange={(e) => {
-                const socials = [...form.socials];
-                socials[i] = { ...socials[i], label: e.target.value };
-                updateField("socials", socials);
-              }}
-            />
-            <input
-              className={inputClass}
-              placeholder="URL"
-              value={social.url}
-              onChange={(e) => {
-                const socials = [...form.socials];
-                socials[i] = { ...socials[i], url: e.target.value };
-                updateField("socials", socials);
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                const socials = [...form.socials];
-                socials.splice(i, 1);
-                updateField("socials", socials);
-              }}
-              className="text-red-400/70 hover:text-red-400"
-            >
-              ✕
-            </button>
-          </div>
-        ))}
-      </div>
+      <SocialsEditor
+        items={form.socials}
+        onChange={(socials) => updateField("socials", socials)}
+      />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div>

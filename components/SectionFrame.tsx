@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { MotionReveal } from "@/components/MotionReveal";
+import { SectionTransition } from "@/components/SectionTransition";
 import { cn } from "@/lib/utils";
 
 interface SectionFrameProps {
@@ -34,7 +35,12 @@ export function SectionFrame({
           <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
         </>
       ) : null}
-      <div className="mx-auto max-w-7xl">
+
+      {/* Gradient transitions for smooth section boundaries */}
+      <SectionTransition position="top" />
+      <SectionTransition position="bottom" />
+
+      <div className="relative mx-auto max-w-7xl">
         <MotionReveal className="mb-12 grid gap-6 md:grid-cols-[0.72fr_1.28fr] md:items-end">
           <div>
             <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">

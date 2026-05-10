@@ -15,9 +15,9 @@ async function readDb(): Promise<DbData> {
     const raw = await readFile(DB_PATH, "utf-8");
     return JSON.parse(raw) as DbData;
   } catch {
-    const { artists } = await import("@/data/site");
+    const { seedArtists } = await import("@/data/seed");
     const { streamConfig } = await import("@/data/stream");
-    const initial: DbData = { artists, stream: streamConfig };
+    const initial: DbData = { artists: seedArtists, stream: streamConfig };
     await writeFile(DB_PATH, JSON.stringify(initial, null, 2), "utf-8");
     return initial;
   }

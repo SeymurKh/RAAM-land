@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MotionConfig } from "framer-motion";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,15 +21,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="relative h-full antialiased">
       <body className="min-h-full bg-[#080706] text-stone-50">
-        <a
-          href="#main-content"
-          className="fixed left-4 top-4 z-[100] -translate-y-20 rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition focus:translate-y-0"
-        >
-          Skip to content
-        </a>
-        {children}
+        <MotionConfig reducedMotion="user">
+          <a
+            href="#main-content"
+            className="fixed left-4 top-4 z-[100] -translate-y-20 rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition focus:translate-y-0"
+          >
+            Skip to content
+          </a>
+          {children}
+        </MotionConfig>
       </body>
     </html>
   );

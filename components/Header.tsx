@@ -63,7 +63,9 @@ export function Header({ modalOpen }: HeaderProps) {
               alt="RAAM"
               width={176}
               height={56}
+              sizes="(min-width: 640px) 160px, 144px"
               className="h-6 w-36 sm:w-40"
+              priority
             />
           </a>
 
@@ -105,6 +107,7 @@ export function Header({ modalOpen }: HeaderProps) {
                   alt="RAAM"
                   width={176}
                   height={56}
+                  sizes="(min-width: 640px) 160px, 144px"
                   className="h-6 w-36 sm:w-40"
                 />
               </a>

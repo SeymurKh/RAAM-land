@@ -104,12 +104,13 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                   </h3>
                 </div>
 
-                <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+                <div className="relative mt-8 aspect-[2/3] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
                   {artist.bannerImage ? (
                     <Image
                       src={artist.bannerImage}
                       alt={`${artist.name} banner`}
                       fill
+                      sizes="(max-width: 768px) 100vw, 640px"
                       className="object-cover"
                     />
                   ) : (

@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
@@ -22,9 +25,17 @@ export function ProjectsSection() {
           }
 
           return (
-            <MotionReveal
+            <motion.div
               key={project.id}
-              delay={index * 0.06}
+              initial={{ opacity: 0, rotateY: -15, x: -20 }}
+              whileInView={{ opacity: 1, rotateY: 0, x: 0 }}
+              viewport={{ once: true, margin: "-8% 0px" }}
+              transition={{
+                duration: 0.7,
+                delay: index * 0.08,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              style={{ transformStyle: "preserve-3d" }}
               className="group relative flex min-h-[560px] flex-col justify-between bg-[#0b0a09]/92 p-6 transition duration-500 hover:bg-[#14110f]"
             >
               <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-stone-100/30 to-transparent opacity-0 transition group-hover:opacity-100" />
@@ -57,7 +68,7 @@ export function ProjectsSection() {
                   {project.accent}
                 </span>
               </div>
-            </MotionReveal>
+            </motion.div>
           );
         })}
       </div>

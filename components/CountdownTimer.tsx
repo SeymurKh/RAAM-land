@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AnimatedDigit } from "@/components/AnimatedDigit";
 
 interface CountdownTimerProps {
   targetDate: string;
@@ -31,7 +32,7 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center">
       <span className="text-4xl font-semibold tabular-nums text-stone-100 sm:text-6xl lg:text-7xl">
-        {String(value).padStart(2, "0")}
+        <AnimatedDigit value={value} />
       </span>
       <span className="mt-2 text-[0.65rem] uppercase tracking-[0.32em] text-stone-300/50">
         {label}

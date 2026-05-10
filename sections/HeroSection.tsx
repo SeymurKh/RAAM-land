@@ -6,7 +6,7 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative isolate flex min-h-screen w-full items-center justify-center overflow-hidden px-5 pb-20 pt-16"
+      className="relative isolate flex min-h-screen w-full items-center justify-center overflow-hidden px-5"
     >
       <Image
         src={siteConfig.heroImage}
@@ -20,7 +20,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_var(--cursor-x,50%)_var(--cursor-y,45%),rgba(120,96,72,0.2),transparent_23%)]" />
       <div className="absolute inset-0 vignette" />
 
-      <div className="hero-copy absolute inset-x-0 top-1/2 z-10 mx-auto flex w-[calc(100%-40px)] max-w-[56rem] -translate-y-1/2 flex-col items-center text-center">
+      <div className="hero-copy relative z-10 mx-auto flex w-[calc(100%-40px)] max-w-[56rem] flex-col items-center text-center">
         <Image
           src="/assets/images/logo.png"
           alt="RAAM"

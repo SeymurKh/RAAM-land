@@ -1,16 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function ScrollReturnIndicator() {
   const [progress, setProgress] = useState(0);
+  const [idle, setIdle] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const update = () => {
       const scrollable =
         document.documentElement.scrollHeight - window.innerHeight;
       setProgress(scrollable > 0 ? window.scrollY / scrollable : 0);
+
+      // Mark as active (not idle)
+      setIdle(false);
+
+      // Reset idle timer
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setIdle(true), 1500);
     };
 
     update();
@@ -19,10 +28,13 @@ export function ScrollReturnIndicator() {
     return () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
 
   const isEnd = progress > 0.965;
+  const hidden = idle && !isEnd && progress === 0;
+  const faded = idle && !isEnd;
 
   return (
     <button
@@ -33,10 +45,13 @@ export function ScrollReturnIndicator() {
         }
       }}
       className={cn(
-        "fixed bottom-6 left-1/2 z-40 flex h-16 w-12 items-center justify-center rounded-full text-stone-100 transition duration-500",
+        "fixed bottom-6 left-1/2 z-40 flex h-16 w-12 items-center justify-center rounded-full text-stone-100 transition-all duration-500",
+        hidden ? "pointer-events-none opacity-0" :
         isEnd
-          ? "pointer-events-auto border border-white/12 bg-black/45 backdrop-blur-xl"
-          : "pointer-events-none",
+          ? "pointer-events-auto border border-white/12 bg-black/45 backdrop-blur-xl opacity-100"
+          : faded
+            ? "pointer-events-none opacity-0"
+            : "pointer-events-none opacity-100",
       )}
       aria-label={isEnd ? "Back to top" : "Scroll progress"}
       style={{

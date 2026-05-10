@@ -14,11 +14,13 @@ export function HeroSection() {
     offset: ["start start", "end start"],
   });
 
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
+  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.5], [0, 0.3]);
-  const contentScale = useTransform(scrollYProgress, [0, 1], [1, 0.82]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.3]);
+  const contentScale = useTransform(scrollYProgress, [0, 1], [1, 0.72]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.15]);
+  const contentBlur = useTransform(scrollYProgress, [0, 0.8], [0, 6]);
+  const contentFilter = useTransform(contentBlur, (v) => `blur(${v}px)`);
 
   return (
     <section
@@ -45,8 +47,8 @@ export function HeroSection() {
       <div className="absolute inset-0 vignette" />
 
       <motion.div
-        className="hero-copy relative z-10 mx-auto flex w-full max-w-[56rem] translate-x-[3%] flex-col items-center px-5 text-center"
-        style={{ y: textY, scale: contentScale, opacity: contentOpacity }}
+        className="hero-copy relative z-10 mx-auto flex w-full max-w-[56rem] flex-col items-center px-5 text-center"
+        style={{ y: textY, scale: contentScale, opacity: contentOpacity, filter: contentFilter }}
       >
         <Image
           src="/assets/images/logo.png"

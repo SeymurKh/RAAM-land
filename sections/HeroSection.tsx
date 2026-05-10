@@ -26,13 +26,13 @@ export function HeroSection() {
           alt="RAAM"
           width={800}
           height={340}
-          className="h-72 w-auto sm:h-96 lg:h-[32rem] -mb-6 sm:-mb-8 lg:-mb-10"
+          className="h-56 w-auto sm:h-72 lg:h-96"
           priority
         />
-        <p className="mt-2 text-xs uppercase tracking-[0.58em] text-stone-200/58">
+        <p className="mt-1 text-xs uppercase tracking-[0.58em] text-stone-200/58">
           {siteConfig.expandedName}
         </p>
-        <p className="mt-3 w-full max-w-[19rem] px-1 text-sm leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">
+        <p className="mt-2 w-full max-w-[19rem] px-1 text-sm leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">
           {siteConfig.description}
         </p>
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">

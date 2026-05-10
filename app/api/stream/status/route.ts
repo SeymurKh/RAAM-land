@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
+import { getStreamConfig } from "@/lib/db";
 
 export async function GET() {
+  // Check if stream is disabled via admin kill switch
+  const streamConfig = await getStreamConfig();
+  if (streamConfig.disabled) {
+    return NextResponse.json({
+      isLive: false,
+      videoId: null,
+      source: "disabled",
+    });
+  }
+
   const apiKey = process.env.YOUTUBE_API_KEY;
   const channelId = process.env.YOUTUBE_CHANNEL_ID;
 

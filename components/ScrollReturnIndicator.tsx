@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function ScrollReturnIndicator() {
@@ -34,7 +33,7 @@ export function ScrollReturnIndicator() {
         }
       }}
       className={cn(
-        "fixed bottom-6 left-1/2 z-40 flex h-16 w-12 -translate-x-1/2 items-center justify-center rounded-full text-stone-100 transition duration-500",
+        "fixed bottom-6 left-1/2 z-40 flex h-16 w-12 items-center justify-center rounded-full text-stone-100 transition duration-500",
         isEnd
           ? "pointer-events-auto border border-white/12 bg-black/45 backdrop-blur-xl"
           : "pointer-events-none",
@@ -62,7 +61,6 @@ export function ScrollReturnIndicator() {
           }}
         />
       </span>
-      {isEnd ? <ArrowUp className="absolute" size={14} /> : null}
     </button>
   );
 }

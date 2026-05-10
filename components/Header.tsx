@@ -63,7 +63,7 @@ export function Header({ modalOpen }: HeaderProps) {
               alt="RAAM"
               width={176}
               height={56}
-              className="h-10 w-28 sm:w-32"
+              className="h-10 w-32 sm:w-36"
             />
           </a>
 
@@ -105,7 +105,7 @@ export function Header({ modalOpen }: HeaderProps) {
                   alt="RAAM"
                   width={176}
                   height={56}
-                  className="h-10 w-28 sm:w-32"
+                  className="h-10 w-32 sm:w-36"
                 />
               </a>
               <button

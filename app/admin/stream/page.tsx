@@ -85,6 +85,38 @@ export default function AdminStreamPage() {
         </p>
       </div>
 
+      {/* Stream kill switch */}
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-stone-300/50">
+              Stream Section
+            </p>
+            <p className="mt-1 text-sm text-stone-200/70">
+              {config.disabled
+                ? "Stream section is hidden. Visitors see the \"Stay tuned\" placeholder."
+                : "Stream section is active. Live streams will be shown automatically."}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setConfig({ ...config, disabled: !config.disabled })}
+            className={`
+              relative h-8 w-14 shrink-0 rounded-full transition-colors duration-300
+              ${config.disabled ? "bg-red-500/30" : "bg-green-500/30"}
+            `}
+            aria-label={config.disabled ? "Enable stream" : "Disable stream"}
+          >
+            <span
+              className={`
+                absolute top-1 left-1 h-6 w-6 rounded-full transition-transform duration-300
+                ${config.disabled ? "translate-x-0 bg-red-400" : "translate-x-6 bg-green-400"}
+              `}
+            />
+          </button>
+        </div>
+      </div>
+
       <form onSubmit={handleSave} className="max-w-lg space-y-6">
         <div>
           <label className={labelClass}>Stream Title</label>

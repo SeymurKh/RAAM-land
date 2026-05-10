@@ -17,8 +17,8 @@ export function HeroSection() {
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.5], [0, 0.3]);
-  const contentScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.6]);
+  const contentScale = useTransform(scrollYProgress, [0, 1], [1, 0.82]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.3]);
 
   return (
     <section
@@ -45,7 +45,7 @@ export function HeroSection() {
       <div className="absolute inset-0 vignette" />
 
       <motion.div
-        className="hero-copy relative z-10 ml-[8%] mr-auto flex w-full max-w-[48rem] flex-col items-center px-5 text-center"
+        className="hero-copy relative z-10 mx-auto flex w-full max-w-[56rem] translate-x-[3%] flex-col items-center px-5 text-center"
         style={{ y: textY, scale: contentScale, opacity: contentOpacity }}
       >
         <Image

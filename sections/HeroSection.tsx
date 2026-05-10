@@ -6,7 +6,7 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative isolate flex min-h-screen w-full items-center justify-center overflow-hidden"
+      className="relative isolate flex min-h-screen w-full items-center overflow-hidden"
     >
       <Image
         src={siteConfig.heroImage}

@@ -68,7 +68,7 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
             exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             onMouseDown={(event) => event.stopPropagation()}
-            className="relative mx-auto min-h-[70vh] max-w-4xl overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#0b0a09]/92 shadow-[0_30px_140px_rgba(0,0,0,0.72)]"
+            className="relative mx-auto h-[80vh] max-w-4xl overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#0b0a09]/92 shadow-[0_30px_140px_rgba(0,0,0,0.72)]"
           >
             <button
               type="button"
@@ -91,8 +91,30 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
             </div>
 
             <div className="relative grid gap-0 lg:grid-cols-[0.88fr_1.12fr]">
-              <div className="flex min-h-[300px] flex-col justify-between border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r">
-                <div>
+              <div className="relative h-full overflow-hidden border-b border-white/10 lg:border-b-0 lg:border-r">
+                {artist.photo ? (
+                  <Image
+                    src={artist.photo}
+                    alt={`${artist.name} photo`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 640px"
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.22),transparent_28%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(74,58,42,0.12),transparent)]" />
+                    <div className="absolute inset-x-8 top-12 h-px bg-white/20" />
+                    <div className="absolute bottom-8 left-8 text-[6rem] font-semibold uppercase leading-none tracking-normal text-white/10 sm:text-[9rem]">
+                      {artist.visual.initials}
+                    </div>
+                    <div className="absolute bottom-8 right-8 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/35 text-stone-200 backdrop-blur-xl">
+                      <Headphones size={28} />
+                    </div>
+                  </>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="relative z-10 flex h-full flex-col justify-end p-6 sm:p-8">
                   <p className="text-xs uppercase tracking-[0.45em] text-stone-300/55">
                     {artist.role} / {artist.origin}
                   </p>
@@ -103,33 +125,9 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                     {artist.name}
                   </h3>
                 </div>
-
-                <div className="relative mt-8 aspect-[2/3] overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                  {artist.photo ? (
-                    <Image
-                      src={artist.photo}
-                      alt={`${artist.name} photo`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 640px"
-                      className="object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <>
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.22),transparent_28%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(74,58,42,0.12),transparent)]" />
-                      <div className="absolute inset-x-8 top-12 h-px bg-white/20" />
-                      <div className="absolute bottom-8 left-8 text-[6rem] font-semibold uppercase leading-none tracking-normal text-white/10 sm:text-[9rem]">
-                        {artist.visual.initials}
-                      </div>
-                      <div className="absolute bottom-8 right-8 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/35 text-stone-200 backdrop-blur-xl">
-                        <Headphones size={28} />
-                      </div>
-                    </>
-                  )}
-                </div>
               </div>
 
-              <div className="artist-modal-scroll max-h-none overflow-y-auto p-6 sm:p-8 lg:max-h-[70vh]">
+              <div className="artist-modal-scroll max-h-none overflow-y-auto p-6 sm:p-8 lg:max-h-[80vh]">
                 <div className="flex flex-wrap gap-2">
                   {artist.genres.map((genre) => (
                     <span

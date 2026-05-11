@@ -157,7 +157,8 @@
         "initials": "FI",
         "position": "low",
         "tone": "from-neutral-200/20"
-      }
+      },
+      "photo": "/uploads/artists/farik-interlude.png"
     },
     {
       "id": "shayyo",
@@ -213,7 +214,8 @@
         "initials": "SH",
         "position": "high",
         "tone": "from-stone-400/20"
-      }
+      },
+      "photo": "/uploads/artists/shayyo.png"
     },
     {
       "id": "inmysoul",
@@ -274,13 +276,14 @@
         "initials": "IS",
         "position": "middle",
         "tone": "from-zinc-300/20"
-      }
+      },
+      "photo": "/uploads/artists/inmysoul.png"
     }
   ],
   "stream": {
     "isLive": true,
     "streamTitle": "RAAM Live Session",
-    "nextStreamDate": "2026-06-12T14:00:00.000Z",
+    "nextStreamDate": "2026-05-13T14:00:00.000Z",
     "youtubeUrl": "https://www.youtube.com/live/Y0BSnmYRh_8?si=VEUeWFIsKrIPavrb",
     "disabled": true
   }

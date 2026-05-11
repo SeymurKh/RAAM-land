@@ -49,8 +49,7 @@
         "initials": "PD",
         "position": "high",
         "tone": "from-stone-300/20"
-      },
-      "bannerImage": "/uploads/artists/pedro.png"
+      }
     },
     {
       "id": "boraa",
@@ -106,7 +105,8 @@
         "initials": "BR",
         "position": "middle",
         "tone": "from-zinc-100/20"
-      }
+      },
+      "photo": "/uploads/artists/boraa.png"
     },
     {
       "id": "farik-interlude",

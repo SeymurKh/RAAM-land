@@ -37,7 +37,7 @@ export interface Artist {
   highlights: string[];
   portfolio: ArtistMedia[];
   socials: ArtistSocial[];
-  bannerImage?: string;
+  photo?: string;
   visual: {
     initials: string;
     position: "high" | "middle" | "low";

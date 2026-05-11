@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import type { Artist } from "@/types/content";
-import { BannerUpload } from "@/components/artist-form/BannerUpload";
+import { ArtistPhotoUpload } from "@/components/artist-form/ArtistPhotoUpload";
 import { PortfolioEditor } from "@/components/artist-form/PortfolioEditor";
 import { SocialsEditor } from "@/components/artist-form/SocialsEditor";
 
@@ -16,10 +15,6 @@ interface ArtistFormProps {
 export function ArtistForm({ artist, mode }: ArtistFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
-  const [bannerPreview, setBannerPreview] = useState<string | null>(
-    artist?.bannerImage ?? null,
-  );
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState<Artist>(
     artist ?? {
@@ -32,7 +27,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
       highlights: [""],
       portfolio: [],
       socials: [],
-      bannerImage: undefined,
+      photo: undefined,
       visual: { initials: "", position: "high", tone: "from-stone-300/20" },
     },
   );
@@ -53,34 +48,9 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
     updateField("highlights", highlights);
   }
 
-  async function handleBannerUpload(file: File): Promise<string | null> {
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("artistId", form.id || `new-${Date.now()}`);
-
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    if (res.ok) {
-      const { url } = await res.json();
-      updateField("bannerImage", url);
-      setBannerPreview(url);
-      return url;
-    }
-    return null;
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-
-    // Upload banner if a new file was selected — capture URL directly
-    const file = fileInputRef.current?.files?.[0];
-    let bannerUrl = form.bannerImage;
-    if (file) {
-      const uploadedUrl = await handleBannerUpload(file);
-      if (uploadedUrl) {
-        bannerUrl = uploadedUrl;
-      }
-    }
 
     const url =
       mode === "create"
@@ -88,7 +58,10 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
         : `/api/artists/${form.id}`;
     const method = mode === "create" ? "POST" : "PUT";
 
-    const payload = { ...form, bannerImage: bannerUrl };
+    // ВАЖНО: заменяем undefined на null, иначе JSON.stringify пропустит поле
+    // и старое значение photo в БД не очистится
+    const payload = { ...form, photo: form.photo ?? null };
+    console.log("[ArtistForm] Submitting:", method, url, "photo:", payload.photo);
 
     const res = await fetch(url, {
       method,
@@ -100,6 +73,8 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
     if (res.ok) {
       router.push("/admin/artists");
       router.refresh();
+    } else {
+      console.error("[ArtistForm] Submit failed:", res.status);
     }
   }
 
@@ -110,36 +85,13 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Banner Image */}
-      <div>
-        <label className={labelClass}>Banner Image</label>
-        <div className="mt-2 flex items-start gap-4">
-          {bannerPreview ? (
-            <div className="relative h-32 w-48 overflow-hidden rounded-xl border border-white/10">
-              <Image
-                src={bannerPreview}
-                alt="Banner preview"
-                fill
-                sizes="192px"
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <div className="flex h-32 w-48 items-center justify-center rounded-xl border border-dashed border-white/15 bg-black/20 text-xs text-stone-500">
-              No image
-            </div>
-          )}
-          <div className="flex flex-col gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
-              className="text-sm text-stone-300 file:mr-3 file:rounded-full file:border file:border-white/10 file:bg-white/[0.06] file:px-4 file:py-2 file:text-xs file:uppercase file:tracking-[0.2em] file:text-stone-100"
-            />
-            <p className="text-xs text-stone-500">PNG, JPEG, WebP or GIF. Max 5MB.</p>
-          </div>
-        </div>
-      </div>
+      {/* Фото артиста — Instagram-стиль */}
+      <ArtistPhotoUpload
+        value={form.photo}
+        artistId={form.id || `new-${Date.now()}`}
+        onChange={(url) => updateField("photo", url)}
+        onRemove={() => updateField("photo", undefined)}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>

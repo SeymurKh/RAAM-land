@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FluidButton } from "@/components/FluidButton";
+import { Logo3D } from "@/components/Logo3D";
 import { siteConfig } from "@/data/site";
 
 export function HeroSection() {
@@ -50,15 +51,7 @@ export function HeroSection() {
         className="hero-copy relative z-10 mx-auto flex w-full max-w-[56rem] flex-col items-center px-5 text-center"
         style={{ y: textY, scale: contentScale, opacity: contentOpacity, filter: contentFilter }}
       >
-        <Image
-          src="/assets/images/logo.png"
-          alt="RAAM"
-          width={800}
-          height={340}
-          sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-          className="h-48 w-auto sm:h-64 lg:h-80"
-          priority
-        />
+        <Logo3D />
         <p className="mt-1 text-xs uppercase tracking-[0.58em] text-stone-200/58">
           {siteConfig.expandedName}
         </p>
@@ -66,8 +59,8 @@ export function HeroSection() {
           {siteConfig.description}
         </p>
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
-          <FluidButton href="#artists">Artists</FluidButton>
-          <FluidButton href="#projects" className="bg-black/20">
+          <FluidButton href="#artists" className="min-w-[160px]">Artists</FluidButton>
+          <FluidButton href="#projects" className="min-w-[160px] bg-black/20">
             Projects
           </FluidButton>
         </div>

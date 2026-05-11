@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useScrollLock } from "@/lib/useScrollLock";
+import { FluidButton } from "@/components/FluidButton";
 
 const navItems = [
   { label: "Artists", href: "#artists" },
@@ -69,15 +70,15 @@ export function Header({ modalOpen }: HeaderProps) {
             />
           </a>
 
-          <div className="hidden items-center gap-9 md:flex">
+          <div className="hidden items-center gap-3 md:flex">
             {navItems.map((item) => (
-              <a
+              <FluidButton
                 key={item.href}
                 href={item.href}
-                className="text-xs uppercase tracking-[0.32em] text-stone-200/62 transition hover:text-stone-50"
+                className="min-w-[120px] text-center text-xs tracking-[0.2em]"
               >
                 {item.label}
-              </a>
+              </FluidButton>
             ))}
           </div>
 

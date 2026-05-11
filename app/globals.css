@@ -23,8 +23,7 @@
 html {
   scroll-behavior: smooth;
   background: var(--background);
-  scrollbar-gutter: stable;
-  overflow-y: overlay;
+  overflow-y: auto;
 }
 
 body {

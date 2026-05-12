@@ -217,45 +217,16 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
         onChange={(socials) => updateField("socials", socials)}
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div>
-          <label className={labelClass}>Visual Initials</label>
-          <input
-            className={inputClass}
-            value={form.visual.initials}
-            onChange={(e) => {
-              setInitialsManuallyEdited(true);
-              updateField("visual", { ...form.visual, initials: e.target.value });
-            }}
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Position</label>
-          <select
-            className={inputClass}
-            value={form.visual.position}
-            onChange={(e) =>
-              updateField("visual", {
-                ...form.visual,
-                position: e.target.value as "high" | "middle" | "low",
-              })
-            }
-          >
-            <option value="high">High</option>
-            <option value="middle">Middle</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-        <div>
-          <label className={labelClass}>Tone class</label>
-          <input
-            className={inputClass}
-            value={form.visual.tone}
-            onChange={(e) =>
-              updateField("visual", { ...form.visual, tone: e.target.value })
-            }
-          />
-        </div>
+      <div>
+        <label className={labelClass}>Visual Initials</label>
+        <input
+          className={inputClass}
+          value={form.visual.initials}
+          onChange={(e) => {
+            setInitialsManuallyEdited(true);
+            updateField("visual", { ...form.visual, initials: e.target.value });
+          }}
+        />
       </div>
 
       <div className="flex gap-4 pt-4">

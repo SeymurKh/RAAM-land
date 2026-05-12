@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Artist } from "@/types/content";
 import { ArtistPhotoUpload } from "@/components/artist-form/ArtistPhotoUpload";
@@ -15,6 +15,7 @@ interface ArtistFormProps {
 export function ArtistForm({ artist, mode }: ArtistFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [initialsManuallyEdited, setInitialsManuallyEdited] = useState(false);
 
   const [form, setForm] = useState<Artist>(
     artist ?? {
@@ -31,6 +32,22 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
       visual: { initials: "", position: "high", tone: "from-stone-300/20" },
     },
   );
+
+  // Auto-generate initials from name when in create mode and initials haven't been manually edited
+  useEffect(() => {
+    if (mode === "create" && !initialsManuallyEdited && form.name) {
+      const initials = form.name
+        .split(" ")
+        .map((word) => word[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+      setForm((prev) => ({
+        ...prev,
+        visual: { ...prev.visual, initials },
+      }));
+    }
+  }, [form.name, mode, initialsManuallyEdited]);
 
   function updateField<K extends keyof Artist>(key: K, value: Artist[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -206,9 +223,10 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
           <input
             className={inputClass}
             value={form.visual.initials}
-            onChange={(e) =>
-              updateField("visual", { ...form.visual, initials: e.target.value })
-            }
+            onChange={(e) => {
+              setInitialsManuallyEdited(true);
+              updateField("visual", { ...form.visual, initials: e.target.value });
+            }}
           />
         </div>
         <div>

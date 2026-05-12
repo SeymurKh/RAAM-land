@@ -32,6 +32,13 @@ interface ArtistModalProps {
 export function ArtistModal({ artist, onClose }: ArtistModalProps) {
   useScrollLock(!!artist);
 
+  // Filter out empty/invalid items so sections with only blank entries are hidden
+  const validGenres = artist?.genres.filter((g) => g.trim()) ?? [];
+  const validBio = artist?.bio.filter((p) => p.trim()) ?? [];
+  const validHighlights = artist?.highlights.filter((h) => h.trim()) ?? [];
+  const validPortfolio = artist?.portfolio.filter((p) => p.title?.trim()) ?? [];
+  const validSocials = artist?.socials.filter((s) => s.label?.trim() && s.url?.trim()) ?? [];
+
   useEffect(() => {
     if (!artist) {
       return;
@@ -90,8 +97,8 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
               <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-stone-800/30 blur-3xl" />
             </div>
 
-            <div className="relative grid gap-0 lg:grid-cols-[0.88fr_1.12fr]">
-              <div className="relative h-full overflow-hidden border-b border-white/10 lg:border-b-0 lg:border-r">
+            <div className="relative grid h-full gap-0 lg:grid-cols-[0.88fr_1.12fr] lg:grid-rows-1">
+              <div className="relative min-h-[320px] overflow-hidden border-b border-white/10 lg:min-h-0 lg:border-b-0 lg:border-r">
                 {artist.photo ? (
                   <Image
                     src={artist.photo}
@@ -106,7 +113,7 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.22),transparent_28%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(74,58,42,0.12),transparent)]" />
                     <div className="absolute inset-x-8 top-12 h-px bg-white/20" />
                     <div className="absolute bottom-8 left-8 text-[6rem] font-semibold uppercase leading-none tracking-normal text-white/10 sm:text-[9rem]">
-                      {artist.visual.initials}
+                      {artist.visual.initials || artist.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
                     </div>
                     <div className="absolute bottom-8 right-8 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/35 text-stone-200 backdrop-blur-xl">
                       <Headphones size={28} />
@@ -128,106 +135,116 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
               </div>
 
               <div className="artist-modal-scroll max-h-none overflow-y-auto p-6 sm:p-8 lg:max-h-[80vh]">
-                <div className="flex flex-wrap gap-2">
-                  {artist.genres.map((genre) => (
-                    <span
-                      key={genre}
-                      className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-stone-200/72"
-                    >
-                      {genre}
-                    </span>
-                  ))}
-                </div>
+                {validGenres.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {validGenres.map((genre) => (
+                      <span
+                        key={genre}
+                        className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-stone-200/72"
+                      >
+                        {genre}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
-                <div className="mt-10 space-y-5 text-lg leading-8 text-stone-100/76">
-                  {artist.bio.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
+                {validBio.length > 0 && (
+                  <div className="mt-10 space-y-5 text-lg leading-8 text-stone-100/76">
+                    {validBio.map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
+                )}
 
-                <div className="mt-10 grid gap-3 sm:grid-cols-3">
-                  {artist.highlights.map((item) => (
-                    <div
-                      key={item}
-                      className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 text-sm leading-6 text-stone-200/72"
-                    >
-                      {item}
-                    </div>
-                  ))}
-                </div>
+                {validHighlights.length > 0 && (
+                  <div className="mt-10 grid gap-3 sm:grid-cols-3">
+                    {validHighlights.map((item) => (
+                      <div
+                        key={item}
+                        className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 text-sm leading-6 text-stone-200/72"
+                      >
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-                <div className="mt-12">
-                  <p className="text-xs uppercase tracking-[0.42em] text-stone-300/55">
-                    Portfolio
-                  </p>
-                  <div className="mt-5 grid gap-3">
-                    {artist.portfolio.map((item) => {
-                      const Icon = item.kind === "video" ? Play : Radio;
-                      const hasUrl = !!item.url;
-                      const sharedInner = (
-                        <>
-                          <span className="flex items-center gap-3 text-stone-100">
-                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-stone-100/10">
-                              <Icon size={16} />
-                            </span>
-                            {item.title}
-                          </span>
-                          <span className="flex items-center gap-2">
-                            {hasUrl ? null : (
-                              <span className="rounded-full border border-white/8 bg-white/[0.03] px-2 py-0.5 text-[0.6rem] uppercase tracking-[0.2em] text-stone-400/60">
-                                Soon
+                {validPortfolio.length > 0 && (
+                  <div className="mt-12">
+                    <p className="text-xs uppercase tracking-[0.42em] text-stone-300/55">
+                      Portfolio
+                    </p>
+                    <div className="mt-5 grid gap-3">
+                      {validPortfolio.map((item) => {
+                        const Icon = item.kind === "video" ? Play : Radio;
+                        const hasUrl = !!item.url;
+                        const sharedInner = (
+                          <>
+                            <span className="flex items-center gap-3 text-stone-100">
+                              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-stone-100/10">
+                                <Icon size={16} />
                               </span>
-                            )}
-                            <span className="text-xs uppercase tracking-[0.25em] text-stone-300/45">
-                              {item.kind}
+                              {item.title}
                             </span>
-                          </span>
-                        </>
-                      );
+                            <span className="flex items-center gap-2">
+                              {hasUrl ? null : (
+                                <span className="rounded-full border border-white/8 bg-white/[0.03] px-2 py-0.5 text-[0.6rem] uppercase tracking-[0.2em] text-stone-400/60">
+                                  Soon
+                                </span>
+                              )}
+                              <span className="text-xs uppercase tracking-[0.25em] text-stone-300/45">
+                                {item.kind}
+                              </span>
+                            </span>
+                          </>
+                        );
 
-                      if (hasUrl) {
+                        if (hasUrl) {
+                          return (
+                            <a
+                              key={item.id}
+                              href={item.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="group flex items-center justify-between rounded-3xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-stone-200/24 hover:bg-white/[0.07]"
+                            >
+                              {sharedInner}
+                            </a>
+                          );
+                        }
+
                         return (
-                          <a
+                          <div
                             key={item.id}
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="group flex items-center justify-between rounded-3xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-stone-200/24 hover:bg-white/[0.07]"
+                            className="flex items-center justify-between rounded-3xl border border-white/6 bg-white/[0.02] p-4 opacity-60"
                           >
                             {sharedInner}
-                          </a>
+                          </div>
                         );
-                      }
+                      })}
+                    </div>
+                  </div>
+                )}
 
+                {validSocials.length > 0 && (
+                  <div className="mt-12 flex flex-wrap gap-3">
+                    {validSocials.map((social) => {
+                      const Icon = socialIcons[social.kind] ?? ExternalLink;
                       return (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between rounded-3xl border border-white/6 bg-white/[0.02] p-4 opacity-60"
+                        <a
+                          key={social.label}
+                          href={social.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-200/78 transition hover:border-stone-100/28 hover:text-white"
                         >
-                          {sharedInner}
-                        </div>
+                          <Icon size={15} />
+                          {social.label}
+                        </a>
                       );
                     })}
                   </div>
-                </div>
-
-                <div className="mt-12 flex flex-wrap gap-3">
-                  {artist.socials.map((social) => {
-                    const Icon = socialIcons[social.kind] ?? ExternalLink;
-                    return (
-                      <a
-                        key={social.label}
-                        href={social.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-200/78 transition hover:border-stone-100/28 hover:text-white"
-                      >
-                        <Icon size={15} />
-                        {social.label}
-                      </a>
-                    );
-                  })}
-                </div>
+                )}
               </div>
             </div>
           </motion.article>

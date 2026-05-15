@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { ArtistModal } from "@/components/ArtistModal";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionSkeleton } from "@/components/SectionSkeleton";
-import { useMediaQuery } from "@/lib/useMediaQuery";
 import type { Artist } from "@/types/content";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -18,7 +17,6 @@ interface ArtistsSectionProps {
 export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSectionProps) {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const isMobile = useMediaQuery("(max-width: 639px)");
 
   useEffect(() => {
     fetch("/api/artists")
@@ -30,65 +28,6 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
     return <SectionSkeleton />;
   }
 
-  /* ── Mobile: compact 2-column grid ── */
-  if (isMobile) {
-    return (
-      <section
-        id="artists"
-        className="relative isolate scroll-mt-24 overflow-hidden px-4 pt-6 pb-14"
-      >
-        <Image
-          src="/assets/images/lilbl.png"
-          alt="RAAM artists background"
-          fill
-          sizes="100vw"
-          className="object-cover opacity-30"
-          priority
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
-        <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
-
-        <div className="relative mx-auto max-w-7xl">
-          <MotionReveal className="mb-6">
-            <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
-              Artists
-            </p>
-          </MotionReveal>
-
-          <div className="grid grid-cols-2 gap-3">
-            {artists.map((artist, index) => (
-              <motion.button
-                key={artist.id}
-                type="button"
-                onClick={() => onSetActiveArtist(artist)}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-8% 0px" }}
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.06,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="group rounded-2xl border border-white/10 bg-white/[0.035] p-4 text-left backdrop-blur-xl transition duration-300 active:scale-[0.97] active:bg-white/[0.08]"
-                aria-label={`Open ${artist.name} profile`}
-              >
-                <span className="block text-lg font-semibold uppercase leading-tight tracking-normal text-stone-100/90 transition group-active:text-white">
-                  {artist.name}
-                </span>
-                <span className="mt-1.5 block text-[0.65rem] font-normal uppercase tracking-[0.28em] text-stone-300/50">
-                  {artist.origin} / {artist.genres.slice(0, 2).join(" / ")}
-                </span>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <ArtistModal artist={activeArtist} onClose={() => onSetActiveArtist(undefined)} />
-      </section>
-    );
-  }
-
-  /* ── Desktop: floating scattered layout ── */
   return (
     <section
       id="artists"
@@ -105,7 +44,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
       <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
 
-      <div className="relative mx-auto min-h-[760px] max-w-7xl">
+      <div className="relative mx-auto min-h-[480px] sm:min-h-[760px] max-w-7xl">
         <MotionReveal className="mb-12">
           <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
             Artists

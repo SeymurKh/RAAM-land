@@ -60,7 +60,7 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
     <AnimatePresence>
       {artist ? (
         <motion.div
-          className="fixed inset-0 z-[80] overflow-y-auto bg-black/72 px-4 pt-20 pb-5 backdrop-blur-2xl sm:px-6 sm:pt-24 sm:pb-8"
+          className="fixed inset-0 z-[80] overflow-y-auto overscroll-y-contain bg-black/72 px-4 pt-20 pb-5 backdrop-blur-2xl sm:px-6 sm:pt-24 sm:pb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

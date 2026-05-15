@@ -64,18 +64,18 @@ export function ContactsSection() {
       className="pb-12"
     >
       <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 lg:grid-cols-2">
-        <MotionReveal direction="left" className="bg-[#0b0a09]/92 p-6 sm:p-8">
-          <div className="mb-10 flex items-start justify-between gap-6">
+        <MotionReveal direction="left" className="bg-[#0b0a09]/92 p-4 sm:p-6 sm:p-8">
+          <div className="mb-6 flex items-start justify-between gap-4 sm:mb-10 sm:gap-6">
             <div>
               <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
                 Book
               </p>
-              <h3 className="mt-4 text-4xl font-semibold uppercase leading-[0.9] tracking-normal text-white">
+              <h3 className="mt-2 text-2xl font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-4 sm:text-4xl">
                 Start a booking
               </h3>
             </div>
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100">
-              <CalendarDays size={18} />
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 sm:h-12 sm:w-12">
+              <CalendarDays size={16} />
             </span>
           </div>
 
@@ -87,7 +87,7 @@ export function ContactsSection() {
                 </span>
                 <input
                   name="name"
-                  className="h-14 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40"
+                  className="h-12 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40 sm:h-14"
                   placeholder="Your name"
                 />
               </label>
@@ -98,7 +98,7 @@ export function ContactsSection() {
                 <input
                   name="email"
                   type="email"
-                  className="h-14 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40"
+                  className="h-12 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40 sm:h-14"
                   placeholder="you@example.com"
                 />
               </label>
@@ -111,7 +111,7 @@ export function ContactsSection() {
               <div className="relative">
                 <select
                   name="type"
-                  className="h-14 w-full appearance-none rounded-2xl border border-white/10 bg-black/25 px-4 pr-10 text-stone-100 outline-none transition focus:border-stone-100/35 focus:bg-black/40"
+                  className="h-12 w-full appearance-none rounded-2xl border border-white/10 bg-black/25 px-4 pr-10 text-stone-100 outline-none transition focus:border-stone-100/35 focus:bg-black/40 sm:h-14"
                   defaultValue="artist-booking"
                 >
                   <option value="artist-booking" className="bg-[#0b0a09] text-stone-100">Artist booking</option>
@@ -133,7 +133,7 @@ export function ContactsSection() {
               </span>
               <textarea
                 name="message"
-                rows={6}
+                rows={4}
                 className="w-full resize-none rounded-3xl border border-white/10 bg-black/25 px-4 py-4 text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40"
                 placeholder="Tell RAAM the date, place, format, and idea."
               />
@@ -159,19 +159,19 @@ export function ContactsSection() {
           </form>
         </MotionReveal>
 
-        <MotionReveal direction="right" delay={0.08} className="bg-[#0b0a09]/92 p-6 sm:p-8">
+        <MotionReveal direction="right" delay={0.08} className="bg-[#0b0a09]/92 p-4 sm:p-6 sm:p-8">
           <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
             Contact
           </p>
-          <h3 className="mt-4 text-4xl font-semibold uppercase leading-[0.9] tracking-normal text-white">
+          <h3 className="mt-2 text-2xl font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-4 sm:text-4xl">
             Direct channel
           </h3>
-          <p className="mt-6 max-w-md text-sm leading-6 text-stone-200/60">
+          <p className="mt-4 max-w-md text-sm leading-6 text-stone-200/60 sm:mt-6">
             Reach the team for resident portfolios, event details, press, and
             community inquiries.
           </p>
 
-          <div className="mt-10 space-y-4">
+          <div className="mt-6 space-y-3 sm:mt-10 sm:space-y-4">
             {contactLinks.map((link) => {
               const Icon = contactIcons[link.kind] ?? Share2;
               return (
@@ -180,10 +180,10 @@ export function ContactsSection() {
                   href={link.href}
                   target={link.kind === "linktree" ? "_blank" : undefined}
                   rel={link.kind === "linktree" ? "noreferrer" : undefined}
-                  className="group flex items-center gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-5 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065]"
+                  className="group flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-4 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065] sm:gap-4 sm:rounded-[1.5rem] sm:p-5"
                 >
-                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100">
-                    <Icon size={18} />
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100 sm:h-12 sm:w-12">
+                    <Icon size={16} />
                   </span>
                   <span>
                     <span className="block text-xs uppercase tracking-[0.32em] text-stone-300/50">

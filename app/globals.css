@@ -166,6 +166,23 @@ select {
   animation: shimmer 2s ease-in-out infinite;
 }
 
+/* Hide scrollbar on horizontal scroll containers (used by ProjectsSection carousel) */
+.scroll-hide::-webkit-scrollbar {
+  display: none;
+}
+.scroll-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Touch-friendly active states for artist cards on mobile */
+@media (hover: none) {
+  .artist-name-3d:active {
+    color: #fff;
+    transform: scale(1.05);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

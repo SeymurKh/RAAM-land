@@ -5,29 +5,32 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FluidButton } from "@/components/FluidButton";
 import { Logo3D } from "@/components/Logo3D";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import { siteConfig } from "@/data/site";
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const isMobile = useMediaQuery("(max-width: 639px)");
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+  // Reduce parallax intensity on mobile for better readability
+  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "25%" : "40%"]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "8%" : "15%"]);
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.5], [0, 0.3]);
-  const contentScale = useTransform(scrollYProgress, [0, 1], [1, 0.72]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.15]);
-  const contentBlur = useTransform(scrollYProgress, [0, 0.8], [0, 6]);
+  const contentScale = useTransform(scrollYProgress, [0, 1], [1, isMobile ? 0.88 : 0.72]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, isMobile ? 0.3 : 0.15]);
+  const contentBlur = useTransform(scrollYProgress, [0, 0.8], [0, isMobile ? 3 : 6]);
   const contentFilter = useTransform(contentBlur, (v) => `blur(${v}px)`);
 
   return (
     <section
       ref={sectionRef}
       id="hero"
-      className="relative isolate flex min-h-screen w-full items-center overflow-hidden"
+      className="relative isolate flex min-h-screen max-h-[92vh] w-full items-center overflow-hidden sm:max-h-none"
     >
       <motion.div className="absolute inset-0" style={{ y: imageY }}>
         <Image
@@ -58,9 +61,9 @@ export function HeroSection() {
         <p className="mt-2 w-full max-w-[19rem] px-1 text-sm leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">
           {siteConfig.description}
         </p>
-        <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
-          <FluidButton href="#artists" className="min-w-[160px]">Artists</FluidButton>
-          <FluidButton href="#projects" className="min-w-[160px] bg-black/20">
+        <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row">
+          <FluidButton href="#artists" className="min-w-[140px] sm:min-w-[160px]">Artists</FluidButton>
+          <FluidButton href="#projects" className="min-w-[140px] bg-black/20 sm:min-w-[160px]">
             Projects
           </FluidButton>
         </div>

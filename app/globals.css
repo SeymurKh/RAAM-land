@@ -194,8 +194,3 @@ select {
   }
 }
 
-/* Logo animation utilities */
-.logo-fragment {
-  will-change: transform;
-  transform-style: preserve-3d;
-}

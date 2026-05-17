@@ -1,407 +1,88 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
-
-/* ───────────────────────────────────────────────
-   Types
-   ─────────────────────────────────────────────── */
-
-interface StripState {
-  spinOffset: number; // degrees offset from base rotation
-  desyncRate: number; // degrees/second offset rate during press
-}
+import { useReducedMotion } from "framer-motion";
 
 /* ───────────────────────────────────────────────
    Constants
    ─────────────────────────────────────────────── */
 
-const STRIP_COUNT = 7;
-const MOBILE_STRIP_COUNT = 5;
-
-const BASE_SPEED = 30; // deg/s → full rotation in 12s
-const MOBILE_BASE_SPEED = 25;
-
-const BOX_DEPTH = 40; // px depth of 3D rectangle (desktop)
-const MOBILE_BOX_DEPTH = 28;
-
-const RECOVERY_DECAY = 0.04; // per-frame lerp (at 60fps)
-const MOBILE_RECOVERY_DECAY = 0.06;
-
-const SPEED_MIN_MULT = 0.3;
-const SPEED_MAX_MULT = 2.5;
-const MOBILE_SPEED_MAX_MULT = 2.0;
-
-const PERSPECTIVE = 900; // px
-const MOBILE_PERSPECTIVE = 800;
-
-/* ───────────────────────────────────────────────
-   Helpers
-   ─────────────────────────────────────────────── */
-
-function random(min: number, max: number): number {
-  return Math.random() * (max - min) + min;
-}
-
-/** Vertical strip clipPath — full height, slices portion of width */
-function getStripClipPath(index: number, total: number): string {
-  const left = (index / total) * 100;
-  const right = ((total - index - 1) / total) * 100;
-  return `inset(0% ${right}% 0% ${left}%)`;
-}
+const MAX_TILT = 8; // degrees
+const PERSPECTIVE = 800; // px
 
 /* ───────────────────────────────────────────────
    Component
    ─────────────────────────────────────────────── */
 
 export function Logo3D() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const stripRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const rafRef = useRef<number>(0);
-  const mountedRef = useRef(true);
-
-  // Animation state — refs (updated per frame, NOT React state)
-  const stripsStateRef = useRef<StripState[]>([]);
-  const baseAngleRef = useRef(0);
-  const isPressedRef = useRef(false);
-  const isRecoveringRef = useRef(false);
-
-  // React state — for UI that changes infrequently (glow, etc.)
-  const [interactionState, setInteractionState] = useState<
-    "idle" | "pressed" | "recovering"
-  >("idle");
-
+  const logoRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  const [isMobile, setIsMobile] = useState(false);
 
-  /* ─── Mobile detection (debounced) ─── */
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (prefersReducedMotion || !logoRef.current) return;
 
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    let timer: ReturnType<typeof setTimeout>;
-    const onResize = () => {
-      clearTimeout(timer);
-      timer = setTimeout(check, 200);
-    };
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      clearTimeout(timer);
-    };
-  }, []);
+      const rect = logoRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width; // 0..1
+      const y = (e.clientY - rect.top) / rect.height; // 0..1
 
-  /* ─── Derived values ─── */
+      // Center-relative: -0.5..+0.5
+      const cx = x - 0.5;
+      const cy = y - 0.5;
 
-  const stripCount = isMobile ? MOBILE_STRIP_COUNT : STRIP_COUNT;
-  const boxDepth = isMobile ? MOBILE_BOX_DEPTH : BOX_DEPTH;
-  const baseSpeed = isMobile ? MOBILE_BASE_SPEED : BASE_SPEED;
-  const recoveryDecay = isMobile ? MOBILE_RECOVERY_DECAY : RECOVERY_DECAY;
-  const speedMaxMult = isMobile ? MOBILE_SPEED_MAX_MULT : SPEED_MAX_MULT;
-  const perspective = isMobile ? MOBILE_PERSPECTIVE : PERSPECTIVE;
+      // Tilt away from cursor: cursor left → logo tilts left (rotateY negative)
+      const rotateY = cx * MAX_TILT * -1;
+      const rotateX = cy * MAX_TILT;
 
-  /* ─── Cleanup on unmount ─── */
-
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
-
-  /* ─── Initialize / reset strip states when count changes ─── */
-
-  useEffect(() => {
-    stripsStateRef.current = Array.from({ length: stripCount }, () => ({
-      spinOffset: 0,
-      desyncRate: 0,
-    }));
-    // Reset DOM transforms
-    stripRefs.current.forEach((el) => {
-      if (el) el.style.transform = "rotateX(0deg)";
-    });
-    baseAngleRef.current = 0;
-    isPressedRef.current = false;
-    isRecoveringRef.current = false;
-    setInteractionState("idle");
-  }, [stripCount]);
-
-  /* ─── Animation loop (requestAnimationFrame) ─── */
-
-  useEffect(() => {
-    let lastTime = performance.now();
-
-    const animate = (time: number) => {
-      if (!mountedRef.current) return;
-
-      const dt = Math.min((time - lastTime) / 1000, 0.1); // cap delta
-      lastTime = time;
-
-      const speed = baseSpeed;
-      const decay = recoveryDecay;
-      const strips = stripsStateRef.current;
-
-      // Base angle always advances at constant speed
-      baseAngleRef.current += speed * dt;
-      const base = baseAngleRef.current;
-
-      let allRecovered = true;
-
-      for (let i = 0; i < strips.length; i++) {
-        const strip = strips[i];
-        if (!strip) continue;
-
-        if (isPressedRef.current) {
-          // Each strip's offset grows at its own rate → desync
-          strip.spinOffset += strip.desyncRate * dt;
-          allRecovered = false;
-        } else if (isRecoveringRef.current) {
-          // Exponential decay: offset → 0 (frame-rate independent)
-          const frameDecay = Math.pow(1 - decay, dt * 60);
-          strip.spinOffset *= frameDecay;
-          if (Math.abs(strip.spinOffset) < 0.3) {
-            strip.spinOffset = 0;
-          } else {
-            allRecovered = false;
-          }
-        }
-
-        // Display angle = base rotation + strip's offset
-        const angle = base + strip.spinOffset;
-
-        // Apply directly to DOM — no React re-render
-        const el = stripRefs.current[i];
-        if (el) {
-          el.style.transform = `rotateX(${angle}deg)`;
-        }
-      }
-
-      // Recovery complete?
-      if (isRecoveringRef.current && allRecovered) {
-        isRecoveringRef.current = false;
-        setInteractionState("idle");
-      }
-
-      rafRef.current = requestAnimationFrame(animate);
-    };
-
-    rafRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [baseSpeed, recoveryDecay]);
-
-  /* ─── Assign random desync rates ─── */
-
-  const assignDesyncRates = useCallback(() => {
-    for (const strip of stripsStateRef.current) {
-      const mult = random(SPEED_MIN_MULT, speedMaxMult);
-      // desyncRate = how fast offset changes vs base speed
-      strip.desyncRate = (mult - 1) * baseSpeed;
-    }
-  }, [baseSpeed, speedMaxMult]);
-
-  /* ─── Event handlers ─── */
-
-  function handlePointerDown(e: React.PointerEvent) {
-    if (prefersReducedMotion) return;
-    e.preventDefault();
-    isPressedRef.current = true;
-    isRecoveringRef.current = false;
-    setInteractionState("pressed");
-    assignDesyncRates();
-  }
-
-  function handlePointerUp() {
-    if (!isPressedRef.current) return;
-    isPressedRef.current = false;
-    isRecoveringRef.current = true;
-    setInteractionState("recovering");
-  }
-
-  function handlePointerLeave() {
-    if (isPressedRef.current) handlePointerUp();
-  }
-
-  function handleTouchStart(e: React.TouchEvent) {
-    if (prefersReducedMotion) return;
-    e.preventDefault();
-    isPressedRef.current = true;
-    isRecoveringRef.current = false;
-    setInteractionState("pressed");
-    assignDesyncRates();
-  }
-
-  function handleTouchEnd() {
-    handlePointerUp();
-  }
-
-  /* ─── Glow ─── */
-
-  const glowOpacity = prefersReducedMotion
-    ? 0.06
-    : interactionState === "pressed"
-    ? 0.30
-    : interactionState === "recovering"
-    ? 0.15
-    : 0.06;
-
-  const glowColor =
-    interactionState === "pressed"
-      ? "rgba(214, 180, 120, 0.3)"
-      : "rgba(255, 255, 255, 0.2)";
-
-  /* ─── Render ─── */
-
-  const halfDepth = boxDepth / 2;
-
-  // Clip paths for current strip count
-  const clipPaths = Array.from({ length: stripCount }, (_, i) =>
-    getStripClipPath(i, stripCount)
+      logoRef.current.style.transform = `perspective(${PERSPECTIVE}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      logoRef.current.style.transition = "transform 0.1s ease-out";
+    },
+    [prefersReducedMotion]
   );
 
-  // Image props shared across all faces
-  const imgProps = {
-    src: "/assets/images/logo.png" as const,
-    alt: "",
-    width: 800,
-    height: 340,
-    sizes: "(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px",
-    className: "h-48 w-auto sm:h-64 lg:h-80",
-    priority: true,
-    "aria-hidden": true as const,
-  };
+  const handleMouseLeave = useCallback(() => {
+    if (!logoRef.current) return;
 
-  // Edge gradient — warm dark with golden tint
-  const edgeGradientTB = "linear-gradient(to bottom, #1e1810, #0d0b09, #1e1810)";
-  const edgeGradientBT = "linear-gradient(to top, #1e1810, #0d0b09, #1e1810)";
+    if (prefersReducedMotion) {
+      logoRef.current.style.transform = "";
+      logoRef.current.style.transition = "";
+      return;
+    }
 
-  // Edge highlight color
-  const edgeHighlight = "rgba(214, 180, 120, 0.12)";
+    logoRef.current.style.transform = `perspective(${PERSPECTIVE}px) rotateX(0deg) rotateY(0deg)`;
+    logoRef.current.style.transition = "transform 0.5s ease-out";
+  }, [prefersReducedMotion]);
+
+  const handleMouseEnterReduced = useCallback(() => {
+    if (!prefersReducedMotion || !logoRef.current) return;
+    logoRef.current.style.transform = "scale(1.02)";
+    logoRef.current.style.transition = "transform 0.3s ease-out";
+  }, [prefersReducedMotion]);
+
+  const handleMouseLeaveReduced = useCallback(() => {
+    if (!prefersReducedMotion || !logoRef.current) return;
+    logoRef.current.style.transform = "";
+    logoRef.current.style.transition = "transform 0.3s ease-out";
+  }, [prefersReducedMotion]);
 
   return (
     <div
-      ref={containerRef}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      style={{
-        perspective: `${perspective}px`,
-        touchAction: "none",
-      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={prefersReducedMotion ? handleMouseLeaveReduced : handleMouseLeave}
+      onMouseEnter={prefersReducedMotion ? handleMouseEnterReduced : undefined}
       className="relative cursor-pointer select-none"
     >
-      {/* Sizer — invisible, establishes container dimensions */}
-      <Image
-        src="/assets/images/logo.png"
-        alt="RAAM"
-        width={800}
-        height={340}
-        sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-        className="h-48 w-auto sm:h-64 lg:h-80 invisible"
-        priority
-        aria-hidden
-      />
-
-      {/* ── Glow / Bloom layer ── */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        animate={{
-          opacity: glowOpacity,
-          filter: "blur(24px)",
-        }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        style={{
-          mixBlendMode: "screen",
-          backgroundColor: glowColor,
-        }}
-      >
-        <Image {...imgProps} />
-      </motion.div>
-
-      {/* ── Shadow beneath the box ── */}
-      <div
-        className="absolute left-[5%] right-[5%] bottom-0 h-6 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, transparent 70%)",
-          filter: "blur(8px)",
-          transform: "translateY(50%)",
-        }}
-      />
-
-      {/* ── 3D Strip Container ── */}
-      <div
-        className="absolute inset-0"
-        style={{ transformStyle: "preserve-3d" }}
-      >
-        {clipPaths.map((clipPath, i) => (
-          <div
-            key={i}
-            ref={(el) => {
-              stripRefs.current[i] = el;
-            }}
-            className="absolute inset-0 logo-fragment"
-            style={{
-              transformStyle: "preserve-3d",
-              transform: "rotateX(0deg)",
-            }}
-          >
-            {/* ── Front face ── */}
-            <div
-              className="absolute inset-0"
-              style={{
-                clipPath,
-                transform: `translateZ(${halfDepth}px)`,
-                backfaceVisibility: "hidden",
-              }}
-            >
-              <Image {...imgProps} />
-            </div>
-
-            {/* ── Back face ── */}
-            <div
-              className="absolute inset-0"
-              style={{
-                clipPath,
-                transform: `rotateX(180deg) translateZ(${halfDepth}px)`,
-                backfaceVisibility: "hidden",
-              }}
-            >
-              {/* scaleY(-1) counter-mirrors so logo is readable from behind */}
-              <div style={{ transform: "scaleY(-1)" }}>
-                <Image {...imgProps} />
-              </div>
-            </div>
-
-            {/* ── Top edge ── */}
-            <div
-              className="absolute left-0 right-0"
-              style={{
-                height: boxDepth,
-                top: 0,
-                transformOrigin: "center top",
-                transform: `translateZ(${halfDepth}px) rotateX(-90deg)`,
-                background: edgeGradientBT,
-                borderTop: `1px solid ${edgeHighlight}`,
-              }}
-            />
-
-            {/* ── Bottom edge ── */}
-            <div
-              className="absolute left-0 right-0"
-              style={{
-                height: boxDepth,
-                bottom: 0,
-                transformOrigin: "center bottom",
-                transform: `translateZ(${halfDepth}px) rotateX(90deg)`,
-                background: edgeGradientTB,
-                borderBottom: `1px solid ${edgeHighlight}`,
-              }}
-            />
-          </div>
-        ))}
+      <div ref={logoRef} style={{ willChange: "transform" }}>
+        <Image
+          src="/assets/images/logo.png"
+          alt="RAAM"
+          width={800}
+          height={340}
+          sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
+          className="h-48 w-auto sm:h-64 lg:h-80"
+          priority
+        />
       </div>
     </div>
   );

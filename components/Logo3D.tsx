@@ -17,14 +17,14 @@ interface StripState {
    Constants
    ─────────────────────────────────────────────── */
 
-const STRIP_COUNT = 6;
+const STRIP_COUNT = 7;
 const MOBILE_STRIP_COUNT = 5;
 
 const BASE_SPEED = 30; // deg/s → full rotation in 12s
 const MOBILE_BASE_SPEED = 25;
 
-const BOX_DEPTH = 20; // px depth of 3D rectangle
-const MOBILE_BOX_DEPTH = 14;
+const BOX_DEPTH = 40; // px depth of 3D rectangle (desktop)
+const MOBILE_BOX_DEPTH = 28;
 
 const RECOVERY_DECAY = 0.04; // per-frame lerp (at 60fps)
 const MOBILE_RECOVERY_DECAY = 0.06;
@@ -32,6 +32,9 @@ const MOBILE_RECOVERY_DECAY = 0.06;
 const SPEED_MIN_MULT = 0.3;
 const SPEED_MAX_MULT = 2.5;
 const MOBILE_SPEED_MAX_MULT = 2.0;
+
+const PERSPECTIVE = 900; // px
+const MOBILE_PERSPECTIVE = 800;
 
 /* ───────────────────────────────────────────────
    Helpers
@@ -41,11 +44,11 @@ function random(min: number, max: number): number {
   return Math.random() * (max - min) + min;
 }
 
-/** Horizontal strip clipPath — full width, slices portion of height */
+/** Vertical strip clipPath — full height, slices portion of width */
 function getStripClipPath(index: number, total: number): string {
-  const top = (index / total) * 100;
-  const bottom = ((total - index - 1) / total) * 100;
-  return `inset(${top}% 0% ${bottom}% 0%)`;
+  const left = (index / total) * 100;
+  const right = ((total - index - 1) / total) * 100;
+  return `inset(0% ${right}% 0% ${left}%)`;
 }
 
 /* ───────────────────────────────────────────────
@@ -96,6 +99,7 @@ export function Logo3D() {
   const baseSpeed = isMobile ? MOBILE_BASE_SPEED : BASE_SPEED;
   const recoveryDecay = isMobile ? MOBILE_RECOVERY_DECAY : RECOVERY_DECAY;
   const speedMaxMult = isMobile ? MOBILE_SPEED_MAX_MULT : SPEED_MAX_MULT;
+  const perspective = isMobile ? MOBILE_PERSPECTIVE : PERSPECTIVE;
 
   /* ─── Cleanup on unmount ─── */
 
@@ -116,7 +120,7 @@ export function Logo3D() {
     }));
     // Reset DOM transforms
     stripRefs.current.forEach((el) => {
-      if (el) el.style.transform = "rotateY(0deg)";
+      if (el) el.style.transform = "rotateX(0deg)";
     });
     baseAngleRef.current = 0;
     isPressedRef.current = false;
@@ -170,7 +174,7 @@ export function Logo3D() {
         // Apply directly to DOM — no React re-render
         const el = stripRefs.current[i];
         if (el) {
-          el.style.transform = `rotateY(${angle}deg)`;
+          el.style.transform = `rotateX(${angle}deg)`;
         }
       }
 
@@ -193,9 +197,6 @@ export function Logo3D() {
     for (const strip of stripsStateRef.current) {
       const mult = random(SPEED_MIN_MULT, speedMaxMult);
       // desyncRate = how fast offset changes vs base speed
-      // multiplier 1.0 = same as base (no offset change)
-      // multiplier 2.0 = offset grows at baseSpeed rate
-      // multiplier 0.3 = offset shrinks (strip falls behind)
       strip.desyncRate = (mult - 1) * baseSpeed;
     }
   }, [baseSpeed, speedMaxMult]);
@@ -271,6 +272,13 @@ export function Logo3D() {
     "aria-hidden": true as const,
   };
 
+  // Edge gradient — warm dark with golden tint
+  const edgeGradientTB = "linear-gradient(to bottom, #1e1810, #0d0b09, #1e1810)";
+  const edgeGradientBT = "linear-gradient(to top, #1e1810, #0d0b09, #1e1810)";
+
+  // Edge highlight color
+  const edgeHighlight = "rgba(214, 180, 120, 0.12)";
+
   return (
     <div
       ref={containerRef}
@@ -280,7 +288,7 @@ export function Logo3D() {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       style={{
-        perspective: "1200px",
+        perspective: `${perspective}px`,
         touchAction: "none",
       }}
       className="relative cursor-pointer select-none"
@@ -313,6 +321,16 @@ export function Logo3D() {
         <Image {...imgProps} />
       </motion.div>
 
+      {/* ── Shadow beneath the box ── */}
+      <div
+        className="absolute left-[5%] right-[5%] bottom-0 h-6 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, transparent 70%)",
+          filter: "blur(8px)",
+          transform: "translateY(50%)",
+        }}
+      />
+
       {/* ── 3D Strip Container ── */}
       <div
         className="absolute inset-0"
@@ -327,7 +345,7 @@ export function Logo3D() {
             className="absolute inset-0 logo-fragment"
             style={{
               transformStyle: "preserve-3d",
-              transform: "rotateY(0deg)",
+              transform: "rotateX(0deg)",
             }}
           >
             {/* ── Front face ── */}
@@ -347,39 +365,39 @@ export function Logo3D() {
               className="absolute inset-0"
               style={{
                 clipPath,
-                transform: `rotateY(180deg) translateZ(${halfDepth}px)`,
+                transform: `rotateX(180deg) translateZ(${halfDepth}px)`,
                 backfaceVisibility: "hidden",
               }}
             >
-              {/* scaleX(-1) counter-mirrors so logo is readable from behind */}
-              <div style={{ transform: "scaleX(-1)" }}>
+              {/* scaleY(-1) counter-mirrors so logo is readable from behind */}
+              <div style={{ transform: "scaleY(-1)" }}>
                 <Image {...imgProps} />
               </div>
             </div>
 
-            {/* ── Left edge ── */}
+            {/* ── Top edge ── */}
             <div
-              className="absolute top-0 bottom-0"
+              className="absolute left-0 right-0"
               style={{
-                width: boxDepth,
-                left: 0,
-                transformOrigin: "left center",
-                transform: `translateZ(${halfDepth}px) rotateY(-90deg)`,
-                background:
-                  "linear-gradient(to right, #1a1714, #0d0b09, #1a1714)",
+                height: boxDepth,
+                top: 0,
+                transformOrigin: "center top",
+                transform: `translateZ(${halfDepth}px) rotateX(-90deg)`,
+                background: edgeGradientBT,
+                borderTop: `1px solid ${edgeHighlight}`,
               }}
             />
 
-            {/* ── Right edge ── */}
+            {/* ── Bottom edge ── */}
             <div
-              className="absolute top-0 bottom-0"
+              className="absolute left-0 right-0"
               style={{
-                width: boxDepth,
-                right: 0,
-                transformOrigin: "right center",
-                transform: `translateZ(${halfDepth}px) rotateY(90deg)`,
-                background:
-                  "linear-gradient(to left, #1a1714, #0d0b09, #1a1714)",
+                height: boxDepth,
+                bottom: 0,
+                transformOrigin: "center bottom",
+                transform: `translateZ(${halfDepth}px) rotateX(90deg)`,
+                background: edgeGradientTB,
+                borderBottom: `1px solid ${edgeHighlight}`,
               }}
             />
           </div>

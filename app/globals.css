@@ -196,6 +196,6 @@ select {
 
 /* Logo animation utilities */
 .logo-fragment {
-  contain: strict;
   will-change: transform;
+  transform-style: preserve-3d;
 }

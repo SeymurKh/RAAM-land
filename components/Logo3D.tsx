@@ -1,38 +1,17 @@
 "use client";
 
-import { useRef, useState, useMemo, useCallback, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 /* ───────────────────────────────────────────────
    Types
    ─────────────────────────────────────────────── */
 
-interface StripData {
-  id: number;
-  clipPath: string;
-  /** Inertia-based scatter from click */
-  scatter: {
-    x: number;
-    y: number;
-    z: number;
-    rotateX: number;
-    opacity: number;
-  };
-  /** Stagger index for reassemble (top-to-bottom) */
-  index: number;
+interface StripState {
+  spinOffset: number; // degrees offset from base rotation
+  desyncRate: number; // degrees/second offset rate during press
 }
-
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  size: number;
-}
-
-type AnimState = "idle" | "hover" | "scattered" | "reassembling";
 
 /* ───────────────────────────────────────────────
    Constants
@@ -41,9 +20,18 @@ type AnimState = "idle" | "hover" | "scattered" | "reassembling";
 const STRIP_COUNT = 6;
 const MOBILE_STRIP_COUNT = 5;
 
-const PARTICLE_COUNT = 14;
-const MOBILE_PARTICLE_COUNT = 8;
-const PARTICLE_LIFETIME_MS = 600;
+const BASE_SPEED = 30; // deg/s → full rotation in 12s
+const MOBILE_BASE_SPEED = 25;
+
+const BOX_DEPTH = 20; // px depth of 3D rectangle
+const MOBILE_BOX_DEPTH = 14;
+
+const RECOVERY_DECAY = 0.04; // per-frame lerp (at 60fps)
+const MOBILE_RECOVERY_DECAY = 0.06;
+
+const SPEED_MIN_MULT = 0.3;
+const SPEED_MAX_MULT = 2.5;
+const MOBILE_SPEED_MAX_MULT = 2.0;
 
 /* ───────────────────────────────────────────────
    Helpers
@@ -53,7 +41,7 @@ function random(min: number, max: number): number {
   return Math.random() * (max - min) + min;
 }
 
-/** Horizontal strip clipPath — covers full width, slices a portion of height */
+/** Horizontal strip clipPath — full width, slices portion of height */
 function getStripClipPath(index: number, total: number): string {
   const top = (index / total) * 100;
   const bottom = ((total - index - 1) / total) * 100;
@@ -61,123 +49,53 @@ function getStripClipPath(index: number, total: number): string {
 }
 
 /* ───────────────────────────────────────────────
-   Strip generation
-   ─────────────────────────────────────────────── */
-
-function generateStrips(count: number): StripData[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i,
-    clipPath: getStripClipPath(i, count),
-    scatter: { x: 0, y: 0, z: 0, rotateX: 0, opacity: 1 },
-    index: i,
-  }));
-}
-
-/* ───────────────────────────────────────────────
-   Scatter computation — inertia fan-out
-   Strips scatter like a deck of cards:
-   - Upper strips fly up, lower strips fly down
-   - rotateX follows direction (flip away from click)
-   - Horizontal drift proportional to distance from center
-   ─────────────────────────────────────────────── */
-
-function computeScatter(
-  strips: StripData[],
-  clickYRatio: number, // 0..1 — vertical position of click within logo
-  containerWidth: number
-): StripData[] {
-  const total = strips.length;
-
-  return strips.map((strip) => {
-    const stripCenter = (strip.index + 0.5) / total; // 0..1
-
-    // Vertical direction: strips above click fly up, below fly down
-    const dy = stripCenter - clickYRatio;
-    const absDy = Math.abs(dy);
-    const direction = dy >= 0 ? 1 : -1;
-
-    // Further from click → more force
-    const forceFactor = 0.6 + absDy * 1.2;
-
-    // Vertical scatter: 80-220px away, proportional to distance from click
-    const scatterY = direction * random(80, 220) * forceFactor;
-
-    // Horizontal drift: slight outward from center, more for edge strips
-    const hDrift = random(-60, 60) + (stripCenter - 0.5) * random(40, 120);
-
-    // Z-depth for parallax feel
-    const scatterZ = random(40, 160);
-
-    // rotateX: flip away from click direction — like cards being swept
-    const rotateX = direction * random(15, 50) * forceFactor;
-
-    // Opacity: slightly transparent when scattered
-    const opacity = random(0.5, 0.85);
-
-    return {
-      ...strip,
-      scatter: {
-        x: hDrift,
-        y: scatterY,
-        z: scatterZ,
-        rotateX,
-        opacity,
-      },
-    };
-  });
-}
-
-/* ───────────────────────────────────────────────
    Component
    ─────────────────────────────────────────────── */
 
 export function Logo3D() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [tiltX, setTiltX] = useState(0);
-  const [tiltY, setTiltY] = useState(0);
-  const [animState, setAnimState] = useState<AnimState>("idle");
-  const [strips, setStrips] = useState<StripData[]>(() =>
-    generateStrips(STRIP_COUNT)
-  );
-  const [particles, setParticles] = useState<Particle[]>([]);
-  const [clickYRatio, setClickYRatio] = useState(0.5);
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  const stripsRef = useRef<StripData[]>(strips);
-  stripsRef.current = strips;
-
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stripRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const rafRef = useRef<number>(0);
   const mountedRef = useRef(true);
-  const particleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Animation state — refs (updated per frame, NOT React state)
+  const stripsStateRef = useRef<StripState[]>([]);
+  const baseAngleRef = useRef(0);
+  const isPressedRef = useRef(false);
+  const isRecoveringRef = useRef(false);
+
+  // React state — for UI that changes infrequently (glow, etc.)
+  const [interactionState, setInteractionState] = useState<
+    "idle" | "pressed" | "recovering"
+  >("idle");
 
   const prefersReducedMotion = useReducedMotion();
-
-  /* ─── Mobile detection ─── */
-
   const [isMobile, setIsMobile] = useState(false);
+
+  /* ─── Mobile detection (debounced) ─── */
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     check();
-    let raf: ReturnType<typeof setTimeout>;
+    let timer: ReturnType<typeof setTimeout>;
     const onResize = () => {
-      clearTimeout(raf);
-      raf = setTimeout(check, 200);
+      clearTimeout(timer);
+      timer = setTimeout(check, 200);
     };
     window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("resize", onResize);
-      clearTimeout(raf);
+      clearTimeout(timer);
     };
   }, []);
 
-  const stripCount = isMobile ? MOBILE_STRIP_COUNT : STRIP_COUNT;
+  /* ─── Derived values ─── */
 
-  // Keep strips in sync with count
-  const currentStrips = useMemo(() => {
-    if (strips.length !== stripCount) {
-      return generateStrips(stripCount);
-    }
-    return strips;
-  }, [strips, stripCount]);
+  const stripCount = isMobile ? MOBILE_STRIP_COUNT : STRIP_COUNT;
+  const boxDepth = isMobile ? MOBILE_BOX_DEPTH : BOX_DEPTH;
+  const baseSpeed = isMobile ? MOBILE_BASE_SPEED : BASE_SPEED;
+  const recoveryDecay = isMobile ? MOBILE_RECOVERY_DECAY : RECOVERY_DECAY;
+  const speedMaxMult = isMobile ? MOBILE_SPEED_MAX_MULT : SPEED_MAX_MULT;
 
   /* ─── Cleanup on unmount ─── */
 
@@ -185,372 +103,288 @@ export function Logo3D() {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      if (particleTimerRef.current) clearTimeout(particleTimerRef.current);
+      cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
-  /* ─── Glow opacity ─── */
+  /* ─── Initialize / reset strip states when count changes ─── */
 
-  const glowOpacity = useMemo(() => {
-    if (prefersReducedMotion) return 0.08;
-    switch (animState) {
-      case "idle":         return 0.08;
-      case "hover":        return 0.20;
-      case "scattered":    return 0.35;
-      case "reassembling": return 0.15;
-      default:             return 0.08;
-    }
-  }, [animState, prefersReducedMotion]);
-
-  const glowColor = useMemo(() => {
-    if (animState === "scattered") {
-      return "rgba(214, 180, 120, 0.35)"; // warm amber
-    }
-    return "rgba(255, 255, 255, 0.25)"; // neutral white
-  }, [animState]);
-
-  const glowBlur = useMemo(() => {
-    switch (animState) {
-      case "idle":      return "blur(30px)";
-      case "hover":     return "blur(24px)";
-      case "scattered": return "blur(20px)";
-      default:          return "blur(28px)";
-    }
-  }, [animState]);
-
-  /* ─── Reassemble completion ─── */
-
-  const reassembleCountRef = useRef(0);
-
-  const handleStripReassemble = useCallback(() => {
-    reassembleCountRef.current += 1;
-    if (reassembleCountRef.current >= stripCount) {
-      reassembleCountRef.current = 0;
-      setAnimState("idle");
-    }
+  useEffect(() => {
+    stripsStateRef.current = Array.from({ length: stripCount }, () => ({
+      spinOffset: 0,
+      desyncRate: 0,
+    }));
+    // Reset DOM transforms
+    stripRefs.current.forEach((el) => {
+      if (el) el.style.transform = "rotateY(0deg)";
+    });
+    baseAngleRef.current = 0;
+    isPressedRef.current = false;
+    isRecoveringRef.current = false;
+    setInteractionState("idle");
   }, [stripCount]);
 
-  /* ─── Pointer handlers ─── */
+  /* ─── Animation loop (requestAnimationFrame) ─── */
 
-  function handlePointerMove(e: React.PointerEvent) {
-    if (!ref.current || prefersReducedMotion) return;
-    // Only tilt in idle/hover
-    if (animState === "scattered" || animState === "reassembling") return;
+  useEffect(() => {
+    let lastTime = performance.now();
 
-    const rect = ref.current.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const x = (e.clientX - cx) / (rect.width / 2);
-    const y = (e.clientY - cy) / (rect.height / 2);
+    const animate = (time: number) => {
+      if (!mountedRef.current) return;
 
-    // Softer tilt than before: 4° horizontal, 3° vertical
-    setTiltY(x * 4);
-    setTiltX(-y * 3);
-  }
+      const dt = Math.min((time - lastTime) / 1000, 0.1); // cap delta
+      lastTime = time;
 
-  function handlePointerEnter() {
-    if (prefersReducedMotion) return;
-    if (animState === "idle") {
-      setAnimState("hover");
+      const speed = baseSpeed;
+      const decay = recoveryDecay;
+      const strips = stripsStateRef.current;
+
+      // Base angle always advances at constant speed
+      baseAngleRef.current += speed * dt;
+      const base = baseAngleRef.current;
+
+      let allRecovered = true;
+
+      for (let i = 0; i < strips.length; i++) {
+        const strip = strips[i];
+        if (!strip) continue;
+
+        if (isPressedRef.current) {
+          // Each strip's offset grows at its own rate → desync
+          strip.spinOffset += strip.desyncRate * dt;
+          allRecovered = false;
+        } else if (isRecoveringRef.current) {
+          // Exponential decay: offset → 0 (frame-rate independent)
+          const frameDecay = Math.pow(1 - decay, dt * 60);
+          strip.spinOffset *= frameDecay;
+          if (Math.abs(strip.spinOffset) < 0.3) {
+            strip.spinOffset = 0;
+          } else {
+            allRecovered = false;
+          }
+        }
+
+        // Display angle = base rotation + strip's offset
+        const angle = base + strip.spinOffset;
+
+        // Apply directly to DOM — no React re-render
+        const el = stripRefs.current[i];
+        if (el) {
+          el.style.transform = `rotateY(${angle}deg)`;
+        }
+      }
+
+      // Recovery complete?
+      if (isRecoveringRef.current && allRecovered) {
+        isRecoveringRef.current = false;
+        setInteractionState("idle");
+      }
+
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [baseSpeed, recoveryDecay]);
+
+  /* ─── Assign random desync rates ─── */
+
+  const assignDesyncRates = useCallback(() => {
+    for (const strip of stripsStateRef.current) {
+      const mult = random(SPEED_MIN_MULT, speedMaxMult);
+      // desyncRate = how fast offset changes vs base speed
+      // multiplier 1.0 = same as base (no offset change)
+      // multiplier 2.0 = offset grows at baseSpeed rate
+      // multiplier 0.3 = offset shrinks (strip falls behind)
+      strip.desyncRate = (mult - 1) * baseSpeed;
     }
-  }
+  }, [baseSpeed, speedMaxMult]);
 
-  function handlePointerLeave() {
-    setTiltX(0);
-    setTiltY(0);
-    if (animState === "hover") {
-      setAnimState("idle");
-    }
-  }
+  /* ─── Event handlers ─── */
 
   function handlePointerDown(e: React.PointerEvent) {
     if (prefersReducedMotion) return;
     e.preventDefault();
-
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
-    const yRatio = clickY / rect.height;
-
-    setClickYRatio(yRatio);
-    setContainerWidth(rect.width);
-
-    // IMMEDIATE scatter — no delay
-    const scattered = computeScatter(stripsRef.current, yRatio, rect.width);
-    setStrips(scattered);
-    setAnimState("scattered");
-    reassembleCountRef.current = 0;
-
-    // Spawn minimal particles
-    spawnParticles(clickX, clickY);
+    isPressedRef.current = true;
+    isRecoveringRef.current = false;
+    setInteractionState("pressed");
+    assignDesyncRates();
   }
 
   function handlePointerUp() {
-    if (animState === "scattered") {
-      setAnimState("reassembling");
-      reassembleCountRef.current = 0;
-      // Reset tilt while reassembling
-      setTiltX(0);
-      setTiltY(0);
-    }
+    if (!isPressedRef.current) return;
+    isPressedRef.current = false;
+    isRecoveringRef.current = true;
+    setInteractionState("recovering");
   }
 
-  /* ─── Touch handlers ─── */
+  function handlePointerLeave() {
+    if (isPressedRef.current) handlePointerUp();
+  }
 
   function handleTouchStart(e: React.TouchEvent) {
     if (prefersReducedMotion) return;
-    const touch = e.touches[0];
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const clickX = touch.clientX - rect.left;
-    const clickY = touch.clientY - rect.top;
-    const yRatio = clickY / rect.height;
-
-    setClickYRatio(yRatio);
-    setContainerWidth(rect.width);
-
-    const scattered = computeScatter(stripsRef.current, yRatio, rect.width);
-    setStrips(scattered);
-    setAnimState("scattered");
-    reassembleCountRef.current = 0;
-    spawnParticles(clickX, clickY);
+    e.preventDefault();
+    isPressedRef.current = true;
+    isRecoveringRef.current = false;
+    setInteractionState("pressed");
+    assignDesyncRates();
   }
 
   function handleTouchEnd() {
-    if (animState === "scattered") {
-      setAnimState("reassembling");
-      reassembleCountRef.current = 0;
-      setTiltX(0);
-      setTiltY(0);
-    }
+    handlePointerUp();
   }
 
-  /* ─── Particles — minimal, gold dots ─── */
+  /* ─── Glow ─── */
 
-  function spawnParticles(cx: number, cy: number) {
-    const count = isMobile ? MOBILE_PARTICLE_COUNT : PARTICLE_COUNT;
-    const newParticles: Particle[] = [];
-    for (let i = 0; i < count; i++) {
-      const angle = random(0, Math.PI * 2);
-      const speed = random(60, 160);
-      newParticles.push({
-        id: Date.now() + i,
-        x: cx,
-        y: cy,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - random(30, 80),
-        size: random(2, 4),
-      });
-    }
-    setParticles(newParticles);
+  const glowOpacity = prefersReducedMotion
+    ? 0.06
+    : interactionState === "pressed"
+    ? 0.30
+    : interactionState === "recovering"
+    ? 0.15
+    : 0.06;
 
-    particleTimerRef.current = setTimeout(() => {
-      if (mountedRef.current) setParticles([]);
-    }, PARTICLE_LIFETIME_MS);
-  }
-
-  /* ─── Spring configs ─── */
-
-  const scatterSpring = { stiffness: 140, damping: 14 };
-  const reassembleSpring = { stiffness: 300, damping: 25 };
+  const glowColor =
+    interactionState === "pressed"
+      ? "rgba(214, 180, 120, 0.3)"
+      : "rgba(255, 255, 255, 0.2)";
 
   /* ─── Render ─── */
 
-  const isScattered = animState === "scattered";
-  const isReassembling = animState === "reassembling";
+  const halfDepth = boxDepth / 2;
+
+  // Clip paths for current strip count
+  const clipPaths = Array.from({ length: stripCount }, (_, i) =>
+    getStripClipPath(i, stripCount)
+  );
+
+  // Image props shared across all faces
+  const imgProps = {
+    src: "/assets/images/logo.png" as const,
+    alt: "",
+    width: 800,
+    height: 340,
+    sizes: "(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px",
+    className: "h-48 w-auto sm:h-64 lg:h-80",
+    priority: true,
+    "aria-hidden": true as const,
+  };
 
   return (
-    <motion.div
-      ref={ref}
-      onPointerMove={handlePointerMove}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
+    <div
+      ref={containerRef}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       style={{
-        perspective: "800px",
-        transformStyle: "preserve-3d",
+        perspective: "1200px",
         touchAction: "none",
       }}
       className="relative cursor-pointer select-none"
     >
+      {/* Sizer — invisible, establishes container dimensions */}
+      <Image
+        src="/assets/images/logo.png"
+        alt="RAAM"
+        width={800}
+        height={340}
+        sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
+        className="h-48 w-auto sm:h-64 lg:h-80 invisible"
+        priority
+        aria-hidden
+      />
+
+      {/* ── Glow / Bloom layer ── */}
       <motion.div
+        className="absolute inset-0 pointer-events-none"
         animate={{
-          rotateX: tiltX,
-          rotateY: tiltY,
+          opacity: glowOpacity,
+          filter: "blur(24px)",
         }}
-        transition={{ type: "spring", stiffness: 200, damping: 25 }}
-        style={{ transformStyle: "preserve-3d" }}
-        className="relative"
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        style={{
+          mixBlendMode: "screen",
+          backgroundColor: glowColor,
+        }}
       >
-        {/* Sizer image — invisible, establishes container size */}
-        <Image
-          src="/assets/images/logo.png"
-          alt="RAAM"
-          width={800}
-          height={340}
-          sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-          className="h-48 w-auto sm:h-64 lg:h-80 invisible"
-          priority
-          aria-hidden
-        />
-
-        {/* ── Glow / Bloom Layer ── */}
-        <motion.div
-          className="absolute inset-0"
-          animate={{
-            opacity: glowOpacity,
-            filter: glowBlur,
-          }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          style={{
-            mixBlendMode: "screen",
-            backgroundColor: glowColor,
-          }}
-        >
-          <Image
-            src="/assets/images/logo.png"
-            alt=""
-            width={800}
-            height={340}
-            sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-            className="h-48 w-auto sm:h-64 lg:h-80"
-            priority
-            aria-hidden
-          />
-        </motion.div>
-
-        {/* ── Idle breathing: whole logo subtle scale pulse ── */}
-        <motion.div
-          className="absolute inset-0"
-          animate={
-            animState === "idle" && !prefersReducedMotion
-              ? { scale: [1, 1.008, 1] }
-              : { scale: 1 }
-          }
-          transition={
-            animState === "idle"
-              ? { duration: 6, repeat: Infinity, ease: "easeInOut" }
-              : { duration: 0.3 }
-          }
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          {/* ── Strip Fragments ── */}
-          {currentStrips.map((strip) => {
-            // Reduced motion: simple opacity
-            if (prefersReducedMotion) {
-              return (
-                <motion.div
-                  key={strip.id}
-                  className="absolute inset-0 logo-fragment"
-                  style={{ clipPath: strip.clipPath }}
-                  animate={{
-                    opacity: isScattered ? 0.6 : 1,
-                  }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Image
-                    src="/assets/images/logo.png"
-                    alt=""
-                    width={800}
-                    height={340}
-                    sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-                    className="h-48 w-auto sm:h-64 lg:h-80"
-                    priority
-                    aria-hidden
-                  />
-                </motion.div>
-              );
-            }
-
-            // Scatter animation target
-            const target = isScattered
-              ? {
-                  x: strip.scatter.x,
-                  y: strip.scatter.y,
-                  z: strip.scatter.z,
-                  rotateX: strip.scatter.rotateX,
-                  opacity: strip.scatter.opacity,
-                }
-              : isReassembling
-              ? { x: 0, y: 0, z: 0, rotateX: 0, opacity: 1 }
-              : {}; // idle/hover — no per-fragment animation
-
-            const transition = isScattered
-              ? {
-                  type: "spring" as const,
-                  ...scatterSpring,
-                }
-              : isReassembling
-              ? {
-                  type: "spring" as const,
-                  ...reassembleSpring,
-                  // Top-to-bottom stagger: 30ms per strip
-                  delay: strip.index * 0.03,
-                  onComplete:
-                    strip.index === stripCount - 1
-                      ? handleStripReassemble
-                      : undefined,
-                }
-              : {};
-
-            return (
-              <motion.div
-                key={strip.id}
-                className="absolute inset-0 logo-fragment"
-                style={{
-                  clipPath: strip.clipPath,
-                  overflow: "hidden",
-                  transformOrigin: "center center",
-                }}
-                animate={target}
-                transition={transition}
-              >
-                <Image
-                  src="/assets/images/logo.png"
-                  alt=""
-                  width={800}
-                  height={340}
-                  sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-                  className="h-48 w-auto sm:h-64 lg:h-80"
-                  priority
-                  aria-hidden
-                />
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* ── Particles — minimal gold dots ── */}
-        <AnimatePresence>
-          {particles.map((particle) => (
-            <motion.div
-              key={particle.id}
-              className="absolute rounded-full pointer-events-none"
-              style={{
-                width: particle.size,
-                height: particle.size,
-                background: "rgba(214, 180, 120, 0.8)",
-                left: particle.x,
-                top: particle.y,
-              }}
-              initial={{ x: 0, y: 0, opacity: 1 }}
-              animate={{
-                x: particle.vx,
-                y: particle.vy + 80,
-                opacity: 0,
-              }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            />
-          ))}
-        </AnimatePresence>
+        <Image {...imgProps} />
       </motion.div>
-    </motion.div>
+
+      {/* ── 3D Strip Container ── */}
+      <div
+        className="absolute inset-0"
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {clipPaths.map((clipPath, i) => (
+          <div
+            key={i}
+            ref={(el) => {
+              stripRefs.current[i] = el;
+            }}
+            className="absolute inset-0 logo-fragment"
+            style={{
+              transformStyle: "preserve-3d",
+              transform: "rotateY(0deg)",
+            }}
+          >
+            {/* ── Front face ── */}
+            <div
+              className="absolute inset-0"
+              style={{
+                clipPath,
+                transform: `translateZ(${halfDepth}px)`,
+                backfaceVisibility: "hidden",
+              }}
+            >
+              <Image {...imgProps} />
+            </div>
+
+            {/* ── Back face ── */}
+            <div
+              className="absolute inset-0"
+              style={{
+                clipPath,
+                transform: `rotateY(180deg) translateZ(${halfDepth}px)`,
+                backfaceVisibility: "hidden",
+              }}
+            >
+              {/* scaleX(-1) counter-mirrors so logo is readable from behind */}
+              <div style={{ transform: "scaleX(-1)" }}>
+                <Image {...imgProps} />
+              </div>
+            </div>
+
+            {/* ── Left edge ── */}
+            <div
+              className="absolute top-0 bottom-0"
+              style={{
+                width: boxDepth,
+                left: 0,
+                transformOrigin: "left center",
+                transform: `translateZ(${halfDepth}px) rotateY(-90deg)`,
+                background:
+                  "linear-gradient(to right, #1a1714, #0d0b09, #1a1714)",
+              }}
+            />
+
+            {/* ── Right edge ── */}
+            <div
+              className="absolute top-0 bottom-0"
+              style={{
+                width: boxDepth,
+                right: 0,
+                transformOrigin: "right center",
+                transform: `translateZ(${halfDepth}px) rotateY(90deg)`,
+                background:
+                  "linear-gradient(to left, #1a1714, #0d0b09, #1a1714)",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

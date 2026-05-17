@@ -193,3 +193,18 @@ select {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Logo animation utilities */
+@keyframes logo-idle-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.logo-fragment {
+  contain: strict;
+  will-change: transform;
+}

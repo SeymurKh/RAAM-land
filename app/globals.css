@@ -204,7 +204,26 @@ select {
   }
 }
 
+/* Enhancement 5: Ambient glow pulse in idle state */
+@keyframes logo-glow-pulse {
+  0%, 100% {
+    opacity: 0.10;
+  }
+  50% {
+    opacity: 0.16;
+  }
+}
+
+.logo-glow-pulse {
+  animation: logo-glow-pulse 4s ease-in-out infinite;
+}
+
 .logo-fragment {
   contain: strict;
   will-change: transform;
+}
+
+/* Enhancement 7: Fragment shadow during explosion */
+.logo-fragment-shadow {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
 }

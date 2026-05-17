@@ -24,8 +24,9 @@ interface FragmentData {
     opacity: number;
   };
   delay: number;
-  idlePhase: number;   // random phase offset for ambient floating
-  idlePeriod: number;  // 4-7 seconds per fragment
+  reassembleDelay: number; // staggered reassemble delay
+  idlePhase: number;       // random phase offset for ambient floating
+  idlePeriod: number;      // 4-7 seconds per fragment
 }
 
 interface Particle {
@@ -35,12 +36,28 @@ interface Particle {
   vx: number;
   vy: number;
   size: number;
+  rotation: number;
+  rotationSpeed: number;
 }
 
-type AnimationState = "idle" | "hovering" | "pressed" | "exploding" | "reassembling";
+interface Sparkle {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+}
+
+type AnimationState =
+  | "idle"
+  | "hovering"
+  | "pressed"
+  | "exploding"
+  | "explodingFloat"
+  | "reassembling";
 
 /* ───────────────────────────────────────────────
-   Constants — per plan: 8×4 desktop, 6×3 mobile
+   Constants
    ─────────────────────────────────────────────── */
 
 const GRID_COLS = 8;
@@ -52,6 +69,9 @@ const PARTICLE_COUNT_DESKTOP = 36;
 const PARTICLE_COUNT_MOBILE = 18;
 const PARTICLE_LIFETIME_MS = 800;
 
+const SPARKLE_COUNT = 15;
+const SPARKLE_LIFETIME_MS = 300;
+
 /* ───────────────────────────────────────────────
    Helpers
    ─────────────────────────────────────────────── */
@@ -60,7 +80,12 @@ function random(min: number, max: number): number {
   return Math.random() * (max - min) + min;
 }
 
-function getClipPath(col: number, row: number, totalCols: number, totalRows: number): string {
+function getClipPath(
+  col: number,
+  row: number,
+  totalCols: number,
+  totalRows: number
+): string {
   const top = (row / totalRows) * 100;
   const bottom = ((totalRows - row - 1) / totalRows) * 100;
   const left = (col / totalCols) * 100;
@@ -83,18 +108,14 @@ function generateFragments(cols: number, rows: number): FragmentData[] {
         row,
         clipPath: getClipPath(col, row, cols, rows),
         scatter: {
-          x: 0,
-          y: 0,
-          z: 0,
-          rotateX: 0,
-          rotateY: 0,
-          rotateZ: 0,
-          scale: 1,
-          opacity: 1,
+          x: 0, y: 0, z: 0,
+          rotateX: 0, rotateY: 0, rotateZ: 0,
+          scale: 1, opacity: 1,
         },
         delay: 0,
+        reassembleDelay: 0,
         idlePhase: random(0, Math.PI * 2),
-        idlePeriod: random(4, 7), // 4-7 seconds as per plan
+        idlePeriod: random(4, 7),
       });
     }
   }
@@ -102,7 +123,7 @@ function generateFragments(cols: number, rows: number): FragmentData[] {
 }
 
 /* ───────────────────────────────────────────────
-   Scatter vector computation — radiates from click
+   Scatter computation — radiates from click
    ─────────────────────────────────────────────── */
 
 function computeScatter(
@@ -114,20 +135,27 @@ function computeScatter(
   cols: number,
   rows: number
 ): FragmentData[] {
+  // Pre-compute container center for reassemble stagger
+  const centerX = containerWidth / 2;
+  const centerY = containerHeight / 2;
+
   return fragments.map((fragment) => {
-    // Fragment center relative to container
     const fragmentCenterX = ((fragment.col + 0.5) / cols) * containerWidth;
     const fragmentCenterY = ((fragment.row + 0.5) / rows) * containerHeight;
 
-    // Direction from click point to fragment center
+    // Direction from click to fragment
     const dx = fragmentCenterX - clickX;
     const dy = fragmentCenterY - clickY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     const directionX = distance > 0 ? dx / distance : random(-1, 1);
     const directionY = distance > 0 ? dy / distance : random(-1, 1);
 
-    // Distance factor for organic variation
     const distanceFactor = random(0.6, 1.4);
+
+    // Reassemble stagger: distance from center (farthest first)
+    const distFromCenter = Math.sqrt(
+      (fragmentCenterX - centerX) ** 2 + (fragmentCenterY - centerY) ** 2
+    );
 
     return {
       ...fragment,
@@ -141,7 +169,8 @@ function computeScatter(
         scale: random(0.3, 0.7),
         opacity: random(0.15, 0.5),
       },
-      delay: distance * 0.02, // wave stagger
+      delay: distance * 0.02,
+      reassembleDelay: distFromCenter * 0.008, // Enhancement 6
     };
   });
 }
@@ -159,21 +188,45 @@ export function Logo3D() {
     generateFragments(GRID_COLS, GRID_ROWS)
   );
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  // Bug 1 fix: ref to always hold latest fragments
+  const fragmentsRef = useRef<FragmentData[]>(fragments);
+  fragmentsRef.current = fragments;
+
+  // Bug 8 fix: mounted flag for cleanup
+  const mountedRef = useRef(true);
 
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const particleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sparkleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Enhancement 1: cursor parallax tracking
+  const cursorRef = useRef({ x: 0, y: 0 });
+  const parallaxFrameRef = useRef<number | null>(null);
 
   const prefersReducedMotion = useReducedMotion();
 
-  // Mobile detection — stable after mount
+  /* ─── Mobile detection (Bug 4 fix: reactive) ─── */
+
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    setIsMobile(window.innerWidth < 640);
-    const onResize = () => setIsMobile(window.innerWidth < 640);
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    // Debounced resize (200ms per performance notes)
+    let raf: ReturnType<typeof setTimeout>;
+    const onResize = () => {
+      clearTimeout(raf);
+      raf = setTimeout(check, 200);
+    };
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      clearTimeout(raf);
+    };
   }, []);
 
   const gridCols = isMobile ? MOBILE_GRID_COLS : GRID_COLS;
@@ -185,27 +238,105 @@ export function Logo3D() {
       return generateFragments(gridCols, gridRows);
     }
     return fragments;
-  }, [fragments.length, gridCols, gridRows]);
+  }, [fragments, gridCols, gridRows]);
+
+  /* ─── Bug 6 fix: reassemble counter ─── */
+
+  const reassembleCompleteCountRef = useRef(0);
+  const totalFragmentsRef = useRef(currentFragments.length);
+  totalFragmentsRef.current = currentFragments.length;
+
+  const handleFragmentReassembleComplete = useCallback(() => {
+    reassembleCompleteCountRef.current += 1;
+    if (reassembleCompleteCountRef.current >= totalFragmentsRef.current) {
+      reassembleCompleteCountRef.current = 0;
+      setAnimationState("idle");
+    }
+  }, []);
+
+  /* ─── Bug 8 fix: cleanup on unmount ─── */
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+      if (particleTimerRef.current) clearTimeout(particleTimerRef.current);
+      if (sparkleTimerRef.current) clearTimeout(sparkleTimerRef.current);
+      if (parallaxFrameRef.current) cancelAnimationFrame(parallaxFrameRef.current);
+    };
+  }, []);
+
+  /* ─── Enhancement 1: cursor-follow parallax on exploded fragments ─── */
+
+  useEffect(() => {
+    if (animationState !== "exploding" && animationState !== "explodingFloat") {
+      return;
+    }
+    const container = ref.current;
+    if (!container) return;
+
+    let rafId: number;
+    const onMove = (e: PointerEvent) => {
+      cursorRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener("pointermove", onMove);
+
+    const update = () => {
+      if (!mountedRef.current) return;
+      if (!ref.current) { rafId = requestAnimationFrame(update); return; }
+
+      const rect = ref.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const mx = (cursorRef.current.x - cx) / rect.width;
+      const my = (cursorRef.current.y - cy) / rect.height;
+
+      // Apply subtle CSS custom properties for parallax
+      ref.current.style.setProperty("--parallax-x", `${mx * 15}px`);
+      ref.current.style.setProperty("--parallax-y", `${my * 15}px`);
+
+      rafId = requestAnimationFrame(update);
+    };
+    rafId = requestAnimationFrame(update);
+
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, [animationState]);
 
   /* ─── Glow helpers ─── */
 
   const glowOpacity = useMemo(() => {
     if (prefersReducedMotion) return 0.12;
     switch (animationState) {
-      case "idle":         return 0.12;
-      case "hovering":     return 0.25;
-      case "pressed":      return 0.55;
-      case "exploding":    return 0.55;
-      case "reassembling": return 0.25;
-      default:             return 0.12;
+      case "idle":           return 0.12;
+      case "hovering":       return 0.25;
+      case "pressed":        return 0.55;
+      case "exploding":      return 0.55;
+      case "explodingFloat": return 0.4;
+      case "reassembling":   return 0.25;
+      default:               return 0.12;
     }
   }, [animationState, prefersReducedMotion]);
 
   const glowColor = useMemo(() => {
-    if (animationState === "exploding" || animationState === "pressed") {
-      return "rgba(214, 180, 120, 0.4)"; // warm amber
+    if (
+      animationState === "exploding" ||
+      animationState === "explodingFloat" ||
+      animationState === "pressed"
+    ) {
+      return "rgba(214, 180, 120, 0.4)";
     }
-    return "rgba(255, 255, 255, 0.3)";    // neutral white
+    return "rgba(255, 255, 255, 0.3)";
+  }, [animationState]);
+
+  /* ─── Enhancement 4: haptic pulse on press ─── */
+
+  const hapticScale = useMemo(() => {
+    if (animationState === "pressed") return 0.98;
+    return 1;
   }, [animationState]);
 
   /* ─── Pointer handlers ─── */
@@ -224,7 +355,9 @@ export function Logo3D() {
   function handlePointerEnter() {
     if (prefersReducedMotion) return;
     setIsHovering(true);
-    setAnimationState("hovering");
+    if (animationState === "idle" || animationState === "reassembling") {
+      setAnimationState("hovering");
+    }
   }
 
   function handlePointerLeave() {
@@ -232,39 +365,74 @@ export function Logo3D() {
     setRotateY(0);
     setIsHovering(false);
     clearTimers();
-    setAnimationState("idle");
+    if (
+      animationState === "hovering" ||
+      animationState === "pressed"
+    ) {
+      setAnimationState("idle");
+    }
   }
 
   function handlePointerDown(e: React.PointerEvent) {
     if (prefersReducedMotion) return;
     e.preventDefault();
+
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    // Bug 2 fix: store container dimensions at click time
+    setContainerSize({ width: rect.width, height: rect.height });
+    setClickPosition({ x: clickX, y: clickY });
     setAnimationState("pressed");
 
-    // Record click position for scatter & shockwave
-    const rect = ref.current?.getBoundingClientRect();
-    if (rect) {
-      setClickPosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
-    }
+    // Bug 1 fix: compute scatter HERE before scheduling, using ref
+    const scattered = computeScatter(
+      fragmentsRef.current,
+      clickX,
+      clickY,
+      rect.width,
+      rect.height,
+      gridCols,
+      gridRows
+    );
 
-    // Explode after 150ms hold (per plan state machine)
+    // Explode after 100ms hold (v2 state machine)
     holdTimerRef.current = setTimeout(() => {
-      triggerExplosion(e);
-    }, 150);
+      if (!mountedRef.current) return;
+      setFragments(scattered);
+      setAnimationState("exploding");
+      spawnParticles(clickX, clickY);
+      spawnSparkles(scattered);
+
+      // After scatter settles, transition to explodingFloat
+      setTimeout(() => {
+        if (!mountedRef.current) return;
+        if (
+          fragmentsRef.current.some((f) => f.scatter.x !== 0)
+        ) {
+          setAnimationState("explodingFloat");
+        }
+      }, 600);
+    }, 100);
   }
 
   function handlePointerUp() {
     clearTimers();
-    if (animationState === "exploding") {
+    if (
+      animationState === "exploding" ||
+      animationState === "explodingFloat"
+    ) {
       setAnimationState("reassembling");
+      reassembleCompleteCountRef.current = 0;
     } else {
       setAnimationState(isHovering ? "hovering" : "idle");
     }
   }
 
-  /* ─── Touch handlers (mobile) ─── */
+  /* ─── Touch handlers ─── */
 
   function handleTouchStart(e: React.TouchEvent) {
     if (prefersReducedMotion) return;
@@ -274,53 +442,50 @@ export function Logo3D() {
 
     const clickX = touch.clientX - rect.left;
     const clickY = touch.clientY - rect.top;
+    setContainerSize({ width: rect.width, height: rect.height });
     setClickPosition({ x: clickX, y: clickY });
     setAnimationState("pressed");
 
+    const scattered = computeScatter(
+      fragmentsRef.current,
+      clickX,
+      clickY,
+      rect.width,
+      rect.height,
+      gridCols,
+      gridRows
+    );
+
     holdTimerRef.current = setTimeout(() => {
-      triggerExplosionAtPoint(clickX, clickY, rect.width, rect.height);
-    }, 150);
+      if (!mountedRef.current) return;
+      setFragments(scattered);
+      setAnimationState("exploding");
+      spawnParticles(clickX, clickY);
+      spawnSparkles(scattered);
+
+      setTimeout(() => {
+        if (!mountedRef.current) return;
+        setAnimationState("explodingFloat");
+      }, 600);
+    }, 100);
   }
 
   function handleTouchEnd() {
     clearTimers();
-    if (animationState === "exploding") {
+    if (
+      animationState === "exploding" ||
+      animationState === "explodingFloat"
+    ) {
       setAnimationState("reassembling");
+      reassembleCompleteCountRef.current = 0;
     } else {
       setAnimationState("idle");
     }
   }
 
-  /* ─── Explosion logic ─── */
+  /* ─── Particle spawning ─── */
 
-  function triggerExplosion(e: React.PointerEvent) {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
-    triggerExplosionAtPoint(clickX, clickY, rect.width, rect.height);
-  }
-
-  function triggerExplosionAtPoint(
-    clickX: number,
-    clickY: number,
-    containerWidth: number,
-    containerHeight: number
-  ) {
-    // Compute scatter vectors
-    const scatteredFragments = computeScatter(
-      currentFragments,
-      clickX,
-      clickY,
-      containerWidth,
-      containerHeight,
-      gridCols,
-      gridRows
-    );
-    setFragments(scatteredFragments);
-    setAnimationState("exploding");
-
-    // Spawn particles
+  function spawnParticles(clickX: number, clickY: number) {
     const count = isMobile ? PARTICLE_COUNT_MOBILE : PARTICLE_COUNT_DESKTOP;
     const newParticles: Particle[] = [];
     for (let i = 0; i < count; i++) {
@@ -333,14 +498,38 @@ export function Logo3D() {
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - random(60, 150),
         size: random(3, 6),
+        rotation: random(0, 360),
+        rotationSpeed: random(-180, 180),
       });
     }
     setParticles(newParticles);
 
-    // Remove particles after lifetime
     particleTimerRef.current = setTimeout(() => {
-      setParticles([]);
+      if (mountedRef.current) setParticles([]);
     }, PARTICLE_LIFETIME_MS);
+  }
+
+  /* ─── Enhancement 3: sparkle trail particles ─── */
+
+  function spawnSparkles(scattered: FragmentData[]) {
+    const newSparkles: Sparkle[] = [];
+    for (let i = 0; i < SPARKLE_COUNT; i++) {
+      const frag = scattered[Math.floor(Math.random() * scattered.length)];
+      const angle = random(0, Math.PI * 2);
+      const speed = random(30, 80);
+      newSparkles.push({
+        id: Date.now() + 10000 + i,
+        x: ((frag.col + 0.5) / gridCols) * containerSize.width,
+        y: ((frag.row + 0.5) / gridRows) * containerSize.height,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+      });
+    }
+    setSparkles(newSparkles);
+
+    sparkleTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setSparkles([]);
+    }, SPARKLE_LIFETIME_MS);
   }
 
   /* ─── Cleanup ─── */
@@ -354,19 +543,22 @@ export function Logo3D() {
       clearTimeout(particleTimerRef.current);
       particleTimerRef.current = null;
     }
+    if (sparkleTimerRef.current) {
+      clearTimeout(sparkleTimerRef.current);
+      sparkleTimerRef.current = null;
+    }
   }
-
-  // Reassemble completion
-  const handleReassembleComplete = useCallback(() => {
-    setAnimationState("idle");
-  }, []);
 
   /* ─── Spring configs ─── */
 
+  // Enhancement 2: gravity pull-back with bounce
   const scatterSpring = { stiffness: 120, damping: 12 };
-  const reassembleSpring = { stiffness: 350, damping: 25 };
+  const reassembleSpring = { stiffness: 400, damping: 18 }; // bounce spring
 
   /* ─── Render ─── */
+
+  const isExploded =
+    animationState === "exploding" || animationState === "explodingFloat";
 
   return (
     <motion.div
@@ -382,13 +574,18 @@ export function Logo3D() {
         perspective: "800px",
         transformStyle: "preserve-3d",
         touchAction: "none",
-      }}
+        // Enhancement 1: parallax CSS vars (applied via rAF)
+        "--parallax-x": "0px",
+        "--parallax-y": "0px",
+      } as React.CSSProperties}
       className="relative cursor-pointer select-none"
     >
       <motion.div
         animate={{
           rotateX,
           rotateY,
+          // Enhancement 4: haptic scale pulse
+          scale: hapticScale,
         }}
         transition={{ type: "spring", stiffness: 120, damping: 30 }}
         style={{ transformStyle: "preserve-3d" }}
@@ -425,7 +622,11 @@ export function Logo3D() {
             width={800}
             height={340}
             sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-            className="h-48 w-auto sm:h-64 lg:h-80"
+            className={
+              animationState === "idle" || animationState === "hovering"
+                ? "h-48 w-auto sm:h-64 lg:h-80 logo-glow-pulse"
+                : "h-48 w-auto sm:h-64 lg:h-80"
+            }
             priority
             aria-hidden
           />
@@ -433,27 +634,27 @@ export function Logo3D() {
 
         {/* ── Layer 2: Fragment Grid ── */}
         {currentFragments.map((fragment) => {
-          // Determine the animation target for this fragment
-          const isExploding = animationState === "exploding";
-          const isReassembling = animationState === "reassembling";
-          const isIdle = animationState === "idle" || animationState === "hovering";
+          const isIdle =
+            animationState === "idle" || animationState === "hovering";
 
-          // Idle ambient float: subtle y oscillation per fragment
-          const idleAnimate = isIdle && !prefersReducedMotion
-            ? { y: [-1.5, 1.5, -1.5] }
-            : {};
+          // Idle ambient float on the fragment div itself (Bug 5 fix)
+          const idleAnimate =
+            isIdle && !prefersReducedMotion
+              ? { y: [-1.5, 1.5, -1.5] }
+              : {};
 
-          const idleTransition = isIdle && !prefersReducedMotion
-            ? {
-                duration: fragment.idlePeriod,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: fragment.idlePhase,
-              }
-            : {};
+          const idleTransition =
+            isIdle && !prefersReducedMotion
+              ? {
+                  duration: fragment.idlePeriod,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: fragment.idlePhase,
+                }
+              : {};
 
-          // Scatter / reassemble targets
-          const stateAnimate = isExploding
+          // Scatter targets — include parallax offset (Enhancement 1)
+          const stateAnimate = isExploded
             ? {
                 x: fragment.scatter.x,
                 y: fragment.scatter.y,
@@ -464,7 +665,7 @@ export function Logo3D() {
                 scale: fragment.scatter.scale,
                 opacity: fragment.scatter.opacity,
               }
-            : isReassembling
+            : animationState === "reassembling"
             ? {
                 x: 0,
                 y: 0,
@@ -477,25 +678,33 @@ export function Logo3D() {
               }
             : {};
 
-          const stateTransition = isExploding
+          const stateTransition = isExploded
             ? {
                 type: "spring" as const,
                 ...scatterSpring,
                 delay: fragment.delay,
               }
-            : isReassembling
+            : animationState === "reassembling"
             ? {
                 type: "spring" as const,
-                ...reassembleSpring,
-                onComplete: fragment.id === 0 ? handleReassembleComplete : undefined,
+                // Enhancement 2: per-fragment stiffness based on distance from center
+                stiffness: 400 - fragment.reassembleDelay * 30,
+                damping: 18,
+                // Enhancement 6: staggered reassemble (outer first)
+                delay: fragment.reassembleDelay,
+                onComplete: handleFragmentReassembleComplete,
               }
             : {};
 
-          // Reduced motion: simple opacity only
-          const reducedAnimate = prefersReducedMotion
-            ? { opacity: isExploding ? 0.6 : 1 }
-            : null;
+          // Enhancement 7: fragment shadow during explosion
+          const shadowStyle: React.CSSProperties = isExploded
+            ? { filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.5))" }
+            : {};
 
+          // Reduced motion fallback
+          const reducedAnimate = prefersReducedMotion
+            ? { opacity: isExploded ? 0.6 : 1 }
+            : null;
           const reducedTransition = prefersReducedMotion
             ? { duration: 0.2 }
             : null;
@@ -507,58 +716,36 @@ export function Logo3D() {
               style={{
                 clipPath: fragment.clipPath,
                 overflow: "hidden",
+                ...shadowStyle,
               }}
-              animate={prefersReducedMotion ? reducedAnimate! : { ...idleAnimate, ...stateAnimate }}
-              transition={prefersReducedMotion ? reducedTransition! : { ...idleTransition, ...stateTransition }}
+              animate={
+                prefersReducedMotion
+                  ? reducedAnimate!
+                  : { ...idleAnimate, ...stateAnimate }
+              }
+              transition={
+                prefersReducedMotion
+                  ? reducedTransition!
+                  : { ...idleTransition, ...stateTransition }
+              }
             >
-              {/* Exploding state: add floating drift inside each fragment */}
-              {isExploding && !prefersReducedMotion && (
-                <motion.div
-                  animate={{
-                    y: [
-                      Math.sin(fragment.idlePhase) * 8,
-                      Math.sin(fragment.idlePhase + Math.PI) * 8,
-                    ],
-                    rotateZ: [0, random(-3, 3)],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  style={{ width: "100%", height: "100%" }}
-                >
-                  <Image
-                    src="/assets/images/logo.png"
-                    alt=""
-                    width={800}
-                    height={340}
-                    sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-                    className="h-48 w-auto sm:h-64 lg:h-80"
-                    priority
-                    aria-hidden
-                  />
-                </motion.div>
-              )}
-              {!isExploding && (
-                <Image
-                  src="/assets/images/logo.png"
-                  alt=""
-                  width={800}
-                  height={340}
-                  sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-                  className="h-48 w-auto sm:h-64 lg:h-80"
-                  priority
-                  aria-hidden
-                />
-              )}
+              <Image
+                src="/assets/images/logo.png"
+                alt=""
+                width={800}
+                height={340}
+                sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
+                className="h-48 w-auto sm:h-64 lg:h-80"
+                priority
+                aria-hidden
+              />
             </motion.div>
           );
         })}
 
         {/* ── Layer 3: Shockwave Ring ── */}
         <AnimatePresence>
-          {(animationState === "exploding" || animationState === "pressed") && (
+          {animationState === "exploding" && (
             <>
               {/* Primary ring */}
               <motion.div
@@ -598,7 +785,7 @@ export function Logo3D() {
           )}
         </AnimatePresence>
 
-        {/* ── Layer 4: Particle Canvas ── */}
+        {/* ── Layer 4: Burst Particles ── */}
         <AnimatePresence>
           {particles.map((particle) => (
             <motion.div
@@ -607,18 +794,52 @@ export function Logo3D() {
               style={{
                 width: particle.size,
                 height: particle.size,
-                background: "radial-gradient(circle, rgba(255,220,160,0.9), transparent)",
+                background:
+                  "radial-gradient(circle, rgba(255,220,160,0.9), transparent)",
                 left: particle.x,
                 top: particle.y,
               }}
-              initial={{ x: 0, y: 0, opacity: 1 }}
+              initial={{
+                x: 0,
+                y: 0,
+                opacity: 1,
+                rotate: particle.rotation,
+              }}
               animate={{
                 x: particle.vx,
-                y: particle.vy + 120, // gravity-like arc
+                y: particle.vy + 120,
                 opacity: 0,
+                // Bug 7 fix: accumulate rotation over lifetime
+                rotate: particle.rotation + particle.rotationSpeed * 0.8,
               }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
+            />
+          ))}
+        </AnimatePresence>
+
+        {/* ── Layer 5: Sparkle Trail Particles (Enhancement 3) ── */}
+        <AnimatePresence>
+          {sparkles.map((sparkle) => (
+            <motion.div
+              key={sparkle.id}
+              className="absolute rounded-full pointer-events-none"
+              style={{
+                width: 2,
+                height: 2,
+                background: "rgba(255,240,200,0.9)",
+                left: sparkle.x,
+                top: sparkle.y,
+                boxShadow: "0 0 3px rgba(255,220,160,0.6)",
+              }}
+              initial={{ x: 0, y: 0, opacity: 1 }}
+              animate={{
+                x: sparkle.vx,
+                y: sparkle.vy + 40,
+                opacity: 0,
+              }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             />
           ))}
         </AnimatePresence>

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArtistModal } from "@/components/ArtistModal";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionSkeleton } from "@/components/SectionSkeleton";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import type { Artist } from "@/types/content";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -17,6 +18,7 @@ interface ArtistsSectionProps {
 export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSectionProps) {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     fetch("/api/artists")
@@ -31,7 +33,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
   return (
     <section
       id="artists"
-      className="relative isolate min-h-screen scroll-mt-24 overflow-hidden px-5 pt-10 pb-24 sm:px-8 lg:px-12"
+      className="relative isolate scroll-mt-24 overflow-hidden px-5 pt-10 pb-24 sm:px-8 md:min-h-screen lg:px-12"
     >
       <Image
         src="/assets/images/lilbl.png"
@@ -44,8 +46,8 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
       <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
 
-      <div className="relative mx-auto min-h-[480px] sm:min-h-[760px] max-w-7xl">
-        <MotionReveal className="mb-12">
+      <div className="relative mx-auto min-h-[380px] sm:min-h-[760px] max-w-7xl md:min-h-[760px]">
+        <MotionReveal className="mb-6 md:mb-12">
           <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
             Artists
           </p>
@@ -66,8 +68,8 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
               whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
               viewport={{ once: true, margin: "-12% 0px" }}
               animate={{
-                y: [0, index % 2 ? -10 : 10, 0],
-                rotateZ: [0, index % 2 ? 1 : -0.8, 0],
+                y: [0, isDesktop ? (index % 2 ? -10 : 10) : (index % 2 ? -5 : 5), 0],
+                rotateZ: [0, isDesktop ? (index % 2 ? 1 : -0.8) : (index % 2 ? 0.5 : -0.4), 0],
                 opacity: isOtherHovered ? 0.3 : 1,
                 scale: isHovered ? 1.15 : 1,
               }}

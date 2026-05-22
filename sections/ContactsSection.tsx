@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { CalendarDays, Mail, Phone, Send, Share2 } from "lucide-react";
+import { Mail, Phone, Send, Share2 } from "lucide-react";
 import { FluidButton } from "@/components/FluidButton";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
@@ -20,7 +20,11 @@ const contactIcons = {
 
 type Tab = "book" | "contact";
 
-export function ContactsSection() {
+interface ContactsSectionProps {
+  onContactActiveChange?: (active: boolean) => void;
+}
+
+export function ContactsSection({ onContactActiveChange }: ContactsSectionProps) {
   const [status, setStatus] = useState<"idle" | "error" | "ready">("idle");
   const [activeTab, setActiveTab] = useState<Tab>("book");
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -36,6 +40,11 @@ export function ContactsSection() {
 
     return "Use this for bookings, collaborations, coaching, and media production.";
   }, [status]);
+
+  function handleTabChange(tab: Tab) {
+    setActiveTab(tab);
+    onContactActiveChange?.(tab === "contact");
+  }
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,16 +76,15 @@ export function ContactsSection() {
     <SectionFrame
       id="contacts"
       eyebrow="Contact Us"
-      intro="Two clear routes: book RAAM for formats and artists, or contact the team directly."
       bgImage="/assets/images/contact.png"
-      className="pb-12"
+      className="pb-8"
     >
       {/* Mobile tab bar */}
       {!isDesktop && (
         <div className="mb-4 flex gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-1">
           <button
             type="button"
-            onClick={() => setActiveTab("book")}
+            onClick={() => handleTabChange("book")}
             className={`flex-1 rounded-xl px-4 py-2.5 text-xs uppercase tracking-[0.28em] transition ${
               activeTab === "book"
                 ? "bg-white/10 text-white"
@@ -87,7 +95,7 @@ export function ContactsSection() {
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("contact")}
+            onClick={() => handleTabChange("contact")}
             className={`flex-1 rounded-xl px-4 py-2.5 text-xs uppercase tracking-[0.28em] transition ${
               activeTab === "contact"
                 ? "bg-white/10 text-white"
@@ -101,106 +109,101 @@ export function ContactsSection() {
 
       <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 lg:grid-cols-1">
         {showBook && (
-          <MotionReveal direction="left" className="relative bg-[#0b0a09]/92 p-4 sm:p-6 lg:p-8">
-            <div className="mb-4 flex items-start justify-between gap-4 sm:mb-6 sm:gap-6 lg:mb-10">
+          <MotionReveal direction="left" className="relative bg-[#0b0a09]/92 p-3 sm:p-5 lg:p-6">
+            <div className="mb-3 flex items-start justify-between gap-4 sm:mb-4 sm:gap-6 lg:mb-6">
               <div>
                 <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
                   Book
                 </p>
-                <h3 className="mt-1 text-xl font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-2 sm:text-2xl lg:mt-4 lg:text-4xl">
+                <h3 className="mt-1 text-xl font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-2 sm:text-2xl lg:mt-3 lg:text-3xl">
                   Start a booking
                 </h3>
               </div>
-              <div className="flex items-center gap-2">
-                {/* Desktop flyout trigger for Contact */}
-                {isDesktop && (
-                  <div className="group/contact relative">
-                    <span className="inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 transition hover:bg-white/10">
-                      <Mail size={16} />
-                    </span>
-                    {/* Flyout dropdown — appears on hover */}
-                    <div className="pointer-events-none absolute right-0 top-full z-50 pt-2 opacity-0 transition-all duration-300 group-hover/contact:pointer-events-auto group-hover/contact:opacity-100">
-                      <div className="w-[26rem] rounded-[1.5rem] border border-white/10 bg-[#0b0a09]/95 p-6 shadow-2xl backdrop-blur-xl">
-                        <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
-                          Contact
-                        </p>
-                        <h3 className="mt-1 text-xl font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-2 sm:text-2xl">
-                          Direct channel
-                        </h3>
-                        <p className="mt-3 max-w-md text-sm leading-6 text-stone-200/60 sm:mt-4">
-                          Reach the team for resident portfolios, event details, press, and
-                          community inquiries.
-                        </p>
+              {/* Desktop flyout trigger for Contact */}
+              {isDesktop && (
+                <div className="group/contact relative">
+                  <span className="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 transition hover:bg-white/10">
+                    <Mail size={16} />
+                  </span>
+                  {/* Flyout dropdown — appears on hover */}
+                  <div className="pointer-events-none absolute right-0 top-full z-50 pt-2 opacity-0 transition-all duration-300 group-hover/contact:pointer-events-auto group-hover/contact:opacity-100">
+                    <div className="w-[24rem] rounded-[1.5rem] border border-white/10 bg-[#0b0a09]/95 p-5 shadow-2xl backdrop-blur-xl">
+                      <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
+                        Contact
+                      </p>
+                      <h3 className="mt-1 text-lg font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-2 sm:text-xl">
+                        Direct channel
+                      </h3>
+                      <p className="mt-2 max-w-md text-sm leading-6 text-stone-200/60 sm:mt-3">
+                        Reach the team for resident portfolios, event details, press, and
+                        community inquiries.
+                      </p>
 
-                        <div className="mt-4 space-y-2.5 sm:mt-6 sm:space-y-3">
-                          {contactLinks.map((link) => {
-                            const Icon = contactIcons[link.kind] ?? Share2;
-                            return (
-                              <a
-                                key={link.id}
-                                href={link.href}
-                                target={link.kind === "linktree" ? "_blank" : undefined}
-                                rel={link.kind === "linktree" ? "noreferrer" : undefined}
-                                className="group flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-3 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065] sm:gap-4 sm:rounded-[1.5rem] sm:p-4"
-                              >
-                                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100 sm:h-10 sm:w-10">
-                                  <Icon size={16} />
+                      <div className="mt-3 space-y-2 sm:mt-4 sm:space-y-2.5">
+                        {contactLinks.map((link) => {
+                          const Icon = contactIcons[link.kind] ?? Share2;
+                          return (
+                            <a
+                              key={link.id}
+                              href={link.href}
+                              target={link.kind === "linktree" ? "_blank" : undefined}
+                              rel={link.kind === "linktree" ? "noreferrer" : undefined}
+                              className="group flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-3 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065] sm:gap-4 sm:rounded-[1.5rem] sm:p-3.5"
+                            >
+                              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100 sm:h-10 sm:w-10">
+                                <Icon size={16} />
+                              </span>
+                              <span>
+                                <span className="block text-xs uppercase tracking-[0.32em] text-stone-300/50">
+                                  {link.label}
                                 </span>
-                                <span>
-                                  <span className="block text-xs uppercase tracking-[0.32em] text-stone-300/50">
-                                    {link.label}
-                                  </span>
-                                  <span className="mt-0.5 block text-sm text-stone-100 sm:mt-1 sm:text-base">
-                                    {link.value}
-                                  </span>
+                                <span className="mt-0.5 block text-sm text-stone-100 sm:mt-1 sm:text-base">
+                                  {link.value}
                                 </span>
-                              </a>
-                            );
-                          })}
-                        </div>
+                              </span>
+                            </a>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
-                )}
-                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 sm:h-10 sm:w-10 lg:h-12 lg:w-12">
-                  <CalendarDays size={16} />
-                </span>
-              </div>
+                </div>
+              )}
             </div>
 
             <form onSubmit={onSubmit} noValidate>
-              <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
+              <div className="grid gap-2 sm:gap-3 sm:grid-cols-2">
                 <label>
-                  <span className="mb-1.5 block text-xs uppercase tracking-[0.28em] text-stone-300/50 sm:mb-2">
+                  <span className="mb-1 block text-xs uppercase tracking-[0.28em] text-stone-300/50 sm:mb-1.5">
                     Name
                   </span>
                   <input
                     name="name"
-                    className="h-11 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40 sm:h-14 sm:text-base"
+                    className="h-10 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40 sm:h-12 sm:text-base"
                     placeholder="Your name"
                   />
                 </label>
                 <label>
-                  <span className="mb-1.5 block text-xs uppercase tracking-[0.28em] text-stone-300/50 sm:mb-2">
+                  <span className="mb-1 block text-xs uppercase tracking-[0.28em] text-stone-300/50 sm:mb-1.5">
                     Email
                   </span>
                   <input
                     name="email"
                     type="email"
-                    className="h-11 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40 sm:h-14 sm:text-base"
+                    className="h-10 w-full rounded-2xl border border-white/10 bg-black/25 px-4 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40 sm:h-12 sm:text-base"
                     placeholder="you@example.com"
                   />
                 </label>
               </div>
 
-              <label className="mt-3 block sm:mt-5">
-                <span className="mb-1.5 block text-xs uppercase tracking-[0.28em] text-stone-300/50 sm:mb-2">
+              <label className="mt-2 block sm:mt-3">
+                <span className="mb-1 block text-xs uppercase tracking-[0.28em] text-stone-300/50 sm:mb-1.5">
                   Booking type
                 </span>
                 <div className="relative">
                   <select
                     name="type"
-                    className="h-11 w-full appearance-none rounded-2xl border border-white/10 bg-black/25 px-4 pr-10 text-sm text-stone-100 outline-none transition focus:border-stone-100/35 focus:bg-black/40 sm:h-14 sm:text-base"
+                    className="h-10 w-full appearance-none rounded-2xl border border-white/10 bg-black/25 px-4 pr-10 text-sm text-stone-100 outline-none transition focus:border-stone-100/35 focus:bg-black/40 sm:h-12 sm:text-base"
                     defaultValue="artist-booking"
                   >
                     <option value="artist-booking" className="bg-[#0b0a09] text-stone-100">Artist booking</option>
@@ -216,19 +219,19 @@ export function ContactsSection() {
                 </div>
               </label>
 
-              <label className="mt-3 block sm:mt-5">
-                <span className="mb-1.5 block text-xs uppercase tracking-[0.28em] text-stone-300/50 sm:mb-2">
+              <label className="mt-2 block sm:mt-3">
+                <span className="mb-1 block text-xs uppercase tracking-[0.28em] text-stone-300/50 sm:mb-1.5">
                   Message
                 </span>
                 <textarea
                   name="message"
                   rows={2}
-                  className="w-full resize-none rounded-3xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40 sm:rows-4 sm:py-4 sm:text-base"
-                  placeholder="Tell RAAM the date, place, format, and idea."
+                  className="w-full resize-none rounded-3xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-stone-100/35 focus:bg-black/40 sm:rows-3 sm:py-3 sm:text-base"
+                  placeholder="Tell us the date, place, format, and idea."
                 />
               </label>
 
-              <div className="mt-4 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <div className="mt-3 flex flex-col gap-3 sm:mt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                 <p
                   className={
                     status === "error"
@@ -251,19 +254,19 @@ export function ContactsSection() {
 
         {/* Mobile-only Contact panel (shown via tab on mobile) */}
         {showContact && (
-          <MotionReveal direction="right" delay={0.08} className="bg-[#0b0a09]/92 p-4 sm:p-6 lg:p-8">
+          <MotionReveal direction="right" delay={0.08} className="bg-[#0b0a09]/92 p-3 sm:p-5 lg:p-6">
             <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
               Contact
             </p>
-            <h3 className="mt-1 text-xl font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-2 sm:text-2xl lg:mt-4 lg:text-4xl">
+            <h3 className="mt-1 text-xl font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-2 sm:text-2xl lg:mt-3 lg:text-3xl">
               Direct channel
             </h3>
-            <p className="mt-3 max-w-md text-sm leading-6 text-stone-200/60 sm:mt-4 lg:mt-6">
+            <p className="mt-2 max-w-md text-sm leading-6 text-stone-200/60 sm:mt-3 lg:mt-4">
               Reach the team for resident portfolios, event details, press, and
               community inquiries.
             </p>
 
-            <div className="mt-4 space-y-2.5 sm:mt-6 sm:space-y-3 lg:mt-10 lg:space-y-4">
+            <div className="mt-3 space-y-2 sm:mt-4 sm:space-y-2.5 lg:mt-6 lg:space-y-3">
               {contactLinks.map((link) => {
                 const Icon = contactIcons[link.kind] ?? Share2;
                 return (
@@ -272,9 +275,9 @@ export function ContactsSection() {
                     href={link.href}
                     target={link.kind === "linktree" ? "_blank" : undefined}
                     rel={link.kind === "linktree" ? "noreferrer" : undefined}
-                    className="group flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-3 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065] sm:gap-4 sm:rounded-[1.5rem] sm:p-4 lg:p-5"
+                    className="group flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-3 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065] sm:gap-4 sm:rounded-[1.5rem] sm:p-3.5"
                   >
-                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100 sm:h-10 sm:w-10 lg:h-12 lg:w-12">
+                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100 sm:h-10 sm:w-10">
                       <Icon size={16} />
                     </span>
                     <span>

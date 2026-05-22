@@ -15,6 +15,18 @@ interface ArtistsSectionProps {
   onSetActiveArtist: Dispatch<SetStateAction<Artist | undefined>>;
 }
 
+/* Pre-set chaotic positions for up to 6 artists.
+   Each entry: { top, x, align } where x is left|right percentage.
+   This avoids the uniform grid look and adds visual rhythm. */
+const CHAOTIC_POSITIONS = [
+  { top: 6, x: 6, align: "left" as const },
+  { top: 26, x: 8, align: "right" as const },
+  { top: 50, x: 14, align: "left" as const },
+  { top: 70, x: 5, align: "right" as const },
+  { top: 88, x: 42, align: "left" as const },
+  { top: 94, x: 12, align: "right" as const },
+];
+
 export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSectionProps) {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -46,7 +58,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
       <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
 
-      <div className="relative mx-auto min-h-[380px] sm:min-h-[760px] max-w-7xl md:min-h-[760px]">
+      <div className="relative mx-auto min-h-[480px] sm:min-h-[760px] max-w-7xl md:min-h-[760px]">
         <MotionReveal className="mb-6 md:mb-12">
           <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
             Artists
@@ -56,6 +68,13 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
         {artists.map((artist, index) => {
           const isHovered = hoveredId === artist.id;
           const isOtherHovered = hoveredId !== null && !isHovered;
+
+          // Use pre-set chaotic positions, or fall back to a formula for extras
+          const pos = CHAOTIC_POSITIONS[index] ?? {
+            top: 10 + index * 16,
+            x: 6 + (index % 3) * 5,
+            align: (index % 2 === 0 ? "left" : "right") as "left" | "right",
+          };
 
           return (
             <motion.button
@@ -88,15 +107,12 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
                 },
               }}
               style={{
-                top: `${14 + (index / artists.length) * 68}%`,
-                ...(index % 2 === 0
-                  ? { left: `${7 + (index % 3) * 3}%` }
-                  : { right: `${7 + (index % 3) * 3}%` }),
-                ...(index === artists.length - 1 && artists.length > 1
-                  ? { left: "50%", right: "auto", transform: "translateX(-50%)" }
-                  : {}),
+                top: `${pos.top}%`,
+                ...(pos.align === "left"
+                  ? { left: `${pos.x}%` }
+                  : { right: `${pos.x}%` }),
               }}
-              className="artist-name-3d group absolute max-w-[86vw] origin-center text-left text-2xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition-all duration-700 ease-out hover:scale-[1.4] hover:text-white focus:text-white sm:text-4xl lg:text-5xl lg:hover:scale-[1.8]"
+              className="artist-name-3d group absolute max-w-[86vw] origin-center text-left text-xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition-all duration-700 ease-out hover:scale-[1.4] hover:text-white focus:text-white sm:text-4xl lg:text-5xl lg:hover:scale-[1.8]"
               aria-label={`Open ${artist.name} profile`}
             >
               <span className="block transition duration-500 group-hover:-translate-y-2">

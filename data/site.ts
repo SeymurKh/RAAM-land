@@ -116,11 +116,11 @@ export const projects: Project[] = [
 
 export const contactLinks: ContactLink[] = [
   {
-    id: "linktree",
-    label: "Linktree",
-    value: "linktr.ee/raamlabel",
-    href: "https://linktr.ee/raamlabel",
-    kind: "linktree",
+    id: "phone",
+    label: "Phone",
+    value: "+994 993 01 00 69",
+    href: "tel:+994993010069",
+    kind: "phone",
   },
   {
     id: "email",
@@ -130,10 +130,10 @@ export const contactLinks: ContactLink[] = [
     kind: "email",
   },
   {
-    id: "phone",
-    label: "Phone",
-    value: "+994 993 01 00 69",
-    href: "tel:+994993010069",
-    kind: "phone",
+    id: "linktree",
+    label: "Linktree",
+    value: "linktr.ee/raamlabel",
+    href: "https://linktr.ee/raamlabel",
+    kind: "linktree",
   },
 ];

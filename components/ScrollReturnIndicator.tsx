@@ -46,9 +46,8 @@ export function ScrollReturnIndicator() {
       }}
       className={cn(
         "fixed bottom-6 left-1/2 z-40 flex h-16 w-12 items-center justify-center rounded-full text-stone-100 transition-all duration-500",
-        hidden ? "pointer-events-none opacity-0" :
-        isEnd
-          ? "pointer-events-auto border border-white/12 bg-black/45 backdrop-blur-xl opacity-100"
+        hidden || isEnd
+          ? "pointer-events-none opacity-0"
           : faded
             ? "pointer-events-none opacity-0"
             : "pointer-events-none opacity-100",

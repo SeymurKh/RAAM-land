@@ -61,7 +61,7 @@ export function ContactsSection() {
   }
 
   const showBook = isDesktop || activeTab === "book";
-  const showContact = isDesktop || activeTab === "contact";
+  const showContact = !isDesktop && activeTab === "contact";
 
   return (
     <SectionFrame
@@ -99,9 +99,9 @@ export function ContactsSection() {
         </div>
       )}
 
-      <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 lg:grid-cols-2">
+      <div className="grid gap-px overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/10 lg:grid-cols-1">
         {showBook && (
-          <MotionReveal direction="left" className="bg-[#0b0a09]/92 p-4 sm:p-6 lg:p-8">
+          <MotionReveal direction="left" className="relative bg-[#0b0a09]/92 p-4 sm:p-6 lg:p-8">
             <div className="mb-4 flex items-start justify-between gap-4 sm:mb-6 sm:gap-6 lg:mb-10">
               <div>
                 <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
@@ -111,9 +111,61 @@ export function ContactsSection() {
                   Start a booking
                 </h3>
               </div>
-              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 sm:h-10 sm:w-10 lg:h-12 lg:w-12">
-                <CalendarDays size={16} />
-              </span>
+              <div className="flex items-center gap-2">
+                {/* Desktop flyout trigger for Contact */}
+                {isDesktop && (
+                  <div className="group/contact relative">
+                    <span className="inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 transition hover:bg-white/10">
+                      <Mail size={16} />
+                    </span>
+                    {/* Flyout dropdown — appears on hover */}
+                    <div className="pointer-events-none absolute right-0 top-full z-50 pt-2 opacity-0 transition-all duration-300 group-hover/contact:pointer-events-auto group-hover/contact:opacity-100">
+                      <div className="w-[26rem] rounded-[1.5rem] border border-white/10 bg-[#0b0a09]/95 p-6 shadow-2xl backdrop-blur-xl">
+                        <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
+                          Contact
+                        </p>
+                        <h3 className="mt-1 text-xl font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-2 sm:text-2xl">
+                          Direct channel
+                        </h3>
+                        <p className="mt-3 max-w-md text-sm leading-6 text-stone-200/60 sm:mt-4">
+                          Reach the team for resident portfolios, event details, press, and
+                          community inquiries.
+                        </p>
+
+                        <div className="mt-4 space-y-2.5 sm:mt-6 sm:space-y-3">
+                          {contactLinks.map((link) => {
+                            const Icon = contactIcons[link.kind] ?? Share2;
+                            return (
+                              <a
+                                key={link.id}
+                                href={link.href}
+                                target={link.kind === "linktree" ? "_blank" : undefined}
+                                rel={link.kind === "linktree" ? "noreferrer" : undefined}
+                                className="group flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-3 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065] sm:gap-4 sm:rounded-[1.5rem] sm:p-4"
+                              >
+                                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100 sm:h-10 sm:w-10">
+                                  <Icon size={16} />
+                                </span>
+                                <span>
+                                  <span className="block text-xs uppercase tracking-[0.32em] text-stone-300/50">
+                                    {link.label}
+                                  </span>
+                                  <span className="mt-0.5 block text-sm text-stone-100 sm:mt-1 sm:text-base">
+                                    {link.value}
+                                  </span>
+                                </span>
+                              </a>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 sm:h-10 sm:w-10 lg:h-12 lg:w-12">
+                  <CalendarDays size={16} />
+                </span>
+              </div>
             </div>
 
             <form onSubmit={onSubmit} noValidate>
@@ -197,6 +249,7 @@ export function ContactsSection() {
           </MotionReveal>
         )}
 
+        {/* Mobile-only Contact panel (shown via tab on mobile) */}
         {showContact && (
           <MotionReveal direction="right" delay={0.08} className="bg-[#0b0a09]/92 p-4 sm:p-6 lg:p-8">
             <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">

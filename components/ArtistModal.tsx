@@ -127,7 +127,7 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                   </p>
                   <h3
                     id={`${artist.id}-title`}
-                    className="mt-3 text-3xl font-semibold uppercase leading-[0.86] tracking-normal text-white text-balance break-words sm:mt-5 sm:text-5xl lg:text-6xl"
+                    className="mt-3 text-3xl font-semibold uppercase leading-[0.86] tracking-normal text-white text-balance sm:mt-5 sm:text-5xl lg:text-6xl lg:tracking-tight"
                   >
                     {artist.name}
                   </h3>

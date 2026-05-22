@@ -38,8 +38,8 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
         <LiveStreamSection />
         {projects}
         <ContactsSection />
-        <footer className="border-t border-white/8 bg-[#080706] py-3 text-center">
-          <p className="text-[0.65rem] tracking-[0.2em] uppercase text-stone-400/50">
+        <footer className="mt-8 border-t border-white/5 bg-[#080706] py-8 text-center sm:py-10">
+          <p className="text-xs tracking-[0.2em] uppercase text-stone-400/50">
             © {new Date().getFullYear()} RAAM — Room All About Music
           </p>
         </footer>

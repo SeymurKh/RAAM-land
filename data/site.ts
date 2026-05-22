@@ -55,7 +55,7 @@ export const projects: Project[] = [
     id: "raam-fomo",
     title: "RAAM x FOMO",
     category: "Collaboration",
-    status: "Developing",
+    status: "Active",
     accent: "Club / Interviews / Video Sets",
     column: 1,
     description: [
@@ -80,7 +80,7 @@ export const projects: Project[] = [
     id: "raam-live",
     title: "RAAM Live",
     category: "Audio Series",
-    status: "Archive",
+    status: "Active",
     accent: "Real-time DJ Performances",
     column: 3,
     description: [
@@ -92,7 +92,7 @@ export const projects: Project[] = [
     id: "coaching",
     title: "Coaching Programs",
     category: "Education",
-    status: "Developing",
+    status: "Active",
     accent: "DJing / Production",
     column: 4,
     description: [

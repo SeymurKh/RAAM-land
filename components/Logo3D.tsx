@@ -80,7 +80,7 @@ export function Logo3D() {
           width={800}
           height={340}
           sizes="(min-width: 1024px) 753px, (min-width: 640px) 602px, 452px"
-          className="h-48 w-auto sm:h-64 lg:h-80"
+          className="h-40 w-auto max-w-full sm:h-64 lg:h-80"
           priority
         />
       </div>

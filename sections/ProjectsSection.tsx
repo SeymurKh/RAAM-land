@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Share2 } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { useMediaQuery } from "@/lib/useMediaQuery";
-import { projects } from "@/data/site";
+import { contactLinks, projects } from "@/data/site";
 
 export function ProjectsSection() {
   const columns = [1, 2, 3, 4, 5] as const;
@@ -70,6 +70,24 @@ export function ProjectsSection() {
               </motion.div>
             );
           })}
+
+          {/* Linktree card — mobile only */}
+          <a
+            href={contactLinks.find((l) => l.kind === "linktree")?.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="min-w-[82vw] snap-center flex flex-col items-center justify-center gap-3 rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/92 p-5 text-center transition hover:border-white/20"
+          >
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100">
+              <Share2 size={20} />
+            </span>
+            <h3 className="text-lg font-semibold uppercase tracking-wide text-stone-50">
+              Linktree
+            </h3>
+            <p className="text-xs leading-5 text-stone-200/58">
+              All RAAM links in one place
+            </p>
+          </a>
         </div>
       ) : (
         /* ── Desktop: grid layout ── */

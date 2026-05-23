@@ -1,10 +1,14 @@
-# UI Fixes — Batch 3
+# UI Fixes — Batch 3 (Updated)
 
-## Правка 1: Direct Channel кнопка — увеличить ширину
+## Правка 1: Flyout триггер — увеличить иконку письма
 
 **Файл:** `sections/ContactsSection.tsx`
 
-Кнопки Direct Channel (Phone, Email, Linktree) сделать шире. Сейчас кнопки компактные — увеличить `min-w` или добавить `w-full`/`flex-1` чтобы они занимали больше места по горизонтали.
+Увеличить **иконку-триггер** (круглый логотип с `<Mail>`) от которого вылетает flyout-панель Direct Channel. Кнопки внутри flyout остаются как есть — шире их делать не надо.
+
+- `h-10 w-10` → `h-12 w-12` (или `h-14 w-14`)
+- Иконку `<Mail size={16}>` → `<Mail size={20}>` (или `size={22}`)
+- Это даёт более крупную зону ховера и визуально выделяет триггер
 
 ---
 
@@ -61,31 +65,94 @@
 
 ---
 
-## Правка 6: Projects — добавить ссылки на YouTube и модальное окно для просмотра
+## ~~Правка 6: Projects — добавить Play кнопку~~ — ОТМЕНЕНО
+
+Кнопку Play на карточки Projects добавлять **не нужно**. VideoModal и YouTube-ссылки также не нужны. `next.config.ts` не меняем.
+
+---
+
+## Правка 7 (НОВАЯ): Hero — заменить фон на Vanta.js TRUNK
 
 **Затрагиваемые файлы:**
-- Новый: `components/VideoModal.tsx` — модальное окно с YouTube iframe
-- `data/site.ts` — заполнить `media.url` для каждого проекта
-- `sections/ProjectsSection.tsx` — добавить кнопку Play на карточку, открыть VideoModal по клику
-- `next.config.ts` — изменить `X-Frame-Options: DENY` → `SAMEORIGIN` чтобы YouTube iframe работал
+- `sections/HeroSection.tsx` — заменить статичный Image фон на Vanta.js TRUNK WebGL-эффект
+- `package.json` — добавить зависимости `vanta` и `three`
+- `app/globals.css` — убрать `@keyframes slow-zoom` и `--animate-slow-zoom` (больше не нужны)
+- Удалить `public/assets/images/dj-turntable-hero.jpg` (старый фон больше не нужен)
+- `data/site.ts` — убрать `heroImage` из `siteConfig` (или оставить для OG-мета, но не рендерить)
 
-**YouTube ссылки:**
-| Проект | URL |
-|--------|-----|
-| Cassette Series | `https://www.youtube.com/playlist?list=PLXMe8QzaK6KSV0OBvj_fOEoq8PPbsltA2` |
-| UpTempo | `https://www.youtube.com/playlist?list=PLXMe8QzaK6KTjYTv9sNTbJqtszfohb7B5` |
-| FOMO | `https://www.youtube.com/watch?v=xdwI9T41lTM&list=RDxdwI9T41lTM&start_radio=1&t=424s` |
-| RAAM Live | `https://youtu.be/F2E4wDTzodM?si=f5i7hyq7bN61bQoq` |
+**Параметры Vanta TRUNK:**
+```
+VANTA.TRUNK({
+  el: "#hero-background",
+  mouseControls: true,
+  touchControls: true,
+  gyroControls: false,
+  minHeight: 200.00,
+  minWidth: 200.00,
+  scale: 1.00,
+  scaleMobile: 1.00,
+  color: 0xbbb4b5,
+  backgroundColor: 0x0,
+  chaos: 3.50
+})
+```
 
-**VideoModal компонент:**
-- Принимает `url: string` и `onClose` callback
-- Конвертирует YouTube URL в embed формат: `https://www.youtube.com/embed/{videoId}?...`
-- Рендерит `<iframe>` с `allow="autoplay; encrypted-media"` и `allowFullScreen`
-- Оверлей с кликом вне для закрытия
-- Кнопка ✕ для закрытия
-- Блокировка скролла при открытом модале
+**Реализация — React-обёртка для Vanta.js:**
 
-**Конвертация URL:**
-- `youtube.com/watch?v=ID` → `youtube.com/embed/ID`
-- `youtube.com/playlist?list=ID` → `youtube.com/embed/videoseries?list=ID`
-- `youtu.be/ID` → `youtube.com/embed/ID`
+Vanta.js — это императивная библиотека, работающая через `script` теги и глобальные объекты. В Next.js (React) нужна обёртка:
+
+1. Установить npm-пакеты:
+   - `three` (peer dependency для vanta)
+   - `vanta` (содержит все эффекты включая TRUNK)
+
+2. Создать хук `useVantaTrunk` или встроить логику прямо в `HeroSection`:
+   - Импорт только на клиенте: `useEffect` + динамический `import('vanta/dist/vanta.trunk.min')`
+   - `import * as THREE from 'three'` — сделать глобальным: `window.THREE = THREE` (Vanta ищет THREE в глобальной области)
+   - В `useEffect` создать эффект: `VANTA.TRUNK({ el: containerRef.current, ... })`
+   - Вернуть cleanup: `effect.destroy()` при размонтировании
+   - Проверка `prefers-reduced-motion`: если да — не инициализировать Vanta, показать статичный чёрный фон
+
+3. Структура HeroSection после изменений:
+   ```
+   <section id="hero">
+     <div ref={vantaRef} className="absolute inset-0" />  ← Vanta canvas
+     <div className="absolute inset-0 bg-[radial-gradient(...)]" />  ← overlay градиенты
+     <div className="absolute inset-0 vignette" />  ← виньетка
+     <motion.div className="hero-copy ...">  ← контент (лого, текст, кнопки)
+   </section>
+   ```
+
+4. Удалить из HeroSection:
+   - `<Image src={siteConfig.heroImage} ...>` — статичный фон
+   - `<motion.div style={{ y: imageY }}>` — параллакс изображения (не нужен, Vanta сам анимируется)
+   - `imageY` transform — убрать
+   - Ссылку на `siteConfig.heroImage`
+
+5. Оставить в HeroSection:
+   - Все overlay-градиенты (они поверх Vanta canvas)
+   - Виньетку
+   - Параллакс текста (`textY`, `contentScale`, `contentOpacity`, `contentFilter`)
+   - `overlayOpacity` — можно оставить для затемнения при скролле
+
+6. Удалить `public/assets/images/dj-turntable-hero.jpg`
+
+7. В `app/globals.css`:
+   - Удалить `--animate-slow-zoom` из `@theme inline`
+   - Удалить `@keyframes slow-zoom`
+
+8. В `data/site.ts`:
+   - Убрать `heroImage` из `siteConfig` (или закомментировать с пометкой что больше не используется для рендера, но может понадобиться для OG image)
+
+**Важно:** Vanta.js TRUNK — это WebGL-эффект с 3D-линиями, реагирующий на мышь. Он создаёт `<canvas>` внутри целевого элемента. Градиенты и виньетка должны быть слоями **поверх** canvas с `pointer-events: none`.
+
+**Схема слоёв Hero:**
+
+```mermaid
+graph TD
+    A[section#hero] --> B[div vantaRef - Vanta TRUNK canvas]
+    A --> C[div - radial gradient overlay]
+    A --> D[div - cursor-follow gradient]
+    A --> E[motion.div - scroll overlay opacity]
+    A --> F[div - vignette]
+    A --> G[motion.div - hero copy: logo + text + buttons]
+```

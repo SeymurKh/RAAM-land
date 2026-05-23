@@ -37,8 +37,8 @@ const artistPositions: Record<string, { desktop: ArtistPosition; mobile: ArtistP
     mobile:  { top: 80, x: 8,  align: "right", rotate: 1.0 },
   },
   "farik-interlude": {
-    desktop: { top: 78, x: 6,  align: "left",  rotate: 0.6 },
-    mobile:  { top: 8,  x: 5,  align: "left",  rotate: -0.5 },
+    desktop: { top: 78, x: 14, align: "left",  rotate: 0.6 },
+    mobile:  { top: 8,  x: 12, align: "left",  rotate: -0.5 },
   },
   shayyo: {
     desktop: { top: 52, x: 8,  align: "right", rotate: -0.9 },

@@ -15,17 +15,59 @@ interface ArtistsSectionProps {
   onSetActiveArtist: Dispatch<SetStateAction<Artist | undefined>>;
 }
 
-/* Pre-set chaotic positions for up to 6 artists.
-   Each entry: { top, x, align } where x is left|right percentage.
-   This avoids the uniform grid look and adds visual rhythm. */
-const CHAOTIC_POSITIONS = [
-  { top: 6, x: 6, align: "left" as const },
-  { top: 26, x: 8, align: "right" as const },
-  { top: 50, x: 14, align: "left" as const },
-  { top: 70, x: 5, align: "right" as const },
-  { top: 88, x: 42, align: "left" as const },
-  { top: 94, x: 12, align: "right" as const },
-];
+/* Deterministic seeded random — same index always yields same value. */
+function seededRandom(seed: number): number {
+  const x = Math.sin(seed) * 43758.5453123;
+  return x - Math.floor(x);
+}
+
+interface Position {
+  top: number;
+  x: number;
+  align: "left" | "right";
+  rotate: number;
+}
+
+/**
+ * Compute scattered positions for N artist names.
+ * Grid-based with jitter so names fill the whole section,
+ * alternate left/right, and stay stable across re-renders.
+ */
+function computePositions(count: number, isDesktop: boolean): Position[] {
+  const cols = isDesktop ? 2 : 1;
+  const rows = Math.ceil(count / cols);
+  const cellH = 100 / rows;
+  const cellW = 100 / cols;
+
+  return Array.from({ length: count }, (_, index) => {
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+
+    // Base position — centre of the cell
+    let baseTop = row * cellH + cellH * 0.5;
+    // Offset even columns downward for a diagonal pattern
+    if (col === 1) baseTop += cellH * 0.15;
+
+    const baseX = col * cellW + cellW * 0.5;
+
+    // Jitter inside the cell (±20% horizontal, ±25% vertical)
+    const jitterX = seededRandom(index * 7 + 3) * 0.4 - 0.2;
+    const jitterY = seededRandom(index * 13 + 5) * 0.5 - 0.25;
+
+    // Clamp top so names stay within the section
+    const top = Math.max(2, Math.min(95, baseTop + jitterY * cellH));
+    const x = baseX + jitterX * cellW;
+
+    // Left half → "left", right half → "right"
+    const align: "left" | "right" = x < 50 ? "left" : "right";
+    const xValue = align === "left" ? x : 100 - x;
+
+    // Deterministic rotation -2°..+2°
+    const rotate = (seededRandom(index * 17 + 11) - 0.5) * 4;
+
+    return { top, x: xValue, align, rotate };
+  });
+}
 
 export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSectionProps) {
   const [artists, setArtists] = useState<Artist[]>([]);
@@ -45,7 +87,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
   return (
     <section
       id="artists"
-      className="relative isolate scroll-mt-24 overflow-hidden px-5 pt-10 pb-24 sm:px-8 md:min-h-screen lg:px-12"
+      className="relative isolate scroll-mt-24 overflow-hidden px-5 pt-16 pb-24 sm:px-8 sm:pt-20 md:min-h-screen lg:px-12"
     >
       <Image
         src="/assets/images/lilbl.png"
@@ -68,13 +110,10 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
         {artists.map((artist, index) => {
           const isHovered = hoveredId === artist.id;
           const isOtherHovered = hoveredId !== null && !isHovered;
-
-          // Use pre-set chaotic positions, or fall back to a formula for extras
-          const pos = CHAOTIC_POSITIONS[index] ?? {
-            top: 10 + index * 16,
-            x: 6 + (index % 3) * 5,
-            align: (index % 2 === 0 ? "left" : "right") as "left" | "right",
-          };
+    
+          // Compute deterministic positions for all artists
+          const positions = computePositions(artists.length, isDesktop);
+          const pos = positions[index];
 
           return (
             <motion.button
@@ -87,7 +126,7 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
               whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
               viewport={{ once: true, margin: "-12% 0px" }}
               animate={{
-                y: [0, isDesktop ? (index % 2 ? -10 : 10) : (index % 2 ? -5 : 5), 0],
+                y: [0, isDesktop ? (index % 2 ? -6 : 6) : (index % 2 ? -3 : 3), 0],
                 rotateZ: [0, isDesktop ? (index % 2 ? 1 : -0.8) : (index % 2 ? 0.5 : -0.4), 0],
                 opacity: isOtherHovered ? 0.3 : 1,
                 scale: isHovered ? 1.15 : 1,
@@ -111,8 +150,10 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
                 ...(pos.align === "left"
                   ? { left: `${pos.x}%` }
                   : { right: `${pos.x}%` }),
+                rotate: `${pos.rotate}deg`,
+                zIndex: isHovered ? 20 : 1,
               }}
-              className="artist-name-3d group absolute max-w-[86vw] origin-center text-left text-xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition-all duration-700 ease-out hover:scale-[1.4] hover:text-white focus:text-white sm:text-4xl lg:text-5xl lg:hover:scale-[1.8]"
+              className="artist-name-3d group absolute max-w-[60vw] sm:max-w-[70vw] origin-center text-left text-2xl font-semibold uppercase leading-[0.82] tracking-normal text-stone-100/82 outline-none transition-all duration-700 ease-out hover:scale-[1.4] hover:text-white focus:text-white sm:text-4xl lg:text-5xl lg:hover:scale-[1.8]"
               aria-label={`Open ${artist.name} profile`}
             >
               <span className="block transition duration-500 group-hover:-translate-y-2">

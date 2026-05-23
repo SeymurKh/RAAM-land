@@ -1,15 +1,22 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Share2 } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
+import { YouTubeModal } from "@/components/YouTubeModal";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { contactLinks, projects } from "@/data/site";
 
 export function ProjectsSection() {
   const columns = [1, 2, 3, 4, 5] as const;
   const isMobile = useMediaQuery("(max-width: 767px)");
+  const [modalState, setModalState] = useState<{
+    url: string;
+    title: string;
+  } | null>(null);
 
   return (
     <SectionFrame
@@ -36,9 +43,24 @@ export function ProjectsSection() {
                   delay: index * 0.06,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="min-w-[82vw] snap-center flex flex-col justify-between rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/92 p-5"
+                onClick={() =>
+                  project.youtubeUrl
+                    ? setModalState({ url: project.youtubeUrl, title: project.title })
+                    : undefined
+                }
+                className={`min-w-[82vw] snap-center relative flex flex-col justify-between overflow-hidden rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/92 p-5${project.youtubeUrl ? " cursor-pointer" : ""}`}
               >
-                <div>
+                {project.bgImage && (
+                    <Image
+                      src={project.bgImage}
+                      alt=""
+                      fill
+                      sizes="(max-width: 767px) 82vw, 0px"
+                      className="pointer-events-none object-cover opacity-35"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0b0a09] via-[#0b0a09]/70 to-transparent" />
+                <div className="relative">
                   <div className="flex items-start justify-between gap-4">
                     <p className="text-[0.65rem] uppercase tracking-[0.32em] text-stone-300/50">
                       {project.category}
@@ -59,7 +81,7 @@ export function ProjectsSection() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex flex-wrap items-center gap-2">
+                <div className="relative mt-6 flex flex-wrap items-center gap-2">
                   <span className="rounded-full border border-white/10 px-3 py-1 text-[0.6rem] uppercase tracking-[0.2em] text-stone-200/58">
                     {project.status}
                   </span>
@@ -76,11 +98,15 @@ export function ProjectsSection() {
             href={contactLinks.find((l) => l.kind === "linktree")?.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="min-w-[82vw] snap-center flex flex-col items-center justify-center gap-3 rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/92 p-5 text-center transition hover:border-white/20"
+            className="min-w-[41vw] snap-center flex flex-col items-center justify-center gap-3 rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/92 p-5 text-center transition hover:border-white/20"
           >
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100">
-              <Share2 size={20} />
-            </span>
+            <Image
+              src="/assets/icons/logolinktree.webp"
+              alt="Linktree"
+              width={48}
+              height={48}
+              className="rounded-lg"
+            />
             <h3 className="text-lg font-semibold uppercase tracking-wide text-stone-50">
               Linktree
             </h3>
@@ -111,10 +137,25 @@ export function ProjectsSection() {
                   ease: [0.22, 1, 0.36, 1],
                 }}
                 style={{ transformStyle: "preserve-3d" }}
-                className="group relative flex min-h-[560px] flex-col justify-between bg-[#0b0a09]/92 p-6 transition duration-500 hover:bg-[#14110f]"
+                onClick={() =>
+                  project.youtubeUrl
+                    ? setModalState({ url: project.youtubeUrl, title: project.title })
+                    : undefined
+                }
+                className={`group relative flex min-h-[560px] flex-col justify-between overflow-hidden bg-[#0b0a09]/92 p-6 transition duration-500 hover:bg-[#14110f]${project.youtubeUrl ? " cursor-pointer" : ""}`}
               >
+                {project.bgImage && (
+                    <Image
+                      src={project.bgImage}
+                      alt=""
+                      fill
+                      sizes="(min-width: 768px) 20vw, 0px"
+                      className="pointer-events-none object-cover opacity-35 transition duration-500 group-hover:opacity-45"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0b0a09] via-[#0b0a09]/70 to-transparent" />
                 <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-stone-100/30 to-transparent opacity-0 transition group-hover:opacity-100" />
-                <div>
+                <div className="relative">
                   <div className="flex items-start justify-between gap-5">
                     <p className="text-xs uppercase tracking-[0.32em] text-stone-300/50">
                       {project.category}
@@ -135,7 +176,7 @@ export function ProjectsSection() {
                   </div>
                 </div>
 
-                <div className="mt-12 flex flex-wrap items-center gap-2">
+                <div className="relative mt-12 flex flex-wrap items-center gap-2">
                   <span className="rounded-full border border-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/58">
                     {project.status}
                   </span>
@@ -148,6 +189,13 @@ export function ProjectsSection() {
           })}
         </div>
       )}
+
+      <YouTubeModal
+        youtubeUrl={modalState?.url}
+        title={modalState?.title ?? ""}
+        isOpen={!!modalState}
+        onClose={() => setModalState(null)}
+      />
     </SectionFrame>
   );
 }

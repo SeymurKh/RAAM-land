@@ -11,9 +11,8 @@ export const siteConfig = {
   expandedName: "Room All About Music",
   description:
     "A multi-disciplinary music label and creative hub dedicated to the strategic development of electronic music in Azerbaijan.",
-  tagline: "Sound, ambiance, and visual narrative for the next local wave.",
-  heroImage: "/assets/images/dj-turntable-hero.jpg",
-  sourceMaterials: [
+    tagline: "Sound, ambiance, and visual narrative for the next local wave.",
+    sourceMaterials: [
     "assets/source/RAAM PRESENTS.pdf",
     "assets/source/RAAM RESIDENTS.pdf",
   ],
@@ -58,6 +57,8 @@ export const projects: Project[] = [
     status: "Active",
     accent: "Club / Interviews / Video Sets",
     column: 1,
+    bgImage: "/assets/images/projects/raamfomo.png",
+    youtubeUrl: "https://www.youtube.com/watch?v=xdwI9T41lTM&list=RDxdwI9T41lTM&start_radio=1&t=424s",
     description: [
       "A collaborative platform for RAAM residents at FOMO Baku, one of Azerbaijan's most known clubs.",
       "The first stage includes artist interviews, venue insight, and two full video sets for YouTube release.",
@@ -70,6 +71,8 @@ export const projects: Project[] = [
     status: "Active",
     accent: "High BPM / Visual Production",
     column: 2,
+    bgImage: "/assets/images/projects/uptempo.png",
+    youtubeUrl: "https://www.youtube.com/playlist?list=PLXMe8QzaK6KTjYTv9sNTbJqtszfohb7B5",
     description: [
       "A high-BPM electronic music format recorded at Finestra del Aperitivo.",
       "The series highlights residents, wider community artists, and coaching graduates ready to present their sound.",
@@ -83,6 +86,8 @@ export const projects: Project[] = [
     status: "Active",
     accent: "Real-time DJ Performances",
     column: 3,
+    bgImage: "/assets/images/projects/live.png",
+    youtubeUrl: "https://youtu.be/F2E4wDTzodM?si=f5i7hyq7bN61bQoq",
     description: [
       "Audio sets recorded directly during live performances in RAAM venues.",
       "Each release documents the flow, energy, and atmosphere of the night as it actually happened.",
@@ -95,6 +100,7 @@ export const projects: Project[] = [
     status: "Active",
     accent: "DJing / Production",
     column: 4,
+    bgImage: "/assets/images/projects/coach.png",
     description: [
       "Group and individual DJ sessions build technical and creative foundations for new artists.",
       "The production program guides each participant toward an original track and potential label support.",
@@ -107,6 +113,8 @@ export const projects: Project[] = [
     status: "Active",
     accent: "Intimate Sets / Vinyl Aesthetic",
     column: 5,
+    bgImage: "/assets/images/projects/cassette.png",
+    youtubeUrl: "https://www.youtube.com/playlist?list=PLXMe8QzaK6KSV0OBvj_fOEoq8PPbsltA2",
     description: [
       "An intimate audio-visual format recorded in close settings with a warm, analog aesthetic.",
       "Each episode captures a resident in a focused, personal set — raw sound, real atmosphere.",

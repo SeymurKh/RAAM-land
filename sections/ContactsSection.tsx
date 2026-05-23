@@ -122,52 +122,52 @@ export function ContactsSection({ onContactActiveChange }: ContactsSectionProps)
               {/* Desktop flyout trigger for Contact */}
               {isDesktop && (
                 <div className="group/contact relative">
-                  <span className="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 transition hover:bg-white/10">
-                    <Mail size={16} />
-                  </span>
-                  {/* Flyout dropdown — appears on hover */}
-                  <div className="pointer-events-none absolute right-0 top-full z-50 pt-2 opacity-0 transition-all duration-300 group-hover/contact:pointer-events-auto group-hover/contact:opacity-100">
-                    <div className="w-[24rem] rounded-[1.5rem] border border-white/10 bg-[#0b0a09]/95 p-5 shadow-2xl backdrop-blur-xl">
-                      <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
-                        Contact
-                      </p>
-                      <h3 className="mt-1 text-lg font-semibold uppercase leading-[0.9] tracking-normal text-white sm:mt-2 sm:text-xl">
-                        Direct channel
-                      </h3>
-                      <p className="mt-2 max-w-md text-sm leading-6 text-stone-200/60 sm:mt-3">
-                        Reach the team for resident portfolios, event details, press, and
-                        community inquiries.
-                      </p>
+                <span className="inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 transition hover:bg-white/10">
+                  <Mail size={20} />
+                </span>
+                {/* Flyout dropdown — appears on hover */}
+                <div className="pointer-events-none absolute right-0 top-full z-50 pt-2 opacity-0 transition-all duration-300 group-hover/contact:pointer-events-auto group-hover/contact:opacity-100">
+                  <div className="w-[20rem] rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/95 p-4 shadow-2xl backdrop-blur-xl">
+                    <p className="text-[0.65rem] uppercase tracking-[0.42em] text-stone-300/50">
+                      Contact
+                    </p>
+                    <h3 className="mt-1 text-base font-semibold uppercase leading-[0.9] tracking-normal text-white">
+                      Direct channel
+                    </h3>
+                    <p className="mt-1.5 max-w-md text-xs leading-5 text-stone-200/60">
+                      Reach the team for resident portfolios, event details, press, and
+                      community inquiries.
+                    </p>
 
-                      <div className="mt-3 space-y-2 sm:mt-4 sm:space-y-2.5">
-                        {contactLinks.map((link) => {
-                          const Icon = contactIcons[link.kind] ?? Share2;
-                          return (
-                            <a
-                              key={link.id}
-                              href={link.href}
-                              target={link.kind === "linktree" ? "_blank" : undefined}
-                              rel={link.kind === "linktree" ? "noreferrer" : undefined}
-                              className="group flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-3 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065] sm:gap-4 sm:rounded-[1.5rem] sm:p-3.5"
-                            >
-                              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100 sm:h-10 sm:w-10">
-                                <Icon size={16} />
+                    <div className="mt-3 space-y-1.5">
+                      {contactLinks.map((link) => {
+                        const Icon = contactIcons[link.kind] ?? Share2;
+                        return (
+                          <a
+                            key={link.id}
+                            href={link.href}
+                            target={link.kind === "linktree" ? "_blank" : undefined}
+                            rel={link.kind === "linktree" ? "noreferrer" : undefined}
+                            className="group flex items-center gap-2.5 rounded-[1rem] border border-white/10 bg-white/[0.035] p-2.5 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065]"
+                          >
+                            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100">
+                              <Icon size={14} />
+                            </span>
+                            <span>
+                              <span className="block text-[0.6rem] uppercase tracking-[0.32em] text-stone-300/50">
+                                {link.label}
                               </span>
-                              <span>
-                                <span className="block text-xs uppercase tracking-[0.32em] text-stone-300/50">
-                                  {link.label}
-                                </span>
-                                <span className="mt-0.5 block text-sm text-stone-100 sm:mt-1 sm:text-base">
-                                  {link.value}
-                                </span>
+                              <span className="mt-0.5 block text-xs text-stone-100">
+                                {link.value}
                               </span>
-                            </a>
-                          );
-                        })}
-                      </div>
+                            </span>
+                          </a>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
+              </div>
               )}
             </div>
 

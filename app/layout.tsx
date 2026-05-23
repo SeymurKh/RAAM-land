@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { MotionConfig } from "framer-motion";
 import "./globals.css";
 
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     title: "RAAM | Room All About Music",
     description:
       "A premium electronic music community, label, and creative hub shaping local talent and immersive formats.",
-    images: ["/assets/images/dj-turntable-hero.jpg"],
+    images: ["/assets/images/logo.png"],
   },
 };
 
@@ -22,6 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="relative h-full antialiased">
+      <head>
+        <Script
+          src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body className="min-h-full bg-[#080706] text-stone-50">
         <MotionConfig reducedMotion="user">
           <a

@@ -53,6 +53,8 @@ export interface Project {
   description: string[];
   accent: string;
   column: 1 | 2 | 3 | 4 | 5;
+  bgImage?: string;
+  youtubeUrl?: string;
   media?: {
     label: string;
     url?: string;

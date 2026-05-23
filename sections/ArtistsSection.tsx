@@ -15,13 +15,7 @@ interface ArtistsSectionProps {
   onSetActiveArtist: Dispatch<SetStateAction<Artist | undefined>>;
 }
 
-/* Deterministic seeded random — same index always yields same value. */
-function seededRandom(seed: number): number {
-  const x = Math.sin(seed) * 43758.5453123;
-  return x - Math.floor(x);
-}
-
-interface Position {
+interface ArtistPosition {
   top: number;
   x: number;
   align: "left" | "right";
@@ -29,45 +23,32 @@ interface Position {
 }
 
 /**
- * Compute scattered positions for N artist names.
- * Grid-based with jitter so names fill the whole section,
- * alternate left/right, and stay stable across re-renders.
+ * Explicit positions for each artist — scattered (not in order)
+ * so the section feels organic and filled with breathing room.
+ * Separate layouts for desktop (2-column) and mobile (1-column).
  */
-function computePositions(count: number, isDesktop: boolean): Position[] {
-  const cols = isDesktop ? 2 : 1;
-  const rows = Math.ceil(count / cols);
-  const cellH = 100 / rows;
-  const cellW = 100 / cols;
-
-  return Array.from({ length: count }, (_, index) => {
-    const row = Math.floor(index / cols);
-    const col = index % cols;
-
-    // Base position — centre of the cell
-    let baseTop = row * cellH + cellH * 0.5;
-    // Offset even columns downward for a diagonal pattern
-    if (col === 1) baseTop += cellH * 0.15;
-
-    const baseX = col * cellW + cellW * 0.5;
-
-    // Jitter inside the cell (±20% horizontal, ±25% vertical)
-    const jitterX = seededRandom(index * 7 + 3) * 0.4 - 0.2;
-    const jitterY = seededRandom(index * 13 + 5) * 0.5 - 0.25;
-
-    // Clamp top so names stay within the section
-    const top = Math.max(2, Math.min(95, baseTop + jitterY * cellH));
-    const x = baseX + jitterX * cellW;
-
-    // Left half → "left", right half → "right"
-    const align: "left" | "right" = x < 50 ? "left" : "right";
-    const xValue = align === "left" ? x : 100 - x;
-
-    // Deterministic rotation -2°..+2°
-    const rotate = (seededRandom(index * 17 + 11) - 0.5) * 4;
-
-    return { top, x: xValue, align, rotate };
-  });
-}
+const artistPositions: Record<string, { desktop: ArtistPosition; mobile: ArtistPosition }> = {
+  pedro: {
+    desktop: { top: 44, x: 8,  align: "left",  rotate: -1.2 },
+    mobile:  { top: 44, x: 6,  align: "left",  rotate: -0.8 },
+  },
+  boraa: {
+    desktop: { top: 12, x: 10, align: "right", rotate: 0.8 },
+    mobile:  { top: 80, x: 8,  align: "right", rotate: 1.0 },
+  },
+  "farik-interlude": {
+    desktop: { top: 78, x: 6,  align: "left",  rotate: 0.6 },
+    mobile:  { top: 8,  x: 5,  align: "left",  rotate: -0.5 },
+  },
+  shayyo: {
+    desktop: { top: 52, x: 8,  align: "right", rotate: -0.9 },
+    mobile:  { top: 62, x: 6,  align: "right", rotate: 0.7 },
+  },
+  inmysoul: {
+    desktop: { top: 22, x: 10, align: "left",  rotate: 1.1 },
+    mobile:  { top: 26, x: 5,  align: "left",  rotate: -1.0 },
+  },
+};
 
 export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSectionProps) {
   const [artists, setArtists] = useState<Artist[]>([]);
@@ -111,9 +92,11 @@ export function ArtistsSection({ activeArtist, onSetActiveArtist }: ArtistsSecti
           const isHovered = hoveredId === artist.id;
           const isOtherHovered = hoveredId !== null && !isHovered;
     
-          // Compute deterministic positions for all artists
-          const positions = computePositions(artists.length, isDesktop);
-          const pos = positions[index];
+          // Look up explicit position for this artist
+          const posEntry = artistPositions[artist.id];
+          const pos = posEntry
+            ? (isDesktop ? posEntry.desktop : posEntry.mobile)
+            : { top: 50, x: 10, align: "left" as const, rotate: 0 };
 
           return (
             <motion.button

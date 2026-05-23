@@ -57,7 +57,7 @@ export function YouTubeModal({
             exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             onMouseDown={(event) => event.stopPropagation()}
-            className="relative w-full max-w-4xl overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#0b0a09]/92 shadow-[0_30px_140px_rgba(0,0,0,0.72)]"
+            className="relative w-full max-w-[92vw] sm:max-w-2xl md:max-w-4xl overflow-hidden rounded-xl sm:rounded-[1.6rem] border border-white/10 bg-[#0b0a09]/92 shadow-[0_30px_140px_rgba(0,0,0,0.72)]"
           >
             <button
               type="button"
@@ -68,7 +68,7 @@ export function YouTubeModal({
               <X size={18} />
             </button>
 
-            <div className="p-6 sm:p-8">
+            <div className="p-3 sm:p-6 md:p-8">
               <h3 className="mb-6 text-2xl font-semibold uppercase leading-[0.9] tracking-normal text-stone-50">
                 {title}
               </h3>

@@ -49,11 +49,11 @@ export function Header({ modalOpen }: HeaderProps) {
         }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "fixed left-0 right-0 top-0 z-50 px-4 py-4 sm:px-6",
+          "fixed left-0 right-0 top-0 z-50 px-4 py-4 sm:px-6 will-change-transform",
           shown && !shouldHide ? "pointer-events-auto" : "pointer-events-none",
         )}
       >
-        <nav className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-black/45 px-4 py-3 shadow-[0_16px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-black/65 px-4 py-3 shadow-[0_16px_80px_rgba(0,0,0,0.45)] backdrop-blur-md">
           <a
             href="#hero"
             className="flex items-center gap-3"

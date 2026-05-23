@@ -101,7 +101,7 @@ export function ProjectsSection() {
             className="min-w-[41vw] snap-center flex flex-col items-center justify-center gap-3 rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/92 p-5 text-center transition hover:border-white/20"
           >
             <Image
-              src="/assets/icons/logolinktree.webp"
+              src="/assets/icons/logolinktree.png"
               alt="Linktree"
               width={48}
               height={48}

@@ -49,7 +49,7 @@ export function Header({ modalOpen }: HeaderProps) {
         }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "fixed left-0 right-0 top-0 z-50 px-4 py-4 sm:px-6 will-change-transform",
+          "fixed left-0 right-0 top-0 z-[60] px-4 py-4 sm:px-6 will-change-transform",
           shown && !shouldHide ? "pointer-events-auto" : "pointer-events-none",
         )}
       >

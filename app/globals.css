@@ -40,7 +40,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 70;
+  z-index: 1;
   opacity: 0.12;
   mix-blend-mode: soft-light;
   background-image:
@@ -107,6 +107,44 @@ select {
   55%,
   100% {
     transform: translateY(220%);
+  }
+}
+
+/* Artist float animations — run on compositor thread for performance */
+@keyframes artist-float-up {
+  0% {
+    transform: translateY(0) rotateZ(0);
+  }
+  100% {
+    transform: translateY(-6px) rotateZ(0.8deg);
+  }
+}
+
+@keyframes artist-float-down {
+  0% {
+    transform: translateY(0) rotateZ(0);
+  }
+  100% {
+    transform: translateY(6px) rotateZ(-0.8deg);
+  }
+}
+
+@media (max-width: 767px) {
+  @keyframes artist-float-up {
+    0% {
+      transform: translateY(0) rotateZ(0);
+    }
+    100% {
+      transform: translateY(-3px) rotateZ(0.4deg);
+    }
+  }
+  @keyframes artist-float-down {
+    0% {
+      transform: translateY(0) rotateZ(0);
+    }
+    100% {
+      transform: translateY(3px) rotateZ(-0.4deg);
+    }
   }
 }
 

@@ -30,9 +30,9 @@ export function SectionFrame({
     >
       {bgImage ? (
         <>
-          <Image src={bgImage} alt="" fill sizes="100vw" className="object-cover opacity-30" priority />
+          <Image src={bgImage} alt="" fill sizes="100vw" className="object-cover opacity-30" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
-          <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
+          <div className="absolute inset-0 bg-black/40" />
         </>
       ) : null}
 

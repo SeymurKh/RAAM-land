@@ -70,10 +70,9 @@ export function EcosystemSection() {
         fill
         sizes="100vw"
         className="object-cover opacity-30"
-        priority
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
-      <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-black/40" />
 
       <div className="relative mx-auto grid max-w-7xl gap-4 border-y border-white/10 py-5 sm:gap-10 sm:py-16 lg:grid-cols-[0.9fr_1.1fr]">
         <MotionReveal direction="left">

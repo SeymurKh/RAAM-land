@@ -13,13 +13,22 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
   const artistId = formData.get("artistId") as string | null;
+  const projectId = formData.get("projectId") as string | null;
+  const entityId = artistId || projectId;
+  const subDir = projectId ? "projects" : "artists";
 
-  console.log("[upload] Received:", { artistId, fileName: file?.name, fileSize: file?.size, fileType: file?.type });
+  console.log("[upload] Received:", {
+    artistId,
+    projectId,
+    fileName: file?.name,
+    fileSize: file?.size,
+    fileType: file?.type,
+  });
 
-  if (!file || !artistId) {
-    console.error("[upload] Missing file or artistId");
+  if (!file || !entityId) {
+    console.error("[upload] Missing file or entityId");
     return NextResponse.json(
-      { error: "File and artistId are required" },
+      { error: "File and artistId or projectId are required" },
       { status: 400 },
     );
   }
@@ -42,15 +51,15 @@ export async function POST(request: NextRequest) {
   }
 
   const ext = file.name.split(".").pop() ?? "png";
-  const uploadDir = join(process.cwd(), "public", "uploads", "artists");
+  const uploadDir = join(process.cwd(), "public", "uploads", subDir);
 
   // Ensure directory exists
   await mkdir(uploadDir, { recursive: true });
 
-  // Delete any existing photo for this artist (any extension)
+  // Delete any existing photo for this entity (any extension)
   const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
   for (const e of possibleExts) {
-    const existingPath = join(uploadDir, `${artistId}.${e}`);
+    const existingPath = join(uploadDir, `${entityId}.${e}`);
     try {
       await unlink(existingPath);
       console.log("[upload] Deleted old file:", existingPath);
@@ -59,14 +68,14 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const fileName = `${artistId}.${ext}`;
+  const fileName = `${entityId}.${ext}`;
   const filePath = join(uploadDir, fileName);
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(filePath, buffer);
+
   console.log("[upload] Saved file:", filePath, "size:", buffer.length);
 
-  // Возвращаем чистый URL без ?v= — Next.js Image не работает с query-параметрами для локальных файлов
-  const url = `/uploads/artists/${fileName}`;
+  const url = `/uploads/${subDir}/${fileName}`;
   console.log("[upload] Returning URL:", url);
   return NextResponse.json({ url });
 }

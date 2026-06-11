@@ -23,7 +23,10 @@ export function SectionFrame({
   return (
     <section
       id={id}
-      className={cn("relative isolate scroll-mt-24 px-4 pt-6 pb-14 sm:px-5 sm:pt-10 sm:pb-24 lg:px-12", className)}
+      className={cn(
+        "relative isolate min-h-screen scroll-mt-24 px-4 pt-6 pb-14 sm:px-5 sm:pt-10 sm:pb-24 lg:px-12",
+        className,
+      )}
     >
       {/* Gradient transitions for smooth section boundaries */}
       <SectionTransition position="top" />

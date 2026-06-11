@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Project } from "@/types/content";
 
@@ -19,6 +19,9 @@ const statuses: Project["status"][] = [
 export function ProjectForm({ mode, project }: ProjectFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [form, setForm] = useState<Project>(
     project ?? {
       id: "",
@@ -48,13 +51,38 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
     updateField("description", description.length ? description : [""]);
   }
 
+  async function handleImageUpload(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const projectId = form.id || "new-project";
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("projectId", projectId);
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (response.ok) {
+        const data = await response.json();
+        updateField("image", data.url);
+      }
+    } catch {
+      // Upload failed silently
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setSaving(true);
-
-    const url = mode === "create" ? "/api/projects" : `/api/projects/${form.id}`;
+    const url =
+      mode === "create" ? "/api/projects" : `/api/projects/${form.id}`;
     const method = mode === "create" ? "POST" : "PUT";
-
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -63,11 +91,10 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
         order: Number(form.order) || 0,
         description: form.description.filter((paragraph) => paragraph.trim()),
         youtubeUrl: form.youtubeUrl?.trim() || undefined,
+        image: form.image?.trim() || undefined,
       }),
     });
-
     setSaving(false);
-
     if (response.ok) {
       router.push("/admin/projects");
       router.refresh();
@@ -149,6 +176,30 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
       </div>
 
       <div>
+        <label className={labelClass}>Project Image</label>
+        <div className="flex items-center gap-4">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-stone-100 transition hover:bg-white/[0.06] disabled:opacity-50"
+          >
+            {uploading ? "Uploading..." : "Choose Image"}
+          </button>
+          {form.image && (
+            <span className="text-xs text-stone-300/55">{form.image}</span>
+          )}
+        </div>
+      </div>
+
+      <div>
         <label className={labelClass}>YouTube playlist URL</label>
         <input
           className={inputClass}
@@ -163,7 +214,9 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
           <label className={labelClass}>Description paragraphs</label>
           <button
             type="button"
-            onClick={() => updateField("description", [...form.description, ""])}
+            onClick={() =>
+              updateField("description", [...form.description, ""])
+            }
             className="text-xs uppercase tracking-[0.2em] text-stone-400 hover:text-white"
           >
             + Add
@@ -194,7 +247,11 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
           disabled={saving}
           className="rounded-full border border-white/15 bg-white/[0.06] px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10 disabled:opacity-50"
         >
-          {saving ? "Saving..." : mode === "create" ? "Create Project" : "Save Changes"}
+          {saving
+            ? "Saving..."
+            : mode === "create"
+              ? "Create Project"
+              : "Save Changes"}
         </button>
         <button
           type="button"

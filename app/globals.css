@@ -95,6 +95,10 @@ select {
   opacity: 1;
 }
 
+.font-bebas {
+  font-family: "Bebas Neue Local", Arial, Helvetica, sans-serif;
+}
+
 .artist-name-3d {
   font-family: "Bebas Neue Local", Arial, Helvetica, sans-serif;
   text-shadow:

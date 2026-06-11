@@ -65,7 +65,7 @@ export default function AdminDashboard() {
             href="/admin/projects"
             className="mt-4 inline-block text-xs uppercase tracking-[0.2em] text-stone-400 transition hover:text-white"
           >
-            Manage â†’
+            Manage →
           </Link>
         </div>
 

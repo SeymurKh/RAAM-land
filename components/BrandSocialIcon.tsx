@@ -11,6 +11,7 @@ const logoSrc: Partial<Record<SocialKind, string>> = {
   soundcloud: "/brand_logo/soundcloud-1.svg",
   spotify: "/brand_logo/spotify-2026-black-logo.svg",
   youtube: "/brand_logo/black-youtube.svg",
+  linktree: "/brand_logo/linktree.svg",
 };
 
 export function BrandSocialIcon({ kind, className }: BrandSocialIconProps) {

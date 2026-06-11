@@ -12,10 +12,6 @@ export const siteConfig = {
   description:
     "A multi-disciplinary music label and creative hub dedicated to the strategic development of electronic music in Azerbaijan.",
     tagline: "Sound, ambiance, and visual narrative for the next local wave.",
-    sourceMaterials: [
-    "assets/source/RAAM PRESENTS.pdf",
-    "assets/source/RAAM RESIDENTS.pdf",
-  ],
 };
 
 export const capabilities: Capability[] = [

@@ -1,22 +1,21 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { Mail, Phone, Send, Share2 } from "lucide-react";
+import { Mail, Phone, Send } from "lucide-react";
+import { BrandSocialIcon } from "@/components/BrandSocialIcon";
 import { FluidButton } from "@/components/FluidButton";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { contactLinks } from "@/data/site";
+import type { SocialKind } from "@/types/content";
 
-const contactIcons = {
+const brandKinds = new Set<SocialKind>(["instagram", "soundcloud", "spotify", "youtube", "linktree"]);
+
+const lucideIcons: Partial<Record<SocialKind, typeof Mail>> = {
   email: Mail,
   phone: Phone,
-  linktree: Share2,
-  instagram: Share2,
-  soundcloud: Share2,
-  spotify: Share2,
-  youtube: Share2,
-} as const;
+};
 
 type Tab = "book" | "contact";
 
@@ -140,7 +139,8 @@ export function ContactsSection({ onContactActiveChange }: ContactsSectionProps)
 
                     <div className="mt-3 space-y-1.5">
                       {contactLinks.map((link) => {
-                        const Icon = contactIcons[link.kind] ?? Share2;
+                        const LucideIcon = lucideIcons[link.kind];
+                        const isBrand = brandKinds.has(link.kind);
                         return (
                           <a
                             key={link.id}
@@ -150,7 +150,11 @@ export function ContactsSection({ onContactActiveChange }: ContactsSectionProps)
                             className="group flex items-center gap-2.5 rounded-[1rem] border border-white/10 bg-white/[0.035] p-2.5 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065]"
                           >
                             <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100">
-                              <Icon size={14} />
+                              {isBrand ? (
+                                <BrandSocialIcon kind={link.kind} className="h-3.5 w-3.5 invert" />
+                              ) : LucideIcon ? (
+                                <LucideIcon size={14} />
+                              ) : null}
                             </span>
                             <span>
                               <span className="block text-[0.6rem] uppercase tracking-[0.32em] text-stone-300/50">
@@ -267,7 +271,8 @@ export function ContactsSection({ onContactActiveChange }: ContactsSectionProps)
 
             <div className="mt-3 space-y-2 sm:mt-4 sm:space-y-2.5 lg:mt-6 lg:space-y-3">
               {contactLinks.map((link) => {
-                const Icon = contactIcons[link.kind] ?? Share2;
+                const LucideIcon = lucideIcons[link.kind];
+                const isBrand = brandKinds.has(link.kind);
                 return (
                   <a
                     key={link.id}
@@ -277,7 +282,11 @@ export function ContactsSection({ onContactActiveChange }: ContactsSectionProps)
                     className="group flex items-center gap-3 rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-3 backdrop-blur-xl transition hover:border-stone-100/24 hover:bg-white/[0.065] sm:gap-4 sm:rounded-[1.5rem] sm:p-3.5"
                   >
                     <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/25 text-stone-100 sm:h-10 sm:w-10">
-                      <Icon size={16} />
+                      {isBrand ? (
+                        <BrandSocialIcon kind={link.kind} className="h-4 w-4 invert" />
+                      ) : LucideIcon ? (
+                        <LucideIcon size={16} />
+                      ) : null}
                     </span>
                     <span>
                       <span className="block text-xs uppercase tracking-[0.32em] text-stone-300/50">

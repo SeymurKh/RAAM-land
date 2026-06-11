@@ -1,194 +1,209 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { YouTubeModal } from "@/components/YouTubeModal";
-import { useMediaQuery } from "@/lib/useMediaQuery";
-import { contactLinks, projects } from "@/data/site";
+import type { Project } from "@/types/content";
 
 export function ProjectsSection() {
-  const columns = [1, 2, 3, 4, 5] as const;
-  const isMobile = useMediaQuery("(max-width: 767px)");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [modalState, setModalState] = useState<{
     url: string;
     title: string;
   } | null>(null);
 
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((response) => response.json())
+      .then((data: Project[]) => {
+        setProjects([...data].sort((a, b) => a.order - b.order));
+      });
+  }, []);
+
+  const activeProject = projects[activeIndex];
+
+  const paddedIndex = useMemo(
+    () => String(activeIndex + 1).padStart(2, "0"),
+    [activeIndex],
+  );
+  const paddedTotal = useMemo(
+    () => String(projects.length).padStart(2, "0"),
+    [projects.length],
+  );
+
+  function goTo(direction: 1 | -1) {
+    setActiveIndex((current) => {
+      if (projects.length === 0) {
+        return 0;
+      }
+
+      return (current + direction + projects.length) % projects.length;
+    });
+  }
+
+  function openProject(project: Project | undefined) {
+    if (!project?.youtubeUrl) {
+      return;
+    }
+
+    setModalState({ url: project.youtubeUrl, title: project.title });
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      goTo(-1);
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      goTo(1);
+    }
+
+    if (event.key === "Enter") {
+      openProject(activeProject);
+    }
+  }
+
   return (
     <SectionFrame
       id="projects"
       eyebrow="Projects"
-      intro="A tighter view of the formats that currently define RAAM's public platform."
-      bgImage="/assets/images/projects.png"
+      intro="A focused gallery of the formats that currently define RAAM's public platform."
     >
-      {/* ── Mobile: horizontal scroll carousel ── */}
-      {isMobile ? (
-        <div className="-mx-4 flex gap-4 overflow-x-auto snap-x snap-mandatory px-4 pb-4 scroll-hide">
-          {columns.map((column, index) => {
-            const project = projects.find((item) => item.column === column);
-            if (!project) return null;
-
-            return (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-8% 0px" }}
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.06,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                onClick={() =>
-                  project.youtubeUrl
-                    ? setModalState({ url: project.youtubeUrl, title: project.title })
-                    : undefined
-                }
-                className={`min-w-[82vw] snap-center relative flex flex-col justify-between overflow-hidden rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/92 p-5${project.youtubeUrl ? " cursor-pointer" : ""}`}
-              >
-                {project.bgImage && (
-                    <Image
-                      src={project.bgImage}
-                      alt=""
-                      fill
-                      sizes="(max-width: 767px) 82vw, 0px"
-                      className="pointer-events-none object-cover opacity-35"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0b0a09] via-[#0b0a09]/70 to-transparent" />
-                <div className="relative">
-                  <div className="flex items-start justify-between gap-4">
-                    <p className="text-[0.65rem] uppercase tracking-[0.32em] text-stone-300/50">
-                      {project.category}
-                    </p>
-                    <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100">
-                      <ArrowUpRight size={15} />
-                    </span>
-                  </div>
-
-                  <h3 className="mt-8 text-2xl font-semibold uppercase leading-[0.9] tracking-normal text-stone-50">
-                    {project.title}
-                  </h3>
-
-                  <div className="mt-4 space-y-3 text-sm leading-6 text-stone-200/62">
-                    {project.description.map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="relative mt-6 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full border border-white/10 px-3 py-1 text-[0.6rem] uppercase tracking-[0.2em] text-stone-200/58">
-                    {project.status}
-                  </span>
-                  <span className="rounded-full bg-stone-100/8 px-3 py-1 text-[0.6rem] uppercase tracking-[0.2em] text-stone-200/58">
-                    {project.accent}
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })}
-
-          {/* Linktree card — mobile only */}
-          <a
-            href={contactLinks.find((l) => l.kind === "linktree")?.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="min-w-[41vw] snap-center flex flex-col items-center justify-center gap-3 rounded-[1.25rem] border border-white/10 bg-[#0b0a09]/92 p-5 text-center transition hover:border-white/20"
-          >
-            <Image
-              src="/assets/icons/logolinktree.png"
-              alt="Linktree"
-              width={48}
-              height={48}
-              className="rounded-lg"
-            />
-            <h3 className="text-lg font-semibold uppercase tracking-wide text-stone-50">
-              Linktree
-            </h3>
-            <p className="text-xs leading-5 text-stone-200/58">
-              All RAAM links in one place
+      <section
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        className="outline-none"
+        aria-label="Projects gallery"
+      >
+        {projects.length === 0 ? (
+          <MotionReveal className="flex min-h-[360px] items-center justify-center rounded-[1.5rem] border border-white/10 bg-[#0b0a09]/86 p-8 text-center">
+            <p className="text-sm uppercase tracking-[0.28em] text-stone-300/55">
+              Projects will appear here soon
             </p>
-          </a>
-        </div>
-      ) : (
-        /* ── Desktop: grid layout ── */
-        <div className="grid gap-px overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {columns.map((column, index) => {
-            const project = projects.find((item) => item.column === column);
+          </MotionReveal>
+        ) : (
+          <div className="relative mx-auto max-w-5xl">
+            <div className="pointer-events-none absolute -inset-4 rounded-[2rem] border border-white/5 bg-black/20 blur-xl" />
 
-            if (!project) {
-              return null;
-            }
+            <div className="relative overflow-hidden rounded-[1.35rem] border border-white/12 bg-[#090909]/88 shadow-[0_28px_120px_rgba(0,0,0,0.55)] backdrop-blur-xl">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_15%,rgba(255,255,255,0.12),transparent_24%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_36%,rgba(255,255,255,0.04))]" />
 
-            return (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, rotateY: -15, x: -20 }}
-                whileInView={{ opacity: 1, rotateY: 0, x: 0 }}
-                viewport={{ once: true, margin: "-8% 0px" }}
-                transition={{
-                  duration: 0.7,
-                  delay: index * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                style={{ transformStyle: "preserve-3d" }}
-                onClick={() =>
-                  project.youtubeUrl
-                    ? setModalState({ url: project.youtubeUrl, title: project.title })
-                    : undefined
-                }
-                className={`group relative flex min-h-[560px] flex-col justify-between overflow-hidden bg-[#0b0a09]/92 p-6 transition duration-500 hover:bg-[#14110f]${project.youtubeUrl ? " cursor-pointer" : ""}`}
-              >
-                {project.bgImage && (
-                    <Image
-                      src={project.bgImage}
-                      alt=""
-                      fill
-                      sizes="(min-width: 768px) 20vw, 0px"
-                      className="pointer-events-none object-cover opacity-35 transition duration-500 group-hover:opacity-45"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0b0a09] via-[#0b0a09]/70 to-transparent" />
-                <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-stone-100/30 to-transparent opacity-0 transition group-hover:opacity-100" />
-                <div className="relative">
-                  <div className="flex items-start justify-between gap-5">
-                    <p className="text-xs uppercase tracking-[0.32em] text-stone-300/50">
-                      {project.category}
-                    </p>
-                    <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-stone-100 transition group-hover:rotate-45 group-hover:bg-white/10">
-                      <ArrowUpRight size={17} />
-                    </span>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.article
+                  key={activeProject.id}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.08}
+                  onDragEnd={(_, info) => {
+                    if (info.offset.x > 80) {
+                      goTo(-1);
+                    }
+
+                    if (info.offset.x < -80) {
+                      goTo(1);
+                    }
+                  }}
+                  initial={{ opacity: 0, x: 48, filter: "blur(10px)" }}
+                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, x: -48, filter: "blur(10px)" }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative grid min-h-[560px] gap-8 p-5 sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:p-10"
+                >
+                  <div className="flex flex-col justify-between rounded-[1rem] border border-white/10 bg-black/30 p-5 sm:p-6">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.42em] text-stone-300/50">
+                        {activeProject.category}
+                      </p>
+                      <h3 className="mt-8 max-w-xl text-5xl font-semibold uppercase leading-[0.84] tracking-normal text-stone-50 sm:text-7xl lg:text-8xl">
+                        {activeProject.title}
+                      </h3>
+                    </div>
+
+                    <div className="mt-10 flex flex-wrap gap-2">
+                      <span className="rounded-full border border-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/64">
+                        {activeProject.status}
+                      </span>
+                      <span className="rounded-full bg-stone-100/8 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/64">
+                        {activeProject.accent}
+                      </span>
+                    </div>
                   </div>
 
-                  <h3 className="mt-12 text-4xl font-semibold uppercase leading-[0.9] tracking-normal text-stone-50">
-                    {project.title}
-                  </h3>
+                  <div className="flex flex-col justify-between">
+                    <div className="space-y-5 text-base leading-8 text-stone-100/72 sm:text-lg sm:leading-9">
+                      {activeProject.description.map((paragraph) => (
+                        <p key={paragraph}>{paragraph}</p>
+                      ))}
+                    </div>
 
-                  <div className="mt-8 space-y-4 text-sm leading-6 text-stone-200/62">
-                    {project.description.map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ))}
+                    <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                      <button
+                        type="button"
+                        onClick={() => openProject(activeProject)}
+                        disabled={!activeProject.youtubeUrl}
+                        className="group inline-flex h-14 items-center justify-center gap-3 rounded-full border border-white/12 bg-white/[0.08] px-6 text-sm font-medium uppercase tracking-[0.22em] text-white transition hover:bg-white/[0.14] disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        <Play size={16} />
+                        Playlist
+                        <ArrowUpRight
+                          size={15}
+                          className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                        />
+                      </button>
+
+                      <div className="flex items-center justify-between gap-4 sm:justify-end">
+                        <span className="text-xs uppercase tracking-[0.28em] text-stone-300/45">
+                          {paddedIndex} / {paddedTotal}
+                        </span>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => goTo(-1)}
+                            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/25 text-white transition hover:bg-white/10"
+                            aria-label="Previous project"
+                          >
+                            <ChevronLeft size={18} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => goTo(1)}
+                            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/25 text-white transition hover:bg-white/10"
+                            aria-label="Next project"
+                          >
+                            <ChevronRight size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </motion.article>
+              </AnimatePresence>
+            </div>
 
-                <div className="relative mt-12 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full border border-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/58">
-                    {project.status}
-                  </span>
-                  <span className="rounded-full bg-stone-100/8 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/58">
-                    {project.accent}
-                  </span>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      )}
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              {projects.map((project, index) => (
+                <button
+                  key={project.id}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  className={`h-2.5 rounded-full transition ${
+                    index === activeIndex
+                      ? "w-10 bg-stone-100"
+                      : "w-2.5 bg-stone-100/28 hover:bg-stone-100/55"
+                  }`}
+                  aria-label={`Show ${project.title}`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
 
       <YouTubeModal
         youtubeUrl={modalState?.url}

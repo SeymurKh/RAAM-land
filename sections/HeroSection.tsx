@@ -1,18 +1,14 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FluidButton } from "@/components/FluidButton";
 import { Logo3D } from "@/components/Logo3D";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { siteConfig } from "@/data/site";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const vantaRef = useRef<HTMLDivElement>(null);
-  const [vantaEffect, setVantaEffect] = useState<any>(null);
   const isMobile = useMediaQuery("(max-width: 639px)");
 
   const { scrollYProgress } = useScroll({
@@ -28,65 +24,12 @@ export function HeroSection() {
   const contentBlur = useTransform(scrollYProgress, [0, 0.8], [0, isMobile ? 3 : 6]);
   const contentFilter = useTransform(contentBlur, (v) => `blur(${v}px)`);
 
-  // Initialize Vanta.js TRUNK effect
-  useEffect(() => {
-    // Respect reduced motion preference
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    // p5.js is loaded globally via CDN <Script> in layout.tsx
-    if (!(window as any).p5) return;
-
-    let isCancelled = false;
-
-    const initVanta = async () => {
-      const VANTA = await import("vanta/dist/vanta.trunk.min");
-      if (isCancelled || !vantaRef.current) return;
-
-      const effect = VANTA.default({
-        el: vantaRef.current,
-        mouseControls: true,
-        touchControls: true,
-        gyroControls: false,
-        minHeight: 200.0,
-        minWidth: 200.0,
-        scale: 1.0,
-        scaleMobile: 1.0,
-        color: 0xbbb4b5,
-        backgroundColor: 0x0,
-        spacing: 2.0,
-        chaos: 3.5,
-      });
-
-      setVantaEffect(effect);
-    };
-
-    initVanta();
-
-    return () => {
-      isCancelled = true;
-      if (vantaEffect) vantaEffect.destroy();
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (vantaEffect) vantaEffect.destroy();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vantaEffect]);
-
   return (
     <section
       ref={sectionRef}
       id="hero"
       className="relative isolate flex min-h-screen max-h-[92vh] w-full items-center overflow-hidden sm:max-h-none"
     >
-      {/* Vanta TRUNK canvas */}
-      <div ref={vantaRef} className="absolute inset-0" />
-
-      {/* Gradient overlays on top of Vanta canvas */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.06),transparent_24%),linear-gradient(180deg,rgba(0,0,0,0.42),rgba(0,0,0,0.78)_62%,#080706_96%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_var(--cursor-x,50%)_var(--cursor-y,45%),rgba(120,96,72,0.2),transparent_23%)]" />
 

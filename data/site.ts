@@ -4,7 +4,7 @@ import {
   RadioTower,
   Sparkles,
 } from "lucide-react";
-import type { Capability, ContactLink, Project } from "@/types/content";
+import type { Capability, ContactLink } from "@/types/content";
 
 export const siteConfig = {
   name: "RAAM",
@@ -46,79 +46,6 @@ export const capabilities: Capability[] = [
     description:
       "Developing DJ and music production programs that help emerging artists take their first steps.",
     icon: GraduationCap,
-  },
-];
-
-export const projects: Project[] = [
-  {
-    id: "raam-fomo",
-    title: "RAAM x FOMO",
-    category: "Collaboration",
-    status: "Active",
-    accent: "Club / Interviews / Video Sets",
-    column: 1,
-    bgImage: "/assets/images/projects/raamfomo.png",
-    youtubeUrl: "https://www.youtube.com/watch?v=xdwI9T41lTM&list=RDxdwI9T41lTM&start_radio=1&t=424s",
-    description: [
-      "A collaborative platform for RAAM residents at FOMO Baku, one of Azerbaijan's most known clubs.",
-      "The first stage includes artist interviews, venue insight, and two full video sets for YouTube release.",
-    ],
-  },
-  {
-    id: "uptempo-jams",
-    title: "UpTempo Jams",
-    category: "Audio Visual Series",
-    status: "Active",
-    accent: "High BPM / Visual Production",
-    column: 2,
-    bgImage: "/assets/images/projects/uptempo.png",
-    youtubeUrl: "https://www.youtube.com/playlist?list=PLXMe8QzaK6KTjYTv9sNTbJqtszfohb7B5",
-    description: [
-      "A high-BPM electronic music format recorded at Finestra del Aperitivo.",
-      "The series highlights residents, wider community artists, and coaching graduates ready to present their sound.",
-    ],
-    media: { label: "Watch sessions" },
-  },
-  {
-    id: "raam-live",
-    title: "RAAM Live",
-    category: "Audio Series",
-    status: "Active",
-    accent: "Real-time DJ Performances",
-    column: 3,
-    bgImage: "/assets/images/projects/live.png",
-    youtubeUrl: "https://youtu.be/F2E4wDTzodM?si=f5i7hyq7bN61bQoq",
-    description: [
-      "Audio sets recorded directly during live performances in RAAM venues.",
-      "Each release documents the flow, energy, and atmosphere of the night as it actually happened.",
-    ],
-  },
-  {
-    id: "coaching",
-    title: "Coaching Programs",
-    category: "Education",
-    status: "Active",
-    accent: "DJing / Production",
-    column: 4,
-    bgImage: "/assets/images/projects/coach.png",
-    description: [
-      "Group and individual DJ sessions build technical and creative foundations for new artists.",
-      "The production program guides each participant toward an original track and potential label support.",
-    ],
-  },
-  {
-    id: "cassette-series",
-    title: "Cassette Series",
-    category: "Audio Visual Series",
-    status: "Active",
-    accent: "Intimate Sets / Vinyl Aesthetic",
-    column: 5,
-    bgImage: "/assets/images/projects/cassette.png",
-    youtubeUrl: "https://www.youtube.com/playlist?list=PLXMe8QzaK6KSV0OBvj_fOEoq8PPbsltA2",
-    description: [
-      "An intimate audio-visual format recorded in close settings with a warm, analog aesthetic.",
-      "Each episode captures a resident in a focused, personal set — raw sound, real atmosphere.",
-    ],
   },
 ];
 

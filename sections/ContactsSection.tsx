@@ -76,8 +76,7 @@ export function ContactsSection({ onContactActiveChange }: ContactsSectionProps)
     <SectionFrame
       id="contacts"
       eyebrow="Contact Us"
-      bgImage="/assets/images/contact.png"
-      className="pb-8"
+      className="bg-[#0a0a0a] pb-8"
     >
       {/* Mobile tab bar */}
       {!isDesktop && (

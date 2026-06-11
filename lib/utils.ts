@@ -22,6 +22,8 @@ export function getYouTubeEmbed(url?: string) {
 
   if (videoId) {
     embedUrl += videoId;
+  } else if (listId) {
+    embedUrl += "videoseries";
   }
 
   if (listId) {

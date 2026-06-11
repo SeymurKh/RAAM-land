@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { ReactNode } from "react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionTransition } from "@/components/SectionTransition";
@@ -9,7 +8,6 @@ interface SectionFrameProps {
   eyebrow: string;
   title?: string;
   intro?: string;
-  bgImage?: string;
   children: ReactNode;
   className?: string;
 }
@@ -19,7 +17,6 @@ export function SectionFrame({
   eyebrow,
   title,
   intro,
-  bgImage,
   children,
   className,
 }: SectionFrameProps) {
@@ -28,14 +25,6 @@ export function SectionFrame({
       id={id}
       className={cn("relative isolate scroll-mt-24 px-4 pt-6 pb-14 sm:px-5 sm:pt-10 sm:pb-24 lg:px-12", className)}
     >
-      {bgImage ? (
-        <>
-          <Image src={bgImage} alt="" fill sizes="100vw" className="object-cover opacity-30" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
-          <div className="absolute inset-0 bg-black/40" />
-        </>
-      ) : null}
-
       {/* Gradient transitions for smooth section boundaries */}
       <SectionTransition position="top" />
       <SectionTransition position="bottom" />

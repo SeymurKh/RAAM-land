@@ -10,6 +10,7 @@ function AdminNav() {
   const links = [
     { href: "/admin", label: "Dashboard" },
     { href: "/admin/artists", label: "Artists" },
+    { href: "/admin/projects", label: "Projects" },
     { href: "/admin/stream", label: "Stream" },
   ];
 

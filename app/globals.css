@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Bebas Neue Local";
+  src: url("/fonts/BebasNeue-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #080706;
   --foreground: #f5f0e8;
@@ -88,10 +96,11 @@ select {
 }
 
 .artist-name-3d {
+  font-family: "Bebas Neue Local", Arial, Helvetica, sans-serif;
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.18),
-    0 8px 0 rgba(255, 255, 255, 0.035),
-    0 24px 42px rgba(0, 0, 0, 0.75);
+    0 1px 0 rgba(255, 255, 255, 0.22),
+    0 10px 0 rgba(255, 255, 255, 0.04),
+    0 34px 52px rgba(0, 0, 0, 0.78);
   transform-style: preserve-3d;
 }
 
@@ -113,37 +122,37 @@ select {
 /* Artist float animations — run on compositor thread for performance */
 @keyframes artist-float-up {
   0% {
-    transform: translateY(0) rotateZ(0);
+    transform: translate3d(0, 0, 0) rotateZ(0);
   }
   100% {
-    transform: translateY(-6px) rotateZ(0.8deg);
+    transform: translate3d(8px, -18px, 0) rotateZ(1.4deg);
   }
 }
 
 @keyframes artist-float-down {
   0% {
-    transform: translateY(0) rotateZ(0);
+    transform: translate3d(0, 0, 0) rotateZ(0);
   }
   100% {
-    transform: translateY(6px) rotateZ(-0.8deg);
+    transform: translate3d(-8px, 18px, 0) rotateZ(-1.4deg);
   }
 }
 
 @media (max-width: 767px) {
   @keyframes artist-float-up {
     0% {
-      transform: translateY(0) rotateZ(0);
+      transform: translate3d(0, 0, 0) rotateZ(0);
     }
     100% {
-      transform: translateY(-3px) rotateZ(0.4deg);
+      transform: translate3d(4px, -9px, 0) rotateZ(0.6deg);
     }
   }
   @keyframes artist-float-down {
     0% {
-      transform: translateY(0) rotateZ(0);
+      transform: translate3d(0, 0, 0) rotateZ(0);
     }
     100% {
-      transform: translateY(3px) rotateZ(-0.4deg);
+      transform: translate3d(-4px, 9px, 0) rotateZ(-0.6deg);
     }
   }
 }

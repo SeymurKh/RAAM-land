@@ -1,26 +1,40 @@
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import type { Artist } from "@/types/content";
+import type { Artist, Project } from "@/types/content";
 import type { StreamConfig } from "@/data/stream";
 
 const DB_PATH = join(process.cwd(), "data", "db.json");
 
 interface DbData {
   artists: Artist[];
+  projects: Project[];
   stream: StreamConfig;
 }
 
 async function readDb(): Promise<DbData> {
   try {
     const raw = await readFile(DB_PATH, "utf-8");
-    return JSON.parse(raw) as DbData;
+    return ensureDbShape(JSON.parse(raw) as DbData);
   } catch {
     const { seedArtists } = await import("@/data/seed");
+    const { seedProjects } = await import("@/data/projects");
     const { streamConfig } = await import("@/data/stream");
-    const initial: DbData = { artists: seedArtists, stream: streamConfig };
+    const initial: DbData = {
+      artists: seedArtists,
+      projects: seedProjects,
+      stream: streamConfig,
+    };
     await writeFile(DB_PATH, JSON.stringify(initial, null, 2), "utf-8");
     return initial;
   }
+}
+
+function ensureDbShape(data: DbData): DbData {
+  if (!Array.isArray(data.projects)) {
+    data.projects = [];
+  }
+
+  return data;
 }
 
 async function writeDb(data: DbData): Promise<void> {
@@ -81,4 +95,48 @@ export async function updateStreamConfig(
   db.stream = { ...db.stream, ...data };
   await writeDb(db);
   return db.stream;
+}
+
+export async function getProjects(): Promise<Project[]> {
+  const db = await readDb();
+  return [...db.projects].sort((a, b) => a.order - b.order);
+}
+
+export async function getProject(id: string): Promise<Project | undefined> {
+  const projects = await getProjects();
+  return projects.find((project) => project.id === id);
+}
+
+export async function createProject(project: Project): Promise<Project> {
+  const db = await readDb();
+  db.projects.push(project);
+  await writeDb(db);
+  return project;
+}
+
+export async function updateProject(
+  id: string,
+  data: Partial<Project>,
+): Promise<Project | null> {
+  const db = await readDb();
+  const index = db.projects.findIndex((project) => project.id === id);
+  if (index === -1) {
+    return null;
+  }
+
+  db.projects[index] = { ...db.projects[index], ...data, id };
+  await writeDb(db);
+  return db.projects[index];
+}
+
+export async function deleteProject(id: string): Promise<boolean> {
+  const db = await readDb();
+  const index = db.projects.findIndex((project) => project.id === id);
+  if (index === -1) {
+    return false;
+  }
+
+  db.projects.splice(index, 1);
+  await writeDb(db);
+  return true;
 }

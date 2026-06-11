@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { PageIntro } from "@/components/PageIntro";
 import { ScrollBackground } from "@/components/ScrollBackground";
 import { ScrollReturnIndicator } from "@/components/ScrollReturnIndicator";
+import { VantaBackground } from "@/components/VantaBackground";
 import { ArtistsSection } from "@/sections/ArtistsSection";
 import { LiveStreamSection } from "@/sections/LiveStreamSection";
 import { ContactsSection } from "@/sections/ContactsSection";
@@ -25,11 +26,12 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
   return (
     <>
       <PageIntro />
+      <VantaBackground />
       <CursorAtmosphere />
       <ScrollBackground />
       <Header modalOpen={!!activeArtist} />
       <ScrollReturnIndicator />
-      <main id="main-content" className="relative overflow-hidden bg-[#080706]">
+      <main id="main-content" className="relative z-10 overflow-hidden">
         {hero}
         {ecosystem}
         <ArtistsSection

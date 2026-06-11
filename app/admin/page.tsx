@@ -5,6 +5,7 @@ import Link from "next/link";
 
 interface DashboardData {
   artistCount: number;
+  projectCount: number;
   isLive: boolean;
   streamTitle: string;
 }
@@ -15,10 +16,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     Promise.all([
       fetch("/api/artists").then((r) => r.json()),
+      fetch("/api/projects").then((r) => r.json()),
       fetch("/api/stream").then((r) => r.json()),
-    ]).then(([artists, stream]) => {
+    ]).then(([artists, projects, stream]) => {
       setData({
         artistCount: artists.length,
+        projectCount: projects.length,
         isLive: stream.isLive,
         streamTitle: stream.streamTitle,
       });
@@ -35,7 +38,7 @@ export default function AdminDashboard() {
         Dashboard
       </h1>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-4">
         <div className="rounded-2xl border border-white/10 bg-[#0b0a09] p-6">
           <p className="text-xs uppercase tracking-[0.32em] text-stone-300/50">
             Artists
@@ -48,6 +51,21 @@ export default function AdminDashboard() {
             className="mt-4 inline-block text-xs uppercase tracking-[0.2em] text-stone-400 transition hover:text-white"
           >
             Manage →
+          </Link>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-[#0b0a09] p-6">
+          <p className="text-xs uppercase tracking-[0.32em] text-stone-300/50">
+            Projects
+          </p>
+          <p className="mt-3 text-4xl font-semibold text-white">
+            {data.projectCount}
+          </p>
+          <Link
+            href="/admin/projects"
+            className="mt-4 inline-block text-xs uppercase tracking-[0.2em] text-stone-400 transition hover:text-white"
+          >
+            Manage â†’
           </Link>
         </div>
 

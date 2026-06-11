@@ -52,14 +52,13 @@ export function LiveStreamSection() {
       eyebrow="Live"
       title="Stream"
       intro="Watch RAAM live sessions and stay tuned for upcoming broadcasts."
-      bgImage="/assets/images/streams.png"
     >
       <div className="mx-auto max-w-4xl overflow-hidden rounded-[1.75rem] border border-white/10">
         {isLive && embedUrl ? (
           <MotionReveal>
             <div className="relative aspect-video w-full bg-black">
               <iframe
-                src={`${embedUrl}?autoplay=0`}
+                src={embedUrl}
                 title={liveTitle}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

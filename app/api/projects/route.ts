@@ -1,0 +1,36 @@
+import { NextRequest, NextResponse } from "next/server";
+import { verifyToken } from "@/lib/auth";
+import { createProject, getProjects } from "@/lib/db";
+import type { Project } from "@/types/content";
+
+export async function GET() {
+  const projects = await getProjects();
+  return NextResponse.json(projects);
+}
+
+export async function POST(request: NextRequest) {
+  const token = request.cookies.get("admin_token")?.value;
+  if (!token || !(await verifyToken(token))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = (await request.json()) as Project;
+  if (!body.id || !body.title) {
+    return NextResponse.json(
+      { error: "id and title are required" },
+      { status: 400 },
+    );
+  }
+
+  const project = await createProject(normalizeProject(body));
+  return NextResponse.json(project, { status: 201 });
+}
+
+function normalizeProject(project: Project): Project {
+  return {
+    ...project,
+    order: Number(project.order) || 0,
+    description: project.description.filter((paragraph) => paragraph.trim()),
+    youtubeUrl: project.youtubeUrl?.trim() || undefined,
+  };
+}

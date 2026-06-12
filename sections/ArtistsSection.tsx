@@ -197,13 +197,13 @@ export function ArtistsSection({
                 onMouseLeave={() => setHoveredId(null)}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="group relative text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-100/82 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(1.8rem,5vw,3rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] whitespace-nowrap mb-4 mr-6"
+                className="group relative text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(1.8rem,5vw,3rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] whitespace-nowrap mb-4 mr-6"
                 aria-label={`Open ${artist.name} profile`}
               >
                 <span className="block text-balance transition duration-500 group-hover:-translate-y-1">
                   {artist.name}
                 </span>
-                <span className="mt-2 block text-xs font-normal uppercase tracking-[0.36em] text-stone-300/45 opacity-0 transition delay-150 duration-500 group-hover:opacity-100 group-focus:opacity-100">
+                <span className="mt-2 block text-xs font-normal uppercase tracking-[0.36em] text-stone-200/70 opacity-0 transition delay-150 duration-500 group-hover:opacity-100 group-focus:opacity-100">
                   {artist.origin} / {artist.genres.slice(0, 2).join(" / ")}
                 </span>
               </motion.button>
@@ -226,7 +226,7 @@ export function ArtistsSection({
                 opacity: { duration: 0.4 },
                 scale: { duration: 0.35, ease: "easeOut" },
               }}
-              className="group absolute text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-100/82 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(1.8rem,5vw,3rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-nowrap"
+              className="group absolute text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(1.8rem,5vw,3rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-nowrap"
               style={{
                 left: containerWidth > 0 ? `${(pos.x / containerWidth) * 100}%` : 0,
                 top: containerHeight > 0 ? `${(pos.y / containerHeight) * 100}%` : 0,
@@ -239,11 +239,12 @@ export function ArtistsSection({
                 style={{
                   animation: `float-drift ${4 + index * 0.4}s ease-in-out infinite`,
                   animationDelay: `${index * 0.7}s`,
+                  textShadow: "0 0 12px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.5)",
                 }}
               >
                 {artist.name}
               </span>
-              <span className="mt-2 block text-xs font-normal uppercase tracking-[0.36em] text-stone-300/45 opacity-0 transition delay-150 duration-500 group-hover:opacity-100 group-focus:opacity-100">
+              <span className="mt-2 block text-xs font-normal uppercase tracking-[0.36em] text-stone-200/70 opacity-0 transition delay-150 duration-500 group-hover:opacity-100 group-focus:opacity-100">
                 {artist.origin} / {artist.genres.slice(0, 2).join(" / ")}
               </span>
             </motion.button>

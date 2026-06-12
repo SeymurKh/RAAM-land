@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Mail, Phone } from "lucide-react";
 import { BrandSocialIcon } from "@/components/BrandSocialIcon";
+import { ContactDialog, type InquiryType } from "@/components/ContactDialog";
 import { CursorAtmosphere } from "@/components/CursorAtmosphere";
 import { Header } from "@/components/Header";
 import { PageIntro } from "@/components/PageIntro";
@@ -31,6 +32,7 @@ interface PageShellProps {
 
 export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
   const [activeArtist, setActiveArtist] = useState<Artist>();
+  const [dialogType, setDialogType] = useState<InquiryType | null>(null);
 
   return (
     <>
@@ -46,14 +48,14 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
         <ArtistsSection
           activeArtist={activeArtist}
           onSetActiveArtist={setActiveArtist}
+          onBook={() => setDialogType("book")}
         />
         <LiveStreamSection />
         {projects}
-        <ContactsSection />
+        <ContactsSection onInquiry={setDialogType} />
         <footer className="border-t border-white/5 bg-[#080706] px-4 py-8 sm:px-8 sm:py-12 lg:px-12">
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between sm:gap-8">
-              {/* Brand */}
               <div className="text-center sm:text-left">
                 <p className="text-xs tracking-[0.2em] uppercase text-stone-400/50">
                   © {new Date().getFullYear()} RAAM — Room All About Music
@@ -63,7 +65,6 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
                 </p>
               </div>
 
-              {/* Contact links from site config */}
               <div className="flex flex-wrap items-center justify-center gap-3">
                 {contactLinks.map((link) => {
                   const LucideIcon = lucideIcons[link.kind];
@@ -91,6 +92,12 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
             </div>
           </div>
         </footer>
+
+        <ContactDialog
+          open={dialogType !== null}
+          type={dialogType}
+          onClose={() => setDialogType(null)}
+        />
       </main>
     </>
   );

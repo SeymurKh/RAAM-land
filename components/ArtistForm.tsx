@@ -117,7 +117,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
             className={inputClass}
             value={form.id}
             onChange={(e) => updateField("id", e.target.value)}
-
+            disabled={mode === "edit"}
             required
           />
         </div>

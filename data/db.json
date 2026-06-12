@@ -209,6 +209,11 @@
           "kind": "soundcloud",
           "label": "Shayyo on SoundCloud",
           "url": "https://soundcloud.com/search?q=Shayyo"
+        },
+        {
+          "kind": "youtube",
+          "label": "@shayyohigh",
+          "url": "https://www.youtube.com/@shayyohigh"
         }
       ],
       "visual": {

@@ -8,6 +8,8 @@ const socialKinds: SocialKind[] = [
   "spotify",
   "youtube",
   "linktree",
+  "apple-music",
+  "telegram",
   "email",
   "phone",
 ];

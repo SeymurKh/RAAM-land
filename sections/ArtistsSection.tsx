@@ -11,6 +11,7 @@ import type { Dispatch, SetStateAction } from "react";
 interface ArtistsSectionProps {
   activeArtist?: Artist;
   onSetActiveArtist: Dispatch<SetStateAction<Artist | undefined>>;
+  onBook?: () => void;
 }
 
 interface Position {
@@ -119,6 +120,7 @@ function computePositions(
 export function ArtistsSection({
   activeArtist,
   onSetActiveArtist,
+  onBook,
 }: ArtistsSectionProps) {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -261,6 +263,7 @@ export function ArtistsSection({
       <ArtistModal
         artist={activeArtist}
         onClose={() => onSetActiveArtist(undefined)}
+        onBook={onBook}
       />
     </SectionFrame>
   );

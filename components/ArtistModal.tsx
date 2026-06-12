@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ExternalLink,
   Headphones,
+  NotebookPen,
   Play,
   Radio,
   X,
@@ -18,9 +19,10 @@ import { useScrollLock } from "@/lib/useScrollLock";
 interface ArtistModalProps {
   artist?: Artist;
   onClose: () => void;
+  onBook?: () => void;
 }
 
-export function ArtistModal({ artist, onClose }: ArtistModalProps) {
+export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
   useScrollLock(!!artist);
 
   // Filter out empty/invalid items so sections with only blank entries are hidden
@@ -217,10 +219,24 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                   </div>
                 )}
 
+                {/* Book button */}
+                {onBook && (
+                  <div className="mt-12">
+                    <button
+                      type="button"
+                      onClick={onBook}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm text-stone-200/78 transition hover:border-stone-100/28 hover:text-white"
+                    >
+                      <NotebookPen size={16} strokeWidth={1.5} />
+                      Book this artist
+                    </button>
+                  </div>
+                )}
+
                 {validSocials.length > 0 && (
-                  <div className="mt-12 flex flex-wrap gap-3">
+                  <div className="mt-6 flex flex-wrap gap-3">
                     {validSocials.map((social) => {
-                      const hasBrandIcon = ["instagram", "soundcloud", "spotify", "youtube"].includes(social.kind);
+                      const hasBrandIcon = ["instagram", "soundcloud", "spotify", "youtube", "linktree", "apple-music", "telegram"].includes(social.kind);
                       return (
                         <a
                           key={social.label}
@@ -232,10 +248,10 @@ export function ArtistModal({ artist, onClose }: ArtistModalProps) {
                           {hasBrandIcon ? (
                             <BrandSocialIcon
                               kind={social.kind}
-                              className="h-4 w-4 object-contain brightness-0 invert"
+                              className="h-5 w-5 object-contain invert"
                             />
                           ) : (
-                            <ExternalLink size={15} />
+                            <ExternalLink size={17} />
                           )}
                           {social.label}
                         </a>

@@ -142,6 +142,17 @@ select {
   }
 }
 
+/* Subtle floating drift — all artist names hover gently */
+@keyframes float-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
 @media (max-width: 767px) {
   @keyframes artist-float-up {
     0% {

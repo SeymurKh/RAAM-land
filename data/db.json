@@ -196,7 +196,7 @@
         {
           "id": "shayyo-live",
           "title": "Shayyo at RAAM Live",
-          "kind": "audio"
+          "kind": "video"
         }
       ],
       "socials": [
@@ -214,6 +214,21 @@
           "kind": "youtube",
           "label": "@shayyohigh",
           "url": "https://www.youtube.com/@shayyohigh"
+        },
+        {
+          "kind": "apple-music",
+          "label": "Shayyo on AppleMusic",
+          "url": "https://music.apple.com/us/artist/shayyo/1815750222"
+        },
+        {
+          "kind": "telegram",
+          "label": "@shayyomusic",
+          "url": "https://t.me/shayyomusic"
+        },
+        {
+          "kind": "spotify",
+          "label": "Shayyo on Spotify",
+          "url": "https://open.spotify.com/artist/4aBVLrgNVCSnksgrJf0Had?si=7XnCXtwTSPe2Z1YsHmhGJw"
         }
       ],
       "visual": {

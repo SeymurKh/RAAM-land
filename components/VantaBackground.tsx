@@ -9,10 +9,10 @@ interface VantaEffectHandle {
 }
 
 const BASE_CHAOS = 3.2;
-const MAX_CHAOS = 9;
-const SCROLL_THRESHOLD = 12;
-const RAMP_UP = 0.35;
-const DECAY_RATE = 0.92;
+const MAX_CHAOS = 6.5;
+const SCROLL_THRESHOLD = 30;
+const RAMP_UP = 0.2;
+const DECAY_RATE = 0.94;
 const SCROLL_IDLE_MS = 120;
 
 export function VantaBackground() {
@@ -49,9 +49,12 @@ export function VantaBackground() {
     }
 
     try {
-      (effectRef.current as any).setChaos?.(chaosRef.current);
+      const effect = effectRef.current as any;
+      if (effect.options) {
+        effect.options.chaos = chaosRef.current;
+      }
     } catch {
-      // setChaos may not be available
+      // options may not be available
     }
 
     const needsMore =

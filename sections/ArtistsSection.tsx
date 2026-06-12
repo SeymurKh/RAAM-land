@@ -39,64 +39,64 @@ function computePositions(
   const rand = seededRandom(42);
   const positions: Position[] = [];
 
-  const centerY = containerHeight * 0.47;
+  // Alternating pattern: even rows = 2 edges, odd rows = 1 center
+  // How many rows needed?
+  let rows = 0;
+  let covered = 0;
+  while (covered < count) {
+    covered += rows % 2 === 0 ? 2 : 1;
+    rows++;
+  }
+  const tileHeight = containerHeight / rows;
+  const centerX = containerWidth / 2;
+  const edgeOffsetX = 0.30; // L/R distance from center
 
-  // Sort artists within each group: longest name moves to center slot
+  // Sort by name length (longest → first), Farik forced to position 2 (row 1, center)
   const sorted = [...names].sort((a, b) => b.name.length - a.name.length);
-  // Force "Farik Interlude" to position 2 (center of domino-5)
   const farikIdx = sorted.findIndex((n) => n.name === "Farik Interlude");
   if (farikIdx >= 0 && farikIdx !== 2) {
     const [farik] = sorted.splice(farikIdx, 1);
     sorted.splice(2, 0, farik);
   }
 
-  // Each "domino tile" holds up to 5 artists (4 corners + 1 center)
-  const PER_TILE = 5;
-  const groups = Math.ceil(count / PER_TILE);
-  const slotWidth = containerWidth / groups;
+  let artistCursor = 0;
 
-  // Domino-5 template: TL, TR, C, BL, BR relative to group center
-  // Larger offsets = more breathing room, "floating in air" effect
-  const cornerOffsetX = 0.26;
-  const cornerOffsetY = 0.24;
+  for (let row = 0; row < rows && artistCursor < count; row++) {
+    const tileCenterY = tileHeight * (row + 0.5);
+    const isEven = row % 2 === 0;
 
-  const templates: Array<{ dx: number; dy: number }> = [
-    { dx: -cornerOffsetX, dy: -cornerOffsetY }, // TL
-    { dx: +cornerOffsetX, dy: -cornerOffsetY }, // TR
-    { dx: 0, dy: 0 },                            // C (longest name)
-    { dx: -cornerOffsetX, dy: +cornerOffsetY },  // BL
-    { dx: +cornerOffsetX, dy: +cornerOffsetY },  // BR
-  ];
+    if (isEven) {
+      // Row with 2 names: L + R
+      for (let slot = 0; slot < 2 && artistCursor < count; slot++, artistCursor++) {
+        const dx = slot === 0 ? -edgeOffsetX : +edgeOffsetX;
+        let x = centerX + dx * containerWidth + (rand() - 0.5) * containerWidth * 0.05;
+        let y = tileCenterY + (rand() - 0.5) * tileHeight * 0.06;
 
-  for (let g = 0; g < groups; g++) {
-    const groupCenterX = slotWidth * (g + 0.5);
-    const startIdx = g * PER_TILE;
-    const groupArtists = sorted.slice(startIdx, startIdx + PER_TILE);
-    const groupSize = groupArtists.length;
+        x -= containerWidth * 0.09; // visual left shift
 
-    for (let i = 0; i < groupSize; i++) {
-      const tpl = templates[i];
-      let x =
-        groupCenterX +
-        tpl.dx * slotWidth +
-        (rand() - 0.5) * slotWidth * 0.05; // organic jitter ±2.5%
-      let y =
-        centerY +
-        tpl.dy * containerHeight +
-        (rand() - 0.5) * containerHeight * 0.06; // organic jitter ±3%
+        const padX = Math.max(30, containerWidth * 0.03);
+        const padY = Math.max(20, tileHeight * 0.08);
+        x = Math.max(padX, Math.min(containerWidth - padX, x));
+        y = Math.max(row * tileHeight + padY, Math.min((row + 1) * tileHeight - padY, y));
 
-      // Shift whole composition left to balance visual center
+        const origIdx = names.findIndex((n) => n.id === sorted[artistCursor].id);
+        positions[origIdx] = { x, y };
+      }
+    } else {
+      // Row with 1 name: center
+      let x = centerX + (rand() - 0.5) * containerWidth * 0.05;
+      let y = tileCenterY + (rand() - 0.5) * tileHeight * 0.06;
+
       x -= containerWidth * 0.09;
 
-      // Clamp within padded container
       const padX = Math.max(30, containerWidth * 0.03);
-      const padY = Math.max(20, containerHeight * 0.06);
+      const padY = Math.max(20, tileHeight * 0.08);
       x = Math.max(padX, Math.min(containerWidth - padX, x));
-      y = Math.max(padY, Math.min(containerHeight - padY, y));
+      y = Math.max(row * tileHeight + padY, Math.min((row + 1) * tileHeight - padY, y));
 
-      // Map back to original order
-      const origIdx = names.findIndex((n) => n.id === groupArtists[i].id);
+      const origIdx = names.findIndex((n) => n.id === sorted[artistCursor].id);
       positions[origIdx] = { x, y };
+      artistCursor++;
     }
   }
 
@@ -105,18 +105,11 @@ function computePositions(
     const idx = names.findIndex((n) => n.name === targetName);
     if (idx >= 0 && positions[idx]) {
       if (targetName === "Farik Interlude") {
-        positions[idx].x -= containerWidth * 0.03; // existing left shift
-        positions[idx].y += containerHeight * 0.01; // net: -0.02 + 0.03 = +0.01
+        positions[idx].x -= containerWidth * 0.03;
+        positions[idx].y += tileHeight * 0.02;
       } else {
-        positions[idx].y += containerHeight * 0.03; // Pedro, Boraa: 3% lower
+        positions[idx].y += tileHeight * 0.04;
       }
-    }
-  }
-
-  // Safety fill
-  for (let i = 0; i < count; i++) {
-    if (!positions[i]) {
-      positions[i] = { x: containerWidth / 2, y: centerY };
     }
   }
 
@@ -163,6 +156,17 @@ export function ArtistsSection({
     [artists.length, containerWidth, containerHeight],
   );
 
+  // Compute number of rows for min-height calculation (same logic as computePositions)
+  const numRows = useMemo(() => {
+    let r = 0;
+    let covered = 0;
+    while (covered < artists.length) {
+      covered += r % 2 === 0 ? 2 : 1;
+      r++;
+    }
+    return r;
+  }, [artists.length]);
+
   const isReady = containerWidth > 0 && positions.length === artists.length;
 
   if (artists.length === 0) {
@@ -176,11 +180,13 @@ export function ArtistsSection({
       intro="Resident DJs, producers, and core contributors shaping the RAAM sound."
     >
 
-      {/* Scattered pool container */}
+      {/* Scattered pool container — grows with more artists */}
       <div
         ref={containerRef}
         className="relative mx-auto w-full max-w-7xl"
-        style={{ minHeight: "50vh" }}
+        style={{
+          minHeight: `${Math.max(50, numRows * 22)}vh`,
+        }}
       >
         {artists.map((artist, index) => {
           const isHovered = hoveredId === artist.id;

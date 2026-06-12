@@ -9,10 +9,11 @@ interface VantaEffectHandle {
 }
 
 const BASE_CHAOS = 3.2;
-const MAX_CHAOS = 8;
-const SCROLL_THRESHOLD = 50;
-const SPRING_STIFFNESS = 0.08;
-const SPRING_DAMPING = 0.85;
+const MAX_CHAOS = 9;
+const SCROLL_THRESHOLD = 12;
+const RAMP_UP = 0.35;
+const DECAY_RATE = 0.92;
+const SCROLL_IDLE_MS = 120;
 
 export function VantaBackground() {
   const vantaRef = useRef<HTMLDivElement>(null);
@@ -22,35 +23,46 @@ export function VantaBackground() {
   const rafRef = useRef<number>(0);
   const lastScrollYRef = useRef(0);
   const lastScrollTimeRef = useRef(Date.now());
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const animateSpring = useCallback(() => {
+  const animate = useCallback(() => {
     if (!effectRef.current) return;
 
-    const current = chaosRef.current;
-    const target =
-      BASE_CHAOS +
-      Math.min(velocityRef.current / SCROLL_THRESHOLD, 1) *
+    if (isScrollingRef.current) {
+      const target =
+        BASE_CHAOS +
+        Math.min(velocityRef.current / SCROLL_THRESHOLD, 1) *
         (MAX_CHAOS - BASE_CHAOS);
-    const delta = target - current;
+      chaosRef.current += (target - chaosRef.current) * RAMP_UP;
+    } else {
+      chaosRef.current =
+        BASE_CHAOS + (chaosRef.current - BASE_CHAOS) * DECAY_RATE;
+      if (chaosRef.current - BASE_CHAOS < 0.05) {
+        chaosRef.current = BASE_CHAOS;
+      }
+    }
 
-    chaosRef.current = current + delta * SPRING_STIFFNESS;
-    velocityRef.current *= SPRING_DAMPING;
-
-    if (velocityRef.current < 0.5) {
+    velocityRef.current *= 0.88;
+    if (velocityRef.current < 0.3) {
       velocityRef.current = 0;
     }
 
     try {
       (effectRef.current as any).setChaos?.(chaosRef.current);
     } catch {
-      // setChaos may not be available on all versions
+      // setChaos may not be available
     }
 
-    if (
-      Math.abs(chaosRef.current - BASE_CHAOS) > 0.01 ||
-      velocityRef.current > 0.5
-    ) {
-      rafRef.current = requestAnimationFrame(animateSpring);
+    const needsMore =
+      isScrollingRef.current ||
+      chaosRef.current - BASE_CHAOS > 0.05 ||
+      velocityRef.current > 0.3;
+
+    if (needsMore) {
+      rafRef.current = requestAnimationFrame(animate);
+    } else {
+      rafRef.current = 0;
     }
   }, []);
 
@@ -108,9 +120,18 @@ export function VantaBackground() {
       velocityRef.current = Math.min(velocity, 200);
       lastScrollYRef.current = scrollY;
       lastScrollTimeRef.current = now;
+      isScrollingRef.current = true;
+
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+      }, SCROLL_IDLE_MS);
 
       if (!rafRef.current) {
-        rafRef.current = requestAnimationFrame(animateSpring);
+        rafRef.current = requestAnimationFrame(animate);
       }
     }
 
@@ -118,12 +139,15 @@ export function VantaBackground() {
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = 0;
       }
     };
-  }, [animateSpring]);
+  }, [animate]);
 
   return (
     <div

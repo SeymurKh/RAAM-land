@@ -1,21 +1,18 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { extractPlaylistId, extractVideoId } from "@/lib/youtube";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function getYouTubeEmbed(url?: string) {
-  if (!url) {
-    return undefined;
-  }
+  if (!url) return undefined;
 
-  const videoId = url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{8,})/)?.[1];
-  const listId = url.match(/[?&]list=([A-Za-z0-9_-]+)/)?.[1];
+  const videoId = extractVideoId(url);
+  const listId = extractPlaylistId(url);
 
-  if (!videoId && !listId) {
-    return undefined;
-  }
+  if (!videoId && !listId) return undefined;
 
   const params: string[] = ["autoplay=0"];
   let embedUrl = "https://www.youtube.com/embed/";

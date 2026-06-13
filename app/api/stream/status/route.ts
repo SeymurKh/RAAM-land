@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { getStreamConfig } from "@/lib/db";
+import { getLiveStream } from "@/lib/youtube";
 
 export async function GET() {
-  // Check if stream is disabled via admin kill switch
   const streamConfig = await getStreamConfig();
+
   if (streamConfig.disabled) {
     return NextResponse.json({
       isLive: false,
@@ -16,7 +17,6 @@ export async function GET() {
   const channelId = process.env.YOUTUBE_CHANNEL_ID;
 
   if (!apiKey || !channelId) {
-    // No API configured — fall back to manual config
     return NextResponse.json({
       isLive: false,
       videoId: null,
@@ -25,46 +25,16 @@ export async function GET() {
   }
 
   try {
-    const url = new URL("https://www.googleapis.com/youtube/v3/search");
-    url.searchParams.set("part", "snippet");
-    url.searchParams.set("channelId", channelId);
-    url.searchParams.set("eventType", "live");
-    url.searchParams.set("type", "video");
-    url.searchParams.set("order", "date");
-    url.searchParams.set("key", apiKey);
-
-    const res = await fetch(url.toString(), { next: { revalidate: 60 } });
-
-    if (!res.ok) {
-      console.error("YouTube API error:", res.status, await res.text());
-      return NextResponse.json({
-        isLive: false,
-        videoId: null,
-        source: "error",
-      });
-    }
-
-    const data = await res.json();
-    const items = data.items ?? [];
-
-    if (items.length > 0) {
-      const videoId = items[0].id.videoId as string;
-      const title = items[0].snippet.title as string;
-      return NextResponse.json({
-        isLive: true,
-        videoId,
-        title,
-        source: "youtube",
-      });
-    }
+    const result = await getLiveStream(apiKey, channelId);
 
     return NextResponse.json({
-      isLive: false,
-      videoId: null,
+      isLive: result.isLive,
+      videoId: result.videoId,
+      title: result.title || undefined,
       source: "youtube",
     });
   } catch (error) {
-    console.error("YouTube API fetch failed:", error);
+    console.error("[stream/status] YouTube API error:", error);
     return NextResponse.json({
       isLive: false,
       videoId: null,

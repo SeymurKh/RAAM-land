@@ -310,6 +310,18 @@
       "accent": "Club / Interviews / Video Sets",
       "order": 1,
       "youtubeUrl": "https://www.youtube.com/playlist?list=PLXMe8QzaK6KR5z3A3WtLCXzsGmX8WvWQh",
+      "videos": [
+        {
+          "id": "raam-fomo-1",
+          "title": "Shayyo b2b Farik Interlude",
+          "url": "https://youtu.be/xdwI9T41lTM"
+        },
+        {
+          "id": "raam-fomo-2",
+          "title": "Pedro b2b Inmysoul",
+          "url": "https://youtu.be/kzyZgVoet0M"
+        }
+      ],
       "description": [
         "A collaborative platform for RAAM residents at FOMO Baku, one of Azerbaijan's most known clubs.",
         "The format brings together artist interviews, venue insight, and full video sets for YouTube release."
@@ -323,6 +335,13 @@
       "accent": "High BPM / Visual Production",
       "order": 2,
       "youtubeUrl": "https://www.youtube.com/playlist?list=PLXMe8QzaK6KTjYTv9sNTbJqtszfohb7B5",
+      "videos": [
+        {
+          "id": "uptempo-1",
+          "title": "Inmysoul [&S] | House | UK Bass | Acid | Fast Groove",
+          "url": "https://youtu.be/qB9Qx5bwe4g?si=XfW6hXbcDJTu3uYQ"
+        }
+      ],
       "description": [
         "A high-BPM electronic music format recorded at Finestra del Aperitivo.",
         "The series highlights residents, wider community artists, and graduates ready to present their sound."
@@ -336,6 +355,23 @@
       "accent": "Real-time DJ Performances",
       "order": 3,
       "youtubeUrl": "https://youtube.com/playlist?list=PLXMe8QzaK6KSM-Hjia_RE5euiS75RXDao&si=oJYYS4ECGlviSxad",
+      "videos": [
+        {
+          "id": "raam-live-1",
+          "title": "Shayyo | Indie Dance | Tech House",
+          "url": "https://youtu.be/eYHX_so7gSk?si=KlUDc6Y3RrJVyoC1"
+        },
+        {
+          "id": "v-1781389558913",
+          "title": "Zövgue | Melodic House | Deep House",
+          "url": "https://youtu.be/27ryh1S4tl0?si=VjSKnAq-kwozw9-k"
+        },
+        {
+          "id": "v-1781389586366",
+          "title": "Shayyo [AZ] b2b Pedro [PR] | Tech House",
+          "url": "https://youtu.be/oegMY9riFfo?si=QaMbpOB7JjZx-VNq"
+        }
+      ],
       "description": [
         "Audio sets recorded directly during live performances in RAAM venues.",
         "Each release documents the flow, energy, and atmosphere of the night as it actually happened."
@@ -349,6 +385,23 @@
       "accent": "Intimate Sets / Vinyl Aesthetic",
       "order": 4,
       "youtubeUrl": "https://youtube.com/playlist?list=PLXMe8QzaK6KSV0OBvj_fOEoq8PPbsltA2&si=ehU1mjUECC4KBGgd",
+      "videos": [
+        {
+          "id": "cassette-1",
+          "title": "ZÖVGUE | Organic House",
+          "url": "https://youtu.be/QxRZrgI6goc?si=00sts1klH3Yft4YQ"
+        },
+        {
+          "id": "v-1781389678370",
+          "title": "SHAYYO | Organic House | Tech House",
+          "url": "https://youtu.be/QCeeF28WocA?si=JiPM1EPdGjT8RIgU"
+        },
+        {
+          "id": "v-1781389678752",
+          "title": "FADE.N | Deep House | Disco House",
+          "url": "https://youtu.be/Qx2LxaF-bkI?si=9btVfQ8RJOmjxlN2"
+        }
+      ],
       "description": [
         "An intimate audio-visual format recorded in close settings with a warm, analog aesthetic.",
         "Each episode captures a resident in a focused, personal set: raw sound, real atmosphere."

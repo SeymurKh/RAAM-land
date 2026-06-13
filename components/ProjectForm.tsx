@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Project } from "@/types/content";
+import type { Project, ProjectVideo } from "@/types/content";
 
 interface ProjectFormProps {
   mode: "create" | "edit";
@@ -31,6 +31,7 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
       accent: "",
       order: 1,
       youtubeUrl: "",
+      videos: [],
       description: [""],
     },
   );
@@ -199,14 +200,58 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
         </div>
       </div>
 
-      <div>
-        <label className={labelClass}>YouTube playlist URL</label>
-        <input
-          className={inputClass}
-          value={form.youtubeUrl ?? ""}
-          onChange={(event) => updateField("youtubeUrl", event.target.value)}
-          placeholder="https://www.youtube.com/playlist?list=..."
-        />
+      {/* Videos editor */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className={labelClass}>Videos</label>
+          <button
+            type="button"
+            onClick={() =>
+              updateField("videos", [
+                ...(form.videos ?? []),
+                { id: `v-${Date.now()}`, title: "", url: "" },
+              ])
+            }
+            className="text-xs uppercase tracking-[0.2em] text-stone-400 hover:text-white"
+          >
+            + Add video
+          </button>
+        </div>
+        {(form.videos ?? []).map((video, index) => (
+          <div key={video.id} className="flex gap-2">
+            <input
+              className={inputClass}
+              placeholder="Title"
+              value={video.title}
+              onChange={(e) => {
+                const updated = [...(form.videos ?? [])];
+                updated[index] = { ...updated[index], title: e.target.value };
+                updateField("videos", updated);
+              }}
+            />
+            <input
+              className={inputClass}
+              placeholder="YouTube URL"
+              value={video.url}
+              onChange={(e) => {
+                const updated = [...(form.videos ?? [])];
+                updated[index] = { ...updated[index], url: e.target.value };
+                updateField("videos", updated);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const updated = [...(form.videos ?? [])];
+                updated.splice(index, 1);
+                updateField("videos", updated);
+              }}
+              className="text-red-400/70 hover:text-red-400 text-lg"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
       </div>
 
       <div className="space-y-3">

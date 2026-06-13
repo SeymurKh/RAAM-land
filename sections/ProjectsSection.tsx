@@ -3,16 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowUpRight, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { YouTubeModal } from "@/components/YouTubeModal";
-import type { Project } from "@/types/content";
+import type { Project, ProjectVideo } from "@/types/content";
 
 export function ProjectsSection() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [modalState, setModalState] = useState<{
+  const [modalVideo, setModalVideo] = useState<{
     url: string;
     title: string;
   } | null>(null);
@@ -42,14 +42,13 @@ export function ProjectsSection() {
     );
   }
 
-  function openProject(p: Project | undefined) {
-    if (p?.youtubeUrl) setModalState({ url: p.youtubeUrl, title: p.title });
+  function openVideo(v: ProjectVideo) {
+    setModalVideo({ url: v.url, title: v.title });
   }
 
   function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key === "ArrowLeft") { event.preventDefault(); goTo(-1); }
     if (event.key === "ArrowRight") { event.preventDefault(); goTo(1); }
-    if (event.key === "Enter") openProject(activeProject);
   }
 
   const total = projects.length;
@@ -80,17 +79,20 @@ export function ProjectsSection() {
               style={{ perspective: "1200px", minHeight: "560px" }}
             >
               {projects.map((project, index) => {
-                // Position relative to active: -1 (left), 0 (center), +1 (right), others hidden
                 let pos = index - activeIndex;
                 if (pos < 0) pos += total;
                 if (pos > total / 2) pos -= total;
-
-                // Only render 3 cards: left, center, right
                 if (Math.abs(pos) > 1) return null;
 
                 const isCenter = pos === 0;
                 const isLeft = pos === -1 || pos === total - 1;
                 const isRight = pos === 1;
+
+                const videos = (project.videos && project.videos.length > 0)
+                  ? project.videos
+                  : project.youtubeUrl
+                    ? [{ id: "watch", title: project.title, url: project.youtubeUrl }]
+                    : [];
 
                 return (
                   <motion.article
@@ -124,7 +126,6 @@ export function ProjectsSection() {
                       pointerEvents: isCenter ? "auto" : "none",
                     }}
                   >
-                    {/* Background image */}
                     {project.image ? (
                       <Image
                         src={project.image}
@@ -137,10 +138,8 @@ export function ProjectsSection() {
                     ) : (
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.05),transparent_50%)]" />
                     )}
-
                     <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/80" />
 
-                    {/* Content */}
                     <div className="relative z-10 flex min-h-[480px] flex-col p-5 sm:p-7 lg:p-9 sm:min-h-[520px]">
                       {isCenter ? (
                         <>
@@ -152,34 +151,35 @@ export function ProjectsSection() {
                               {project.title}
                             </h3>
                           </div>
-                          <div className="mt-5 flex-1 space-y-3 text-base leading-8 text-stone-100/72 sm:mt-6 sm:text-lg sm:leading-9 line-clamp-5">
+                          <div className="mt-5 flex-1 space-y-3 text-base leading-8 text-stone-100/72 sm:mt-6 sm:text-lg sm:leading-9 line-clamp-4">
                             {project.description.map((p) => (
                               <p key={p}>{p}</p>
                             ))}
                           </div>
-                          <div className="mt-auto pt-6 sm:pt-8">
-                            <div className="mb-4 flex flex-wrap gap-2">
-                              <span className="rounded-full border border-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/64">
-                                {project.status}
-                              </span>
-                              <span className="rounded-full bg-stone-100/8 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/64">
-                                {project.accent}
-                              </span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => openProject(project)}
-                              disabled={!project.youtubeUrl}
-                              className="group inline-flex h-12 items-center justify-center gap-3 rounded-full border border-white/12 bg-white/[0.08] px-6 text-sm font-medium uppercase tracking-[0.22em] text-white transition hover:bg-white/[0.14] disabled:cursor-not-allowed disabled:opacity-45"
-                            >
-                              <Play size={15} />
-                              Playlist
-                              <ArrowUpRight
-                                size={14}
-                                className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                              />
-                            </button>
+
+                          {/* Tags */}
+                          <div className="mt-auto pt-4 flex flex-wrap gap-2">
+                            <span className="rounded-full border border-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/64">
+                              {project.status}
+                            </span>
+                            <span className="rounded-full bg-stone-100/8 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/64">
+                              {project.accent}
+                            </span>
                           </div>
+
+                          {/* Watch button */}
+                          {(videos.length > 0 || project.youtubeUrl) && (
+                            <div className="mt-4">
+                              <button
+                                type="button"
+                        onClick={() => setModalVideo({ url: videos[0].url, title: project.title })}
+                                className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-5 py-2.5 text-sm text-stone-200/80 transition hover:border-white/20 hover:bg-white/[0.1] hover:text-white"
+                              >
+                                <Play size={14} />
+                                Watch
+                              </button>
+                            </div>
+                          )}
                         </>
                       ) : (
                         <div className="flex min-h-[200px] flex-col justify-center px-4">
@@ -196,7 +196,7 @@ export function ProjectsSection() {
                 );
               })}
 
-              {/* Side arrows — overlaid on the 3D scene edges */}
+              {/* Side arrows */}
               <button
                 type="button"
                 onClick={() => goTo(-1)}
@@ -240,10 +240,15 @@ export function ProjectsSection() {
         )}
 
         <YouTubeModal
-          youtubeUrl={modalState?.url}
-          title={modalState?.title ?? ""}
-          isOpen={!!modalState}
-          onClose={() => setModalState(null)}
+          youtubeUrl={modalVideo?.url}
+          title={modalVideo?.title ?? ""}
+          isOpen={!!modalVideo}
+          onClose={() => setModalVideo(null)}
+          videos={(activeProject?.videos && activeProject.videos.length > 0)
+            ? activeProject.videos
+            : activeProject?.youtubeUrl
+              ? [{ id: "watch", title: activeProject.title, url: activeProject.youtubeUrl }]
+              : []}
         />
       </section>
     </SectionFrame>

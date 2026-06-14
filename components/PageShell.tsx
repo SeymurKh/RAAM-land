@@ -4,10 +4,8 @@ import { useState } from "react";
 import { Mail, Phone } from "lucide-react";
 import { BrandSocialIcon } from "@/components/BrandSocialIcon";
 import { ContactDialog, type InquiryType } from "@/components/ContactDialog";
-import { CursorAtmosphere } from "@/components/CursorAtmosphere";
 import { Header } from "@/components/Header";
 import { PageIntro } from "@/components/PageIntro";
-import { ScrollBackground } from "@/components/ScrollBackground";
 import { ScrollReturnIndicator } from "@/components/ScrollReturnIndicator";
 import { VantaBackground } from "@/components/VantaBackground";
 import { ArtistsSection } from "@/sections/ArtistsSection";
@@ -38,8 +36,6 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
     <>
       <PageIntro />
       <VantaBackground />
-      <CursorAtmosphere />
-      <ScrollBackground />
       <Header modalOpen={!!activeArtist} />
       <ScrollReturnIndicator />
       <main id="main-content" className="relative z-10 overflow-hidden">

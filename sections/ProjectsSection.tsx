@@ -73,10 +73,9 @@ export function ProjectsSection() {
           </MotionReveal>
         ) : (
           <div className="relative mx-auto max-w-5xl">
-            {/* 3D scene */}
             <div
-              className="relative flex items-center justify-center"
-              style={{ perspective: "1200px", minHeight: "560px" }}
+              className="relative flex items-center justify-center min-h-[420px] sm:min-h-[560px]"
+              style={{ perspective: "1200px" }}
             >
               {projects.map((project, index) => {
                 let pos = index - activeIndex;
@@ -114,11 +113,7 @@ export function ProjectsSection() {
                         ? "blur(0px) brightness(1)"
                         : "blur(3px) brightness(0.7)",
                     }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 200,
-                      damping: 24,
-                    }}
+                    transition={{ type: "spring", stiffness: 200, damping: 24 }}
                     className="absolute w-full max-w-[44rem] origin-center rounded-[1.35rem] border border-white/12 bg-[#0b0a09]/92 shadow-[0_20px_100px_rgba(0,0,0,0.55)] backdrop-blur-xl overflow-hidden"
                     style={{
                       transformStyle: "preserve-3d",
@@ -140,7 +135,7 @@ export function ProjectsSection() {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/80" />
 
-                    <div className="relative z-10 flex min-h-[480px] flex-col p-5 sm:p-7 lg:p-9 sm:min-h-[520px]">
+                    <div className="relative z-10 flex min-h-[440px] flex-col p-5 sm:min-h-[520px] sm:p-7 lg:p-9">
                       {isCenter ? (
                         <>
                           <div>
@@ -157,7 +152,6 @@ export function ProjectsSection() {
                             ))}
                           </div>
 
-                          {/* Tags */}
                           <div className="mt-auto pt-4 flex flex-wrap gap-2">
                             <span className="rounded-full border border-white/10 px-3 py-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-200/64">
                               {project.status}
@@ -167,12 +161,11 @@ export function ProjectsSection() {
                             </span>
                           </div>
 
-                          {/* Watch button */}
                           {(videos.length > 0 || project.youtubeUrl) && (
                             <div className="mt-4">
                               <button
                                 type="button"
-                        onClick={() => setModalVideo({ url: videos[0].url, title: project.title })}
+                                onClick={() => setModalVideo({ url: videos[0].url, title: project.title })}
                                 className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-5 py-2.5 text-sm text-stone-200/80 transition hover:border-white/20 hover:bg-white/[0.1] hover:text-white"
                               >
                                 <Play size={14} />
@@ -195,28 +188,19 @@ export function ProjectsSection() {
                   </motion.article>
                 );
               })}
+            </div>
 
-              {/* Side arrows */}
+            {/* Navigation: ← dots → counter */}
+            <div className="mt-5 flex items-center justify-center gap-3 px-2">
               <button
                 type="button"
                 onClick={() => goTo(-1)}
-                className="absolute left-0 z-20 flex h-12 w-12 -translate-x-1 items-center justify-center rounded-full border border-white/10 bg-black/40 text-white backdrop-blur-md transition hover:bg-white/10 hover:scale-105 sm:h-14 sm:w-14"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white transition hover:bg-white/10"
                 aria-label="Previous project"
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={16} />
               </button>
-              <button
-                type="button"
-                onClick={() => goTo(1)}
-                className="absolute right-0 z-20 flex h-12 w-12 translate-x-1 items-center justify-center rounded-full border border-white/10 bg-black/40 text-white backdrop-blur-md transition hover:bg-white/10 hover:scale-105 sm:h-14 sm:w-14"
-                aria-label="Next project"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
 
-            {/* Bottom bar: dots + counter */}
-            <div className="mt-5 flex items-center justify-between px-2">
               <div className="flex flex-wrap gap-2">
                 {projects.map((project, index) => (
                   <button
@@ -232,7 +216,17 @@ export function ProjectsSection() {
                   />
                 ))}
               </div>
-              <span className="text-xs uppercase tracking-[0.28em] text-stone-300/45">
+
+              <button
+                type="button"
+                onClick={() => goTo(1)}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white transition hover:bg-white/10"
+                aria-label="Next project"
+              >
+                <ChevronRight size={16} />
+              </button>
+
+              <span className="hidden text-xs uppercase tracking-[0.28em] text-stone-300/45 md:inline">
                 {paddedIndex} / {paddedTotal}
               </span>
             </div>

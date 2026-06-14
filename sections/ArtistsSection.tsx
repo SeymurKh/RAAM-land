@@ -41,7 +41,6 @@ function computePositions(
   const positions: Position[] = [];
 
   // Alternating pattern: even rows = 2 edges, odd rows = 1 center
-  // How many rows needed?
   let rows = 0;
   let covered = 0;
   while (covered < count) {
@@ -50,7 +49,7 @@ function computePositions(
   }
   const tileHeight = containerHeight / rows;
   const centerX = containerWidth / 2;
-  const edgeOffsetX = 0.30; // L/R distance from center
+  const edgeOffsetX = 0.30;
 
   // Sort by name length (longest → first), Farik forced to position 2 (row 1, center)
   const sorted = [...names].sort((a, b) => b.name.length - a.name.length);
@@ -67,13 +66,12 @@ function computePositions(
     const isEven = row % 2 === 0;
 
     if (isEven) {
-      // Row with 2 names: L + R
       for (let slot = 0; slot < 2 && artistCursor < count; slot++, artistCursor++) {
         const dx = slot === 0 ? -edgeOffsetX : +edgeOffsetX;
         let x = centerX + dx * containerWidth + (rand() - 0.5) * containerWidth * 0.05;
         let y = tileCenterY + (rand() - 0.5) * tileHeight * 0.06;
 
-        x -= containerWidth * 0.09; // visual left shift
+        x -= containerWidth * 0.10;
 
         const padX = Math.max(30, containerWidth * 0.03);
         const padY = Math.max(20, tileHeight * 0.08);
@@ -84,11 +82,10 @@ function computePositions(
         positions[origIdx] = { x, y };
       }
     } else {
-      // Row with 1 name: center
       let x = centerX + (rand() - 0.5) * containerWidth * 0.05;
       let y = tileCenterY + (rand() - 0.5) * tileHeight * 0.06;
 
-      x -= containerWidth * 0.09;
+      x -= containerWidth * 0.10;
 
       const padX = Math.max(30, containerWidth * 0.03);
       const padY = Math.max(20, tileHeight * 0.08);
@@ -102,16 +99,17 @@ function computePositions(
   }
 
   // Fine-tune individual positions
-  for (const targetName of ["Farik Interlude", "Pedro", "Boraa"]) {
+  for (const targetName of ["Pedro", "Boraa"]) {
     const idx = names.findIndex((n) => n.name === targetName);
     if (idx >= 0 && positions[idx]) {
-      if (targetName === "Farik Interlude") {
-        positions[idx].x -= containerWidth * 0.03;
-        positions[idx].y += tileHeight * 0.02;
-      } else {
-        positions[idx].y += tileHeight * 0.04;
-      }
+      positions[idx].y += tileHeight * 0.04;
     }
+  }
+
+  // Farik Interlude: additional 3% left shift
+  const farikPosIdx = names.findIndex((n) => n.name === "Farik Interlude");
+  if (farikPosIdx >= 0 && positions[farikPosIdx]) {
+    positions[farikPosIdx].x -= containerWidth * 0.06;
   }
 
   return positions;
@@ -158,7 +156,6 @@ export function ArtistsSection({
     [artists.length, containerWidth, containerHeight],
   );
 
-  // Compute number of rows for min-height calculation (same logic as computePositions)
   const numRows = useMemo(() => {
     let r = 0;
     let covered = 0;
@@ -181,8 +178,6 @@ export function ArtistsSection({
       eyebrow="Artists"
       intro="Resident DJs, producers, and core contributors shaping the RAAM sound."
     >
-
-      {/* Scattered pool container — grows with more artists */}
       <div
         ref={containerRef}
         className="relative mx-auto w-full max-w-7xl"
@@ -205,7 +200,7 @@ export function ArtistsSection({
                 onMouseLeave={() => setHoveredId(null)}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="group relative text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(1.8rem,5vw,3rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] whitespace-nowrap mb-4 mr-6"
+                className="group relative text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(2.4rem,7vw,3.5rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] whitespace-nowrap mb-4 mr-6"
                 aria-label={`Open ${artist.name} profile`}
               >
                 <span className="block text-balance transition duration-500 group-hover:-translate-y-1">
@@ -234,7 +229,7 @@ export function ArtistsSection({
                 opacity: { duration: 0.4 },
                 scale: { duration: 0.35, ease: "easeOut" },
               }}
-              className="group absolute text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(1.8rem,5vw,3rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-nowrap"
+              className="group absolute text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(2.4rem,7vw,3.5rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-nowrap"
               style={{
                 left: containerWidth > 0 ? `${(pos.x / containerWidth) * 100}%` : 0,
                 top: containerHeight > 0 ? `${(pos.y / containerHeight) * 100}%` : 0,

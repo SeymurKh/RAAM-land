@@ -155,7 +155,13 @@ export function VantaBackground() {
   return (
     <div
       ref={vantaRef}
-      className="pointer-events-none fixed inset-0 z-0 bg-black"
+      className="pointer-events-none absolute z-0 bg-black"
+      style={{
+        left: 0,
+        right: 0,
+        top: "-30px",
+        height: "calc(100svh + 60px)",
+      }}
       aria-hidden="true"
     />
   );

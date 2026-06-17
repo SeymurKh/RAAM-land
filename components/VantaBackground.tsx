@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -25,6 +25,23 @@ export function VantaBackground() {
   const lastScrollTimeRef = useRef(Date.now());
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Fixed pixel height — never changes on toolbar show/hide
+  const [vh, setVh] = useState<number | null>(null);
+  const lastWidthRef = useRef<number>(0);
+
+  useEffect(() => {
+    function measure() {
+      // Only update if width changed (orientation change), ignore toolbar
+      if (lastWidthRef.current !== window.innerWidth) {
+        lastWidthRef.current = window.innerWidth;
+        setVh(window.innerHeight);
+      }
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
 
   const animate = useCallback(() => {
     if (!effectRef.current) return;
@@ -155,13 +172,8 @@ export function VantaBackground() {
   return (
     <div
       ref={vantaRef}
-      className="pointer-events-none absolute z-0 bg-black"
-      style={{
-        left: 0,
-        right: 0,
-        top: "-30px",
-        height: "calc(100svh + 60px)",
-      }}
+      className="pointer-events-none fixed inset-x-0 top-0 z-0 bg-black"
+      style={vh !== null ? { height: `${vh}px` } : { height: "100dvh" }}
       aria-hidden="true"
     />
   );

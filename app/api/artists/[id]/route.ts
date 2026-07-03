@@ -50,11 +50,31 @@ export async function PUT(
     body.photo = undefined;
   }
 
+  // Если аватар удалили (null), удалить файл с диска
+  if (body.avatar === null || body.avatar === undefined) {
+    const existing = await getArtist(id);
+    if (existing?.avatar) {
+      console.log("[PUT /api/artists/:id] Deleting avatar file for:", id);
+      const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
+      const uploadDir = join(process.cwd(), "public", "uploads", "artists");
+      for (const ext of possibleExts) {
+        const filePath = join(uploadDir, `avatar-${id}.${ext}`);
+        try {
+          await unlink(filePath);
+          console.log("[PUT /api/artists/:id] Deleted avatar:", filePath);
+        } catch {
+          // Файл не существует — это нормально
+        }
+      }
+    }
+    body.avatar = undefined;
+  }
+
   const artist = await updateArtist(id, body);
   if (!artist) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  console.log("[PUT /api/artists/:id] Saved artist:", id, "photo:", artist.photo);
+  console.log("[PUT /api/artists/:id] Saved artist:", id, "photo:", artist.photo, "avatar:", artist.avatar);
   return NextResponse.json(artist);
 }
 
@@ -77,6 +97,21 @@ export async function DELETE(
     const uploadDir = join(process.cwd(), "public", "uploads", "artists");
     for (const ext of possibleExts) {
       const filePath = join(uploadDir, `${id}.${ext}`);
+      try {
+        await unlink(filePath);
+      } catch {
+        // Файл не существует — это нормально
+      }
+    }
+  }
+
+  // Удаляем аватар с диска
+  if (artist?.avatar) {
+    console.log("[DELETE /api/artists/:id] Deleting avatar for:", id);
+    const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
+    const uploadDir = join(process.cwd(), "public", "uploads", "artists");
+    for (const ext of possibleExts) {
+      const filePath = join(uploadDir, `avatar-${id}.${ext}`);
       try {
         await unlink(filePath);
       } catch {

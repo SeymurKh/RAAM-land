@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export function PageIntro() {
   const [visible, setVisible] = useState(true);
-  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     // Check if user has reduced motion preference
@@ -16,7 +15,6 @@ export function PageIntro() {
 
     if (prefersReduced) {
       setVisible(false);
-      setDismissed(true);
       return;
     }
 
@@ -28,9 +26,7 @@ export function PageIntro() {
   }, []);
 
   return (
-    <AnimatePresence
-      onExitComplete={() => setDismissed(true)}
-    >
+    <AnimatePresence>
       {visible ? (
         <motion.div
           key="page-intro"

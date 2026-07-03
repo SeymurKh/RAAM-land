@@ -14,7 +14,7 @@ interface DbData {
 async function readDb(): Promise<DbData> {
   try {
     const raw = await readFile(DB_PATH, "utf-8");
-    return ensureDbShape(JSON.parse(raw) as DbData);
+    return await ensureDbShape(JSON.parse(raw) as DbData);
   } catch {
     const { seedArtists } = await import("@/data/seed");
     const { seedProjects } = await import("@/data/projects");
@@ -29,9 +29,16 @@ async function readDb(): Promise<DbData> {
   }
 }
 
-function ensureDbShape(data: DbData): DbData {
+async function ensureDbShape(data: DbData): Promise<DbData> {
+  if (!Array.isArray(data.artists)) {
+    data.artists = [];
+  }
   if (!Array.isArray(data.projects)) {
     data.projects = [];
+  }
+  if (!data.stream || typeof data.stream !== "object") {
+    const { streamConfig } = await import("@/data/stream");
+    data.stream = streamConfig;
   }
 
   return data;

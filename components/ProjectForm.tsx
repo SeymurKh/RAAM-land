@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Project, ProjectVideo } from "@/types/content";
+import type { Project } from "@/types/content";
+import { ImagePositionPicker } from "@/components/ImagePositionPicker";
 
 interface ProjectFormProps {
   mode: "create" | "edit";
@@ -195,9 +196,30 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
             {uploading ? "Uploading..." : "Choose Image"}
           </button>
           {form.image && (
-            <span className="text-xs text-stone-300/55">{form.image}</span>
+            <button
+              type="button"
+              onClick={() => {
+                updateField("image", undefined);
+                updateField("imagePosition", undefined);
+              }}
+              className="text-xs text-red-400/70 hover:text-red-400"
+            >
+              Remove
+            </button>
           )}
         </div>
+
+        {/* Image Position Picker */}
+        {form.image && (
+          <div className="mt-3">
+            <label className={labelClass}>Image Position</label>
+            <ImagePositionPicker
+              imageUrl={form.image}
+              value={form.imagePosition}
+              onChange={(pos) => updateField("imagePosition", pos)}
+            />
+          </div>
+        )}
       </div>
 
       {/* Videos editor */}

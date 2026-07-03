@@ -42,10 +42,6 @@ export function ProjectsSection() {
     );
   }
 
-  function openVideo(v: ProjectVideo) {
-    setModalVideo({ url: v.url, title: v.title });
-  }
-
   function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key === "ArrowLeft") { event.preventDefault(); goTo(-1); }
     if (event.key === "ArrowRight") { event.preventDefault(); goTo(1); }
@@ -127,6 +123,7 @@ export function ProjectsSection() {
                         alt=""
                         fill
                         className="object-cover brightness-[0.25] saturate-[0.4]"
+                        style={{ objectPosition: project.imagePosition ?? "center" }}
                         sizes="(max-width: 1024px) 100vw, 40vw"
                         priority={isCenter}
                       />

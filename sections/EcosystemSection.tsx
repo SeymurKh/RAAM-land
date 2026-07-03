@@ -59,7 +59,7 @@ function TiltCard({
 
 export function EcosystemSection() {
   const gridRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(gridRef, { once: true, margin: "-10% 0px" });
+  useInView(gridRef, { once: true, margin: "-10% 0px" });
 
   return (
     <section id="ecosystem" className="relative isolate scroll-mt-24 overflow-hidden px-4 pt-4 pb-6 sm:px-5 sm:pt-10 sm:pb-20 lg:px-12">

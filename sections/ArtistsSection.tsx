@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArtistModal } from "@/components/ArtistModal";
 import { SectionFrame } from "@/components/SectionFrame";
@@ -238,13 +239,25 @@ export function ArtistsSection({
               aria-label={`Open ${artist.name} profile`}
             >
               <span
-                className="block text-balance transition duration-500 group-hover:-translate-y-1"
+                className="inline-flex items-center gap-3 text-balance transition duration-500 group-hover:-translate-y-1"
                 style={{
                   animation: `float-drift ${4 + index * 0.4}s ease-in-out infinite`,
                   animationDelay: `${index * 0.7}s`,
                   textShadow: "0 0 12px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.5)",
                 }}
               >
+                {artist.avatar && (
+                  <span className="relative inline-flex h-[0.8em] w-[0.8em] shrink-0 overflow-hidden rounded-full border border-white/20">
+                    <Image
+                      src={artist.avatar}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      style={{ objectPosition: artist.avatarPosition ?? "50% 50%" }}
+                      sizes="3rem"
+                    />
+                  </span>
+                )}
                 {artist.name}
               </span>
               <span className="mt-2 block text-xs font-normal uppercase tracking-[0.36em] text-stone-200/70 opacity-0 transition delay-150 duration-500 group-hover:opacity-100 group-focus:opacity-100">

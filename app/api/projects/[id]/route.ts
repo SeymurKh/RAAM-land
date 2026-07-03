@@ -60,5 +60,6 @@ function normalizeProject(project: Project): Project {
     order: Number(project.order) || 0,
     description: project.description.filter((paragraph) => paragraph.trim()),
     youtubeUrl: project.youtubeUrl?.trim() || undefined,
+    image: project.image?.trim() || undefined,
   };
 }

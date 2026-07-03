@@ -52,6 +52,31 @@ export async function POST(request: NextRequest) {
     body.photo = undefined;
   }
 
+  // Если аватар был загружен с временным именем (avatar-new-xxx), переименовываем файл
+  if (body.avatar && body.avatar.includes("/uploads/artists/avatar-new-")) {
+    const avatarUploadDir = join(process.cwd(), "public", "uploads", "artists");
+    const avatarOldFileName = body.avatar.split("/").pop()!;
+    const avatarExt = avatarOldFileName.split(".").pop()!;
+    const avatarNewFileName = `avatar-${body.id}.${avatarExt}`;
+    const avatarOldPath = join(avatarUploadDir, avatarOldFileName);
+    const avatarNewPath = join(avatarUploadDir, avatarNewFileName);
+
+    try {
+      // Удаляем старый аватар если есть (другое расширение)
+      const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
+      for (const e of possibleExts) {
+        if (e === avatarExt) continue;
+        const existingPath = join(avatarUploadDir, `avatar-${body.id}.${e}`);
+        try { await unlink(existingPath); } catch { /* ok */ }
+      }
+      await rename(avatarOldPath, avatarNewPath);
+      body.avatar = `/uploads/artists/${avatarNewFileName}`;
+      console.log("[POST /api/artists] Renamed avatar:", avatarOldFileName, "→", avatarNewFileName);
+    } catch (err) {
+      console.error("[POST /api/artists] Failed to rename avatar:", err);
+    }
+  }
+
   console.log("[POST /api/artists] Creating artist:", body.id, "photo:", body.photo);
   const artist = await createArtist(body);
   return NextResponse.json(artist, { status: 201 });

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import type { Artist } from "@/types/content";
 import { ArtistPhotoUpload } from "@/components/artist-form/ArtistPhotoUpload";
 import { PortfolioEditor } from "@/components/artist-form/PortfolioEditor";
 import { SocialsEditor } from "@/components/artist-form/SocialsEditor";
+import { ImagePositionPicker } from "@/components/ImagePositionPicker";
 
 interface ArtistFormProps {
   artist?: Artist;
@@ -16,6 +17,10 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [initialsManuallyEdited, setInitialsManuallyEdited] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarVersion, setAvatarVersion] = useState(0);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const tempIdRef = useRef(`new-${Date.now()}`);
 
   const [form, setForm] = useState<Artist>(
     artist ?? {
@@ -29,6 +34,9 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
       portfolio: [],
       socials: [],
       photo: undefined,
+      imagePosition: "50% 50%",
+      avatar: undefined,
+      avatarPosition: "50% 50%",
       visual: { initials: "", position: "high", tone: "from-stone-300/20" },
     },
   );
@@ -65,6 +73,32 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
     updateField("highlights", highlights);
   }
 
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const artistId = form.id || tempIdRef.current;
+    setUploadingAvatar(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("artistId", artistId);
+    formData.append("kind", "avatar");
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (response.ok) {
+        const data = await response.json();
+        updateField("avatar", data.url);
+        setAvatarVersion((v) => v + 1);
+      }
+    } catch {
+      // Upload failed silently
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -75,10 +109,8 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
         : `/api/artists/${form.id}`;
     const method = mode === "create" ? "POST" : "PUT";
 
-    // ВАЖНО: заменяем undefined на null, иначе JSON.stringify пропустит поле
-    // и старое значение photo в БД не очистится
-    const payload = { ...form, photo: form.photo ?? null };
-    console.log("[ArtistForm] Submitting:", method, url, "photo:", payload.photo);
+    const payload = { ...form, photo: form.photo ?? null, avatar: form.avatar ?? null };
+    console.log("[ArtistForm] Submitting:", method, url, "photo:", payload.photo, "avatar:", payload.avatar);
 
     const res = await fetch(url, {
       method,
@@ -105,10 +137,68 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
       {/* Фото артиста — Instagram-стиль */}
       <ArtistPhotoUpload
         value={form.photo}
-        artistId={form.id || `new-${Date.now()}`}
+        artistId={form.id || tempIdRef.current}
         onChange={(url) => updateField("photo", url)}
-        onRemove={() => updateField("photo", undefined)}
+        onRemove={() => {
+          updateField("photo", undefined);
+          updateField("imagePosition", undefined);
+        }}
       />
+
+      {/* Image Position Picker для фото */}
+      {form.photo && (
+        <div>
+          <label className={labelClass}>Photo Position</label>
+          <ImagePositionPicker
+            imageUrl={form.photo}
+            value={form.imagePosition}
+            onChange={(pos) => updateField("imagePosition", pos)}
+          />
+        </div>
+      )}
+
+      {/* Аватар артиста */}
+      <div>
+        <label className={labelClass}>Avatar (circle next to name)</label>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-4">
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-stone-100 transition hover:bg-white/[0.06] disabled:opacity-50"
+            >
+              {uploadingAvatar ? "Uploading..." : form.avatar ? "Change Avatar" : "Upload Avatar"}
+            </button>
+            {form.avatar && (
+              <button
+                type="button"
+                onClick={() => {
+                  updateField("avatar", undefined);
+                  updateField("avatarPosition", undefined);
+                }}
+                className="text-xs text-red-400/70 hover:text-red-400"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          {form.avatar && (
+            <ImagePositionPicker
+              imageUrl={`${form.avatar}?v=${avatarVersion}`}
+              value={form.avatarPosition}
+              onChange={(pos) => updateField("avatarPosition", pos)}
+            />
+          )}
+        </div>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>

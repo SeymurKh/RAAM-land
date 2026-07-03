@@ -14,12 +14,14 @@ export async function POST(request: NextRequest) {
   const file = formData.get("file") as File | null;
   const artistId = formData.get("artistId") as string | null;
   const projectId = formData.get("projectId") as string | null;
+  const kind = formData.get("kind") as string | null; // "avatar" | "photo" | undefined
   const entityId = artistId || projectId;
   const subDir = projectId ? "projects" : "artists";
 
   console.log("[upload] Received:", {
     artistId,
     projectId,
+    kind,
     fileName: file?.name,
     fileSize: file?.size,
     fileType: file?.type,
@@ -56,10 +58,14 @@ export async function POST(request: NextRequest) {
   // Ensure directory exists
   await mkdir(uploadDir, { recursive: true });
 
-  // Delete any existing photo for this entity (any extension)
+  // Determine file name prefix
+  const isAvatar = kind === "avatar" && !projectId;
+  const prefix = isAvatar ? `avatar-${entityId}` : entityId;
+
+  // Delete any existing file for this entity/kind (any extension)
   const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
   for (const e of possibleExts) {
-    const existingPath = join(uploadDir, `${entityId}.${e}`);
+    const existingPath = join(uploadDir, `${prefix}.${e}`);
     try {
       await unlink(existingPath);
       console.log("[upload] Deleted old file:", existingPath);
@@ -68,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const fileName = `${entityId}.${ext}`;
+  const fileName = `${prefix}.${ext}`;
   const filePath = join(uploadDir, fileName);
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(filePath, buffer);

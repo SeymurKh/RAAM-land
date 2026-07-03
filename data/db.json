@@ -50,7 +50,8 @@
         "position": "high",
         "tone": "from-stone-300/20"
       },
-      "photo": "/uploads/artists/pedro.png"
+      "photo": "/uploads/artists/pedro.png",
+      "avatar": "/uploads/artists/avatar-pedro.JPG"
     },
     {
       "id": "boraa",
@@ -159,7 +160,9 @@
         "position": "low",
         "tone": "from-neutral-200/20"
       },
-      "photo": "/uploads/artists/farik-interlude.png"
+      "photo": "/uploads/artists/farik-interlude.png",
+      "avatar": "/uploads/artists/avatar-farik-interlude.JPG",
+      "avatarPosition": "56% 38%"
     },
     {
       "id": "shayyo",
@@ -236,7 +239,8 @@
         "position": "high",
         "tone": "from-stone-400/20"
       },
-      "photo": "/uploads/artists/shayyo.png"
+      "photo": "/uploads/artists/shayyo.png",
+      "avatar": "/uploads/artists/avatar-shayyo.JPG"
     },
     {
       "id": "inmysoul",
@@ -298,7 +302,8 @@
         "position": "middle",
         "tone": "from-zinc-300/20"
       },
-      "photo": "/uploads/artists/inmysoul.png"
+      "photo": "/uploads/artists/inmysoul.png",
+      "avatar": "/uploads/artists/avatar-inmysoul.JPG"
     }
   ],
   "projects": [
@@ -325,7 +330,9 @@
       "description": [
         "A collaborative platform for RAAM residents at FOMO Baku, one of Azerbaijan's most known clubs.",
         "The format brings together artist interviews, venue insight, and full video sets for YouTube release."
-      ]
+      ],
+      "image": "/uploads/projects/raam-fomo.jpg",
+      "imagePosition": "50% 50%"
     },
     {
       "id": "uptempo-jams",
@@ -345,7 +352,8 @@
       "description": [
         "A high-BPM electronic music format recorded at Finestra del Aperitivo.",
         "The series highlights residents, wider community artists, and graduates ready to present their sound."
-      ]
+      ],
+      "image": "/uploads/projects/uptempo-jams.png"
     },
     {
       "id": "raam-live",
@@ -375,7 +383,8 @@
       "description": [
         "Audio sets recorded directly during live performances in RAAM venues.",
         "Each release documents the flow, energy, and atmosphere of the night as it actually happened."
-      ]
+      ],
+      "image": "/uploads/projects/raam-live.jpg"
     },
     {
       "id": "cassette-series",
@@ -405,7 +414,33 @@
       "description": [
         "An intimate audio-visual format recorded in close settings with a warm, analog aesthetic.",
         "Each episode captures a resident in a focused, personal set: raw sound, real atmosphere."
-      ]
+      ],
+      "image": "/uploads/projects/cassette-series.png"
+    },
+    {
+      "id": "grape-grooves",
+      "title": "GRAPE GROOVES",
+      "category": "Audio Visual Series",
+      "status": "Active",
+      "accent": "Atmospheric Video Sets / Music & Nature",
+      "order": 1,
+      "videos": [
+        {
+          "id": "v-1783095078265",
+          "title": "Narahat b2b Fade.N Live at Room (Baku, Azerbaijan) [05.06.2024]",
+          "url": "https://youtu.be/5PZaU4VuXc4?si=GyEasFuayHcaf6Ns"
+        },
+        {
+          "id": "v-1783095166311",
+          "title": " Narahat b2b Joule Live at Room (Baku, Azerbaijan) [01.05.24]",
+          "url": "https://youtu.be/F2E4wDTzodM?si=ArDgdaE6xPOzLmLZ"
+        }
+      ],
+      "description": [
+        "Grape Grooves is a musical journey that blends artistry of our residents and the charm of nature.",
+        "We craft atmospheric video sets in stunning locations - amidst vineyards, wineries, and they surroundings."
+      ],
+      "image": "/uploads/projects/grape-grooves.png"
     }
   ],
   "stream": {

@@ -63,7 +63,7 @@ export function ArtistsSection({
       eyebrow="Artists"
       intro="Resident DJs, producers, and core contributors shaping the RAAM sound."
     >
-      <div className="flex flex-col items-center gap-y-12 sm:gap-y-22">
+      <div className="flex flex-col items-center gap-y-12 sm:gap-y-22 pt-16 sm:pt-8">
         {rows.map((row, rowIdx) => (
           <div
             key={rowIdx}

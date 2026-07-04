@@ -24,7 +24,7 @@ export function SectionFrame({
     <section
       id={id}
       className={cn(
-        "relative isolate min-h-[100dvh] scroll-mt-24 px-4 pt-4 pb-8 sm:min-h-screen sm:px-5 sm:pt-10 sm:pb-24 lg:px-12",
+        "relative isolate min-h-[100svh] scroll-mt-24 px-4 pt-4 pb-8 sm:min-h-screen sm:px-5 sm:pt-10 sm:pb-24 lg:px-12",
         className,
       )}
     >

@@ -108,7 +108,8 @@
         "position": "middle",
         "tone": "from-zinc-100/20"
       },
-      "photo": "/uploads/artists/boraa.png"
+      "photo": "/uploads/artists/boraa.png",
+      "avatar": "/uploads/artists/avatar-boraa.jpg"
     },
     {
       "id": "farik-interlude",
@@ -161,8 +162,8 @@
         "tone": "from-neutral-200/20"
       },
       "photo": "/uploads/artists/farik-interlude.png",
-      "avatar": "/uploads/artists/avatar-farik-interlude.JPG",
-      "avatarPosition": "56% 38%"
+      "avatarPosition": "56% 38%",
+      "avatar": "/uploads/artists/avatar-farik-interlude.JPG"
     },
     {
       "id": "shayyo",

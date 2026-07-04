@@ -8,11 +8,15 @@ export default function AdminStreamPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [hasYoutubeEnv, setHasYoutubeEnv] = useState(false);
+  const [source, setSource] = useState<"youtube" | "twitch">("youtube");
 
   useEffect(() => {
     fetch("/api/stream")
       .then((r) => r.json())
-      .then((data) => setConfig(data));
+      .then((data) => {
+        setConfig(data);
+        if (data.source) setSource(data.source);
+      });
 
     // Check if YouTube API is configured
     fetch("/api/stream/status")
@@ -65,24 +69,70 @@ export default function AdminStreamPage() {
         Stream Control
       </h1>
 
-      {/* YouTube API status */}
+      {/* Stream source selector */}
       <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
         <p className="text-xs uppercase tracking-[0.28em] text-stone-300/50">
-          YouTube API Status
+          Stream Source
         </p>
-        <p className="mt-2 text-sm text-stone-200/70">
-          {hasYoutubeEnv ? (
-            <span className="text-green-400">
-              ✓ YOUTUBE_API_KEY and YOUTUBE_CHANNEL_ID are configured. Live
-              status is auto-detected.
-            </span>
-          ) : (
-            <span className="text-amber-400">
-              ⚠ YOUTUBE_API_KEY or YOUTUBE_CHANNEL_ID not set. Set them in
-              your environment to enable auto-detection.
-            </span>
-          )}
-        </p>
+        <div className="mt-3 flex gap-3">
+          <label
+            className={`flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm transition ${
+              source === "youtube"
+                ? "border-white/25 bg-white/[0.08] text-stone-100"
+                : "border-white/10 bg-transparent text-stone-400 hover:text-stone-200"
+            }`}
+          >
+            <input
+              type="radio"
+              name="source"
+              value="youtube"
+              checked={source === "youtube"}
+              onChange={() => {
+                setSource("youtube");
+                setConfig({ ...config, source: "youtube" });
+              }}
+              className="sr-only"
+            />
+            YouTube API
+          </label>
+          <label
+            className={`flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm transition ${
+              source === "twitch"
+                ? "border-white/25 bg-white/[0.08] text-stone-100"
+                : "border-white/10 bg-transparent text-stone-400 hover:text-stone-200"
+            }`}
+          >
+            <input
+              type="radio"
+              name="source"
+              value="twitch"
+              checked={source === "twitch"}
+              onChange={() => {
+                setSource("twitch");
+                setConfig({ ...config, source: "twitch" });
+              }}
+              className="sr-only"
+            />
+            Twitch
+          </label>
+        </div>
+
+        {/* YouTube API status (only visible when YouTube is selected) */}
+        {source === "youtube" && (
+          <p className="mt-3 text-sm text-stone-200/70">
+            {hasYoutubeEnv ? (
+              <span className="text-green-400">
+                ✓ YOUTUBE_API_KEY and YOUTUBE_CHANNEL_ID are configured. Live
+                status is auto-detected.
+              </span>
+            ) : (
+              <span className="text-amber-400">
+                ⚠ YOUTUBE_API_KEY or YOUTUBE_CHANNEL_ID not set. Set them in
+                your environment to enable auto-detection.
+              </span>
+            )}
+          </p>
+        )}
       </div>
 
       {/* Stream kill switch */}
@@ -118,6 +168,27 @@ export default function AdminStreamPage() {
       </div>
 
       <form onSubmit={handleSave} className="max-w-lg space-y-6">
+        {/* Twitch channel field */}
+        {source === "twitch" && (
+          <div>
+            <label className={labelClass}>Twitch Channel</label>
+            <input
+              className={inputClass}
+              value={config.twitchChannel ?? ""}
+              onChange={(e) =>
+                setConfig({
+                  ...config,
+                  twitchChannel: e.target.value || undefined,
+                })
+              }
+              placeholder="raam_live"
+            />
+            <p className="mt-1 text-xs text-stone-500">
+              Enter the channel name (not the full URL).
+            </p>
+          </div>
+        )}
+
         <div>
           <label className={labelClass}>Stream Title</label>
           <input
@@ -127,24 +198,6 @@ export default function AdminStreamPage() {
               setConfig({ ...config, streamTitle: e.target.value })
             }
           />
-        </div>
-
-        <div>
-          <label className={labelClass}>YouTube URL (fallback)</label>
-          <input
-            className={inputClass}
-            value={config.youtubeUrl ?? ""}
-            onChange={(e) =>
-              setConfig({
-                ...config,
-                youtubeUrl: e.target.value || undefined,
-              })
-            }
-            placeholder="https://www.youtube.com/watch?v=..."
-          />
-          <p className="mt-1 text-xs text-stone-500">
-            Used as fallback when YouTube API is not configured.
-          </p>
         </div>
 
         <div>

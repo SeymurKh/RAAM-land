@@ -63,12 +63,12 @@ export function ArtistsSection({
       eyebrow="Artists"
       intro="Resident DJs, producers, and core contributors shaping the RAAM sound."
     >
-      <div className="flex flex-col items-center gap-y-6 sm:gap-y-22">
+      <div className="flex flex-col items-center gap-y-12 sm:gap-y-22">
         {rows.map((row, rowIdx) => (
           <div
             key={rowIdx}
-            className={`flex w-full max-w-5xl ${
-              rowIdx % 2 === 0 ? "justify-between" : "justify-center"
+            className={`flex w-full max-w-5xl gap-4 sm:gap-0 ${
+              rowIdx % 2 === 0 ? "justify-center sm:justify-between" : "justify-center"
             }`}
           >
             {row.map((artist, artistIdx) => {
@@ -90,7 +90,7 @@ export function ArtistsSection({
                     opacity: { duration: 0.4 },
                     scale: { duration: 0.35, ease: "easeOut" },
                   }}
-                  className="group font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(2.8rem,9vw,3.8rem)] sm:text-[clamp(2.4rem,7vw,3.5rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-normal text-left"
+                   className="group font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(2rem,8vw,2.8rem)] sm:text-[clamp(2.4rem,7vw,3.5rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-normal text-center sm:text-left"
                   aria-label={`Open ${artist.name} profile`}
                 >
                   <span

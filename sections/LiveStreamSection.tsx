@@ -5,7 +5,6 @@ import { CountdownTimer } from "@/components/CountdownTimer";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionSkeleton } from "@/components/SectionSkeleton";
 import { SectionFrame } from "@/components/SectionFrame";
-import { getYouTubeEmbed } from "@/lib/utils";
 import type { StreamConfig } from "@/data/stream";
 
 interface LiveStatus {
@@ -13,6 +12,7 @@ interface LiveStatus {
   videoId: string | null;
   title?: string;
   source: string;
+  twitchChannel?: string;
 }
 
 export function LiveStreamSection() {
@@ -37,13 +37,17 @@ export function LiveStreamSection() {
   const isLive = liveStatus?.isLive ?? false;
   const liveVideoId = liveStatus?.videoId;
   const liveTitle = liveStatus?.title ?? streamTitle;
+  const liveSource = liveStatus?.source;
+  const twitchChannel = liveStatus?.twitchChannel;
 
-  // Build embed URL: prefer auto-detected videoId, fall back to manual youtubeUrl
+  // Build embed URL based on source
   let embedUrl: string | null = null;
-  if (isLive && liveVideoId) {
+  if (isLive && liveSource === "twitch" && twitchChannel) {
+    const parent =
+      typeof window !== "undefined" ? window.location.hostname : "";
+    embedUrl = `https://player.twitch.tv/?channel=${encodeURIComponent(twitchChannel)}&parent=${encodeURIComponent(parent)}`;
+  } else if (isLive && liveSource === "youtube" && liveVideoId) {
     embedUrl = `https://www.youtube.com/embed/${liveVideoId}`;
-  } else if (isLive && config.youtubeUrl) {
-    embedUrl = getYouTubeEmbed(config.youtubeUrl) ?? null;
   }
 
   return (
@@ -76,6 +80,11 @@ export function LiveStreamSection() {
               {liveStatus?.source === "youtube" && (
                 <span className="ml-auto text-xs uppercase tracking-[0.16em] text-stone-400/50">
                   Auto-detected
+                </span>
+              )}
+              {liveStatus?.source === "twitch" && (
+                <span className="ml-auto text-xs uppercase tracking-[0.16em] text-stone-400/50">
+                  Twitch
                 </span>
               )}
             </div>

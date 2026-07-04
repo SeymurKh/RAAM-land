@@ -13,6 +13,17 @@ export async function GET() {
     });
   }
 
+  // Twitch source — not auto-detected; trust admin config
+  if (streamConfig.source === "twitch") {
+    return NextResponse.json({
+      isLive: streamConfig.twitchChannel ? true : false,
+      videoId: null,
+      source: "twitch",
+      twitchChannel: streamConfig.twitchChannel ?? undefined,
+    });
+  }
+
+  // YouTube source — auto-detect via API
   const apiKey = process.env.YOUTUBE_API_KEY;
   const channelId = process.env.YOUTUBE_CHANNEL_ID;
 

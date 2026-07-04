@@ -446,9 +446,10 @@
   ],
   "stream": {
     "isLive": true,
+    "disabled": true,
+    "source": "twitch",
     "streamTitle": "RAAM Live Session",
     "nextStreamDate": "2026-07-04T17:00:00.000Z",
-    "youtubeUrl": "https://www.youtube.com/live/Y0BSnmYRh_8?si=VEUeWFIsKrIPavrb",
-    "disabled": true
+    "twitchChannel": " RAAMLabel"
   }
 }

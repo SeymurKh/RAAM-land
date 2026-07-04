@@ -51,7 +51,8 @@
         "tone": "from-stone-300/20"
       },
       "photo": "/uploads/artists/pedro.png",
-      "avatar": "/uploads/artists/avatar-pedro.JPG"
+      "avatar": "/uploads/artists/avatar-pedro.JPG",
+      "imagePosition": "50% 50%"
     },
     {
       "id": "boraa",
@@ -446,10 +447,10 @@
   ],
   "stream": {
     "isLive": true,
-    "disabled": true,
+    "disabled": false,
     "source": "twitch",
     "streamTitle": "RAAM Live Session",
     "nextStreamDate": "2026-07-04T17:00:00.000Z",
-    "twitchChannel": " RAAMLabel"
+    "twitchChannel": "RAAMLabel"
   }
 }

@@ -56,6 +56,7 @@ export function LiveStreamSection() {
       eyebrow="Live"
       title="Stream"
       intro="Watch RAAM live sessions and stay tuned for upcoming broadcasts."
+      className="pt-16 sm:pt-10"
     >
       <div className="mx-auto max-w-4xl overflow-hidden rounded-[1.75rem] border border-white/10">
         {isLive && embedUrl ? (

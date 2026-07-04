@@ -31,7 +31,6 @@ export function HeroSection() {
       className="relative isolate flex min-h-screen max-h-[92vh] w-full items-center overflow-hidden sm:max-h-none"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.06),transparent_24%),linear-gradient(180deg,rgba(0,0,0,0.42),rgba(0,0,0,0.78)_62%,#080706_96%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_var(--cursor-x,50%)_var(--cursor-y,45%),rgba(120,96,72,0.2),transparent_23%)]" />
 
       {/* Scroll-based darkening overlay */}
       <motion.div

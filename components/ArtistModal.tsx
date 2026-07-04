@@ -91,7 +91,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
             </div>
 
             <div className="relative grid h-full gap-0 lg:grid-cols-[0.88fr_1.12fr] lg:grid-rows-1">
-              <div className="relative min-h-[320px] overflow-hidden border-b border-white/10 lg:min-h-0 lg:border-b-0 lg:border-r">
+              <div className="relative min-h-[260px] overflow-hidden border-b border-white/10 sm:min-h-[320px] lg:min-h-0 lg:border-b-0 lg:border-r">
                 {artist.photo ? (
                   <Image
                     src={artist.photo}

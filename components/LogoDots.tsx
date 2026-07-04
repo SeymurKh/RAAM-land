@@ -23,7 +23,7 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
   const [activeDot, setActiveDot] = useState<number | null>(null);
 
   return (
-    <div className="relative w-56 h-56 sm:w-72 sm:h-72">
+    <div className="relative w-64 h-64 sm:w-72 sm:h-72">
       {[0, 1, 2, 3].map((i) => {
         const isActive = activeDot === i;
         const isOtherActive = activeDot !== null && !isActive;
@@ -56,11 +56,11 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
               return (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-white sm:gap-1">
                   <Icon
-                    size={16}
-                    className="opacity-80 sm:size-[18px]"
+                    size={20}
+                    className="opacity-80 sm:size-[20px]"
                     strokeWidth={1.5}
                   />
-                  <span className="text-[0.45rem] font-medium uppercase tracking-[0.12em] opacity-85 sm:text-[0.55rem]">
+                  <span className="text-[0.55rem] font-medium uppercase tracking-[0.12em] opacity-85 sm:text-[0.6rem]">
                     {labels[i]}
                   </span>
                 </div>

@@ -230,11 +230,11 @@ export function ArtistsSection({
                 opacity: { duration: 0.4 },
                 scale: { duration: 0.35, ease: "easeOut" },
               }}
-              className="group absolute text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(2.4rem,7vw,3.5rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-nowrap"
+              className="group absolute text-left font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(2.8rem,9vw,3.8rem)] sm:text-[clamp(2.4rem,7vw,3.5rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-nowrap"
               style={{
                 left: containerWidth > 0 ? `${(pos.x / containerWidth) * 100}%` : 0,
                 top: containerHeight > 0 ? `${(pos.y / containerHeight) * 100}%` : 0,
-                transform: "translate(-50%, -50%)",
+                transform: containerWidth < 640 ? "translate(-57%, -50%)" : "translate(-50%, -50%)",
               }}
               aria-label={`Open ${artist.name} profile`}
             >
@@ -247,14 +247,12 @@ export function ArtistsSection({
                 }}
               >
                 {artist.avatar && (
-                  <span className="relative inline-flex h-[0.8em] w-[0.8em] shrink-0 overflow-hidden rounded-full border border-white/20">
-                    <Image
+                  <span className="relative inline-flex h-[1em] w-[1em] shrink-0 overflow-hidden rounded-full border border-white/20">
+                    <img
                       src={artist.avatar}
                       alt=""
-                      fill
-                      className="object-cover"
+                      className="h-full w-full object-cover"
                       style={{ objectPosition: artist.avatarPosition ?? "50% 50%" }}
-                      sizes="3rem"
                     />
                   </span>
                 )}

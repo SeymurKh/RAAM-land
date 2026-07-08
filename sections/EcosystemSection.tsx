@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { capabilities, siteConfig } from "@/data/site";
 import { MotionReveal } from "@/components/MotionReveal";
+import { SectionTransition } from "@/components/SectionTransition";
 
 function TiltCard({
   children,
@@ -62,10 +63,11 @@ export function EcosystemSection() {
   useInView(gridRef, { once: true, margin: "-10% 0px" });
 
   return (
-    <section id="ecosystem" className="relative isolate scroll-mt-24 overflow-hidden px-4 pt-4 pb-6 sm:px-5 sm:pt-10 sm:pb-20 lg:px-12">
+    <section id="ecosystem" className="relative isolate scroll-mt-24 overflow-hidden px-4 pt-0 pb-6 sm:px-5 sm:pt-0 sm:pb-20 lg:px-12">
+      <SectionTransition position="bottom" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
 
-      <div className="relative mx-auto grid max-w-7xl gap-4 border-y border-white/10 py-5 sm:gap-10 sm:py-16 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="relative mx-auto grid max-w-7xl gap-4 border-t border-white/10 py-5 sm:gap-10 sm:py-16 lg:grid-cols-[0.9fr_1.1fr]">
         <MotionReveal direction="left">
           <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
             We are building

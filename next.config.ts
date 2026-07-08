@@ -23,6 +23,14 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   images: {
+    localPatterns: [
+      {
+        pathname: "/uploads/**",
+      },
+      {
+        pathname: "/assets/**",
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",

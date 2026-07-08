@@ -1,25 +1,42 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
+
+type PickerShape = "avatar" | "modal-photo" | "project-card";
 
 interface ImagePositionPickerProps {
   imageUrl: string;
-  value?: string; // "X% Y%", default "50% 50%"
+  value?: string;
   onChange: (position: string) => void;
+  shape: PickerShape;
 }
+
+const shapeClasses: Record<PickerShape, string> = {
+  avatar: "aspect-square rounded-full",
+  "modal-photo": "aspect-[4/5] rounded-[1.6rem]",
+  "project-card": "aspect-[4/3] rounded-[1.35rem]",
+};
 
 export function ImagePositionPicker({
   imageUrl,
-  value = "50% 50%",
+  value = "50% 50% 1",
   onChange,
+  shape,
 }: ImagePositionPickerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
 
-  // Parse current position
-  const [xPercent, yPercent] = value
-    .split(" ")
-    .map((s) => parseFloat(s) || 50);
+  const parts = value.split(" ");
+  const xPercent = parseFloat(parts[0]) || 50;
+  const yPercent = parseFloat(parts[1]) || 50;
+  const zoom = parseFloat(parts[2]) || 1;
+
+  const emitChange = useCallback(
+    (x: number, y: number, z: number) => {
+      onChange(`${Math.round(x)}% ${Math.round(y)}% ${z.toFixed(1)}`);
+    },
+    [onChange],
+  );
 
   const updateFromMouse = useCallback(
     (clientX: number, clientY: number) => {
@@ -28,11 +45,11 @@ export function ImagePositionPicker({
       const rect = el.getBoundingClientRect();
       const x = ((clientX - rect.left) / rect.width) * 100;
       const y = ((clientY - rect.top) / rect.height) * 100;
-      const clampedX = Math.max(0, Math.min(100, Math.round(x)));
-      const clampedY = Math.max(0, Math.min(100, Math.round(y)));
-      onChange(`${clampedX}% ${clampedY}%`);
+      const clampedX = Math.max(0, Math.min(100, x));
+      const clampedY = Math.max(0, Math.min(100, y));
+      emitChange(clampedX, clampedY, zoom);
     },
-    [onChange],
+    [zoom, emitChange],
   );
 
   function handleMouseDown(e: React.MouseEvent) {
@@ -41,55 +58,81 @@ export function ImagePositionPicker({
     updateFromMouse(e.clientX, e.clientY);
   }
 
-  function handleMouseMove(e: React.MouseEvent) {
-    if (!dragging) return;
-    updateFromMouse(e.clientX, e.clientY);
-  }
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!dragging) return;
+      updateFromMouse(e.clientX, e.clientY);
+    },
+    [dragging, updateFromMouse],
+  );
 
   function handleMouseUp() {
     setDragging(false);
   }
 
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = -e.deltaY * 0.005;
+      const newZoom = Math.max(1, Math.min(3, zoom + delta));
+      emitChange(xPercent, yPercent, newZoom);
+    },
+    [zoom, xPercent, yPercent, emitChange],
+  );
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, [handleWheel]);
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!dragging || e.touches.length !== 1) return;
+      updateFromMouse(e.touches[0].clientX, e.touches[0].clientY);
+    },
+    [dragging, updateFromMouse],
+  );
+
   return (
     <div
       ref={containerRef}
-      className="relative h-40 w-full cursor-crosshair overflow-hidden rounded-xl border border-white/10 bg-black/50 select-none"
+      className={`relative w-full max-w-sm cursor-grab overflow-hidden border border-white/10 bg-black/50 select-none ${shapeClasses[shape]}`}
       style={{ touchAction: "none" }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={(e) => {
+        if (e.touches.length === 1) {
+          setDragging(true);
+          updateFromMouse(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={() => setDragging(false)}
     >
-      {/* Background image */}
+      {/* Background image — fills the shape with zoom */}
       <div
         className="absolute inset-0"
         style={{
           backgroundImage: `url(${imageUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: value,
+          backgroundSize: `${zoom * 100}%`,
+          backgroundPosition: `${xPercent}% ${yPercent}%`,
+          backgroundRepeat: "no-repeat",
         }}
       />
 
-      {/* Grid overlay */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute left-1/2 top-0 h-full w-px bg-white" />
-        <div className="absolute left-0 top-1/2 h-px w-full bg-white" />
-      </div>
+      {/* Overlay edge ring — subtle white border-like glow */}
+      <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/5" />
 
-      {/* Crosshair */}
-      <div
-        className="absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-        style={{ left: `${xPercent}%`, top: `${yPercent}%` }}
-      >
-        {/* Outer ring */}
-        <div className="absolute inset-0 rounded-full border-2 border-white shadow-[0_0_8px_rgba(0,0,0,0.6)]" />
-        {/* Inner dot */}
-        <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_4px_rgba(0,0,0,0.6)]" />
+      {/* Info badge */}
+      <div className="absolute bottom-2 left-2 rounded-full bg-black/60 px-3 py-1 text-[0.65rem] text-stone-300/80 backdrop-blur-sm pointer-events-none">
+        {Math.round(xPercent)}% {Math.round(yPercent)}% · {zoom.toFixed(1)}×
       </div>
-
-      {/* Position label */}
-      <div className="absolute bottom-2 left-2 rounded-full bg-black/60 px-3 py-1 text-xs text-stone-300/80 backdrop-blur-sm">
-        {value}
+      <div className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2.5 py-1 text-[0.6rem] text-stone-300/50 backdrop-blur-sm pointer-events-none">
+        Drag · Scroll
       </div>
     </div>
   );

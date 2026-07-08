@@ -10,6 +10,8 @@ interface SectionFrameProps {
   intro?: string;
   children: ReactNode;
   className?: string;
+  /** Optional gradient transition at section boundary */
+  transition?: "top" | "bottom";
 }
 
 export function SectionFrame({
@@ -19,6 +21,7 @@ export function SectionFrame({
   intro,
   children,
   className,
+  transition,
 }: SectionFrameProps) {
   return (
     <section
@@ -28,9 +31,7 @@ export function SectionFrame({
         className,
       )}
     >
-      {/* Gradient transitions for smooth section boundaries */}
-      <SectionTransition position="top" />
-      <SectionTransition position="bottom" />
+      {transition && <SectionTransition position={transition} />}
 
       <div className="relative mx-auto max-w-7xl">
         <MotionReveal className="mb-6 grid gap-4 sm:mb-12 sm:gap-6 md:grid-cols-[0.72fr_1.28fr] md:items-end">

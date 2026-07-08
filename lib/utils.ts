@@ -6,6 +6,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Parse image position string "X% Y% Z" into { x, y, zoom }.
+ * Falls back to "50% 50%" with no zoom.
+ */
+export function parseImagePosition(
+  value?: string,
+): { position: string; zoom: number } {
+  if (!value) return { position: "50% 50%", zoom: 1 };
+  const parts = value.split(" ");
+  return {
+    position: `${parts[0] || "50%"} ${parts[1] || "50%"}`,
+    zoom: parseFloat(parts[2]) || 1,
+  };
+}
+
 export function getYouTubeEmbed(url?: string) {
   if (!url) return undefined;
 

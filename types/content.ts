@@ -68,6 +68,7 @@ export interface Project {
   videos?: ProjectVideo[];
   image?: string;
   imagePosition?: string;
+  brightness?: number; // 0-100, default 25
 }
 
 export interface Capability {

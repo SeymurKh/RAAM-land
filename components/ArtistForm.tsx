@@ -89,7 +89,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
       });
       if (response.ok) {
         const data = await response.json();
-        updateField("avatar", data.url);
+        updateField("avatar", `${data.url}?v=${Date.now()}`);
         setAvatarVersion((v) => v + 1);
       }
     } catch {
@@ -153,6 +153,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
             imageUrl={form.photo}
             value={form.imagePosition}
             onChange={(pos) => updateField("imagePosition", pos)}
+            shape="modal-photo"
           />
         </div>
       )}
@@ -195,6 +196,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
               imageUrl={`${form.avatar}?v=${avatarVersion}`}
               value={form.avatarPosition}
               onChange={(pos) => updateField("avatarPosition", pos)}
+              shape="avatar"
             />
           )}
         </div>

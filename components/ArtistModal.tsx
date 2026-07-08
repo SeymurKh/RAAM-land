@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { BrandSocialIcon } from "@/components/BrandSocialIcon";
 import type { Artist } from "@/types/content";
-import { cn } from "@/lib/utils";
+import { cn, parseImagePosition } from "@/lib/utils";
 import { useScrollLock } from "@/lib/useScrollLock";
 
 interface ArtistModalProps {
@@ -99,6 +99,13 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                     fill
                     sizes="(max-width: 768px) 100vw, 640px"
                     className="object-cover"
+                    style={(() => {
+                      const { position, zoom } = parseImagePosition(artist.imagePosition);
+                      return {
+                        objectPosition: position,
+                        transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+                      };
+                    })()}
                     unoptimized
                   />
                 ) : (

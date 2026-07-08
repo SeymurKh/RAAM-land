@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArtistModal } from "@/components/ArtistModal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { SectionSkeleton } from "@/components/SectionSkeleton";
+import { parseImagePosition } from "@/lib/utils";
 import type { Artist } from "@/types/content";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -62,6 +64,7 @@ export function ArtistsSection({
       id="artists"
       eyebrow="Artists"
       intro="Resident DJs, producers, and core contributors shaping the RAAM sound."
+      transition="top"
     >
       <div className="flex flex-col items-center gap-y-12 sm:gap-y-22 pt-16 sm:pt-8">
         {rows.map((row, rowIdx) => (
@@ -103,11 +106,20 @@ export function ArtistsSection({
                   >
                     {artist.avatar && (
                       <span className="relative inline-flex h-[1em] w-[1em] shrink-0 overflow-hidden rounded-full border border-white/20">
-                        <img
+                        <Image
                           src={artist.avatar}
                           alt=""
+                          width={80}
+                          height={80}
                           className="h-full w-full object-cover"
-                          style={{ objectPosition: artist.avatarPosition ?? "50% 50%" }}
+                          style={(() => {
+                            const { position, zoom } = parseImagePosition(artist.avatarPosition);
+                            return {
+                              objectPosition: position,
+                              transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+                            };
+                          })()}
+                          unoptimized
                         />
                       </span>
                     )}

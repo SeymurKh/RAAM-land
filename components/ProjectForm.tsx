@@ -70,7 +70,7 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
       });
       if (response.ok) {
         const data = await response.json();
-        updateField("image", data.url);
+        updateField("image", `${data.url}?v=${Date.now()}`);
       }
     } catch {
       // Upload failed silently
@@ -217,7 +217,30 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
               imageUrl={form.image}
               value={form.imagePosition}
               onChange={(pos) => updateField("imagePosition", pos)}
+              shape="project-card"
             />
+          </div>
+        )}
+
+        {/* Brightness */}
+        {form.image && (
+          <div className="mt-3">
+            <label className={labelClass}>
+              Image Brightness: {form.brightness ?? 25}%
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={form.brightness ?? 25}
+              onChange={(e) =>
+                updateField("brightness", Number(e.target.value))
+              }
+              className="w-full accent-stone-400"
+            />
+            <p className="mt-1 text-xs text-stone-500">
+              0 = very dark, 100 = bright
+            </p>
           </div>
         )}
       </div>

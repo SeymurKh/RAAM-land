@@ -43,8 +43,9 @@ export function ArtistPhotoUpload({
 
       if (res.ok) {
         const data = await res.json();
-        console.log("[ArtistPhotoUpload] Upload success, URL:", data.url);
-        onChange(data.url);
+        const urlWithBust = `${data.url}?v=${Date.now()}`;
+        console.log("[ArtistPhotoUpload] Upload success, URL:", urlWithBust);
+        onChange(urlWithBust);
       } else {
         const data = await res.json().catch(() => ({}));
         console.error("[ArtistPhotoUpload] Upload failed:", res.status, data);

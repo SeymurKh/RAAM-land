@@ -54,7 +54,7 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
             {(() => {
               const Icon = icons[i];
               return (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-white sm:gap-1">
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-[#0a0a0a] sm:gap-1">
                   <Icon
                     size={20}
                     className="opacity-80 sm:size-[20px]"

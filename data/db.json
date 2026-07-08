@@ -51,8 +51,9 @@
         "tone": "from-stone-300/20"
       },
       "photo": "/uploads/artists/pedro.png",
-      "avatar": "/uploads/artists/avatar-pedro.JPG",
-      "imagePosition": "50% 50%"
+      "imagePosition": "50% 50% 1.0",
+      "avatarPosition": "43% 42% 1.5",
+      "avatar": "/uploads/artists/avatar-pedro.JPG?v=1783539675724"
     },
     {
       "id": "boraa",
@@ -163,7 +164,7 @@
         "tone": "from-neutral-200/20"
       },
       "photo": "/uploads/artists/farik-interlude.png",
-      "avatarPosition": "56% 38%",
+      "avatarPosition": "62% 56% 1.5",
       "avatar": "/uploads/artists/avatar-farik-interlude.JPG"
     },
     {
@@ -242,7 +243,8 @@
         "tone": "from-stone-400/20"
       },
       "photo": "/uploads/artists/shayyo.png",
-      "avatar": "/uploads/artists/avatar-shayyo.JPG"
+      "avatar": "/uploads/artists/avatar-shayyo.JPG",
+      "avatarPosition": "46% 62% 1.5"
     },
     {
       "id": "inmysoul",
@@ -428,29 +430,52 @@
       "order": 1,
       "videos": [
         {
-          "id": "v-1783095078265",
-          "title": "Narahat b2b Fade.N Live at Room (Baku, Azerbaijan) [05.06.2024]",
-          "url": "https://youtu.be/5PZaU4VuXc4?si=GyEasFuayHcaf6Ns"
+          "id": "v-1783540021996",
+          "title": "Grape Grooves Ep.6 - Narahat | Deep House | Progressive House",
+          "url": "https://youtu.be/e-EZITWzaDc?si=w0laTRehT3n_f3HK"
         },
         {
-          "id": "v-1783095166311",
-          "title": " Narahat b2b Joule Live at Room (Baku, Azerbaijan) [01.05.24]",
-          "url": "https://youtu.be/F2E4wDTzodM?si=ArDgdaE6xPOzLmLZ"
+          "id": "v-1783540022765",
+          "title": "Grape Grooves Ep.5 - Shayyo | Organic House | Tech House",
+          "url": "https://youtu.be/riP7EuiDfTA?si=8-TVmZz-qpIUbZjw"
+        },
+        {
+          "id": "v-1783540056530",
+          "title": "Grape Grooves Ep.4 - Tali Muss | Progressive House",
+          "url": "https://youtu.be/SEwPclIU8eo?si=kuWUASqceF2SvdiF"
+        },
+        {
+          "id": "v-1783540056883",
+          "title": "Grape Grooves Ep.3 - Pedro | House | Tech House",
+          "url": "https://youtu.be/ic-K39bhe7Y?si=1RYvxIeR9LSPg7EC"
+        },
+        {
+          "id": "v-1783540085349",
+          "title": "Grape Grooves Ep.2 - Ilkevich | Deep House | Disco House",
+          "url": "https://youtu.be/8dRDkXmfJ4A?si=l06tm6u4140jGqwZ"
+        },
+        {
+          "id": "v-1783540085487",
+          "title": "Grape Grooves Ep.1 - Farik Interlude | Melodic House | Indie Dance",
+          "url": "https://youtu.be/TaVnaTPGqC4?si=PVmgYjq5u8Se_xt3"
         }
       ],
       "description": [
         "Grape Grooves is a musical journey that blends artistry of our residents and the charm of nature.",
         "We craft atmospheric video sets in stunning locations - amidst vineyards, wineries, and they surroundings."
       ],
-      "image": "/uploads/projects/grape-grooves.png"
+      "overlayOpacity": 0,
+      "imagePosition": "50% 50% 1.0",
+      "brightness": 100,
+      "image": "/uploads/projects/grape-grooves.png?v=1783539182758"
     }
   ],
   "stream": {
     "isLive": true,
-    "disabled": false,
+    "disabled": true,
     "source": "twitch",
     "streamTitle": "RAAM Live Session",
-    "nextStreamDate": "2026-07-04T17:00:00.000Z",
+    "nextStreamDate": "2026-07-10T17:00:00.000Z",
     "twitchChannel": "RAAMLabel"
   }
 }

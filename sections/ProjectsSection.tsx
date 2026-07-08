@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { YouTubeModal } from "@/components/YouTubeModal";
+import { parseImagePosition } from "@/lib/utils";
 import type { Project, ProjectVideo } from "@/types/content";
 
 export function ProjectsSection() {
@@ -54,6 +55,7 @@ export function ProjectsSection() {
       id="projects"
       eyebrow="Projects"
       intro="A focused gallery of the formats that currently define RAAM's public platform."
+      transition="bottom"
     >
       <section
         tabIndex={0}
@@ -122,8 +124,15 @@ export function ProjectsSection() {
                         src={project.image}
                         alt=""
                         fill
-                        className="object-cover brightness-[0.25] saturate-[0.4]"
-                        style={{ objectPosition: project.imagePosition ?? "center" }}
+                        className="object-cover saturate-[0.4]"
+                        style={(() => {
+                          const { position, zoom } = parseImagePosition(project.imagePosition);
+                          return {
+                            objectPosition: position,
+                            transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+                            filter: `brightness(${(project.brightness ?? 25) / 100})`,
+                          };
+                        })()}
                         sizes="(max-width: 1024px) 100vw, 40vw"
                         priority={isCenter}
                       />

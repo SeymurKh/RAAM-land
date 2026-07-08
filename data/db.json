@@ -307,7 +307,8 @@
         "tone": "from-zinc-300/20"
       },
       "photo": "/uploads/artists/inmysoul.png",
-      "avatar": "/uploads/artists/avatar-inmysoul.JPG"
+      "avatar": "/uploads/artists/avatar-inmysoul.JPG",
+      "avatarPosition": "36% 44% 1.5"
     }
   ],
   "projects": [

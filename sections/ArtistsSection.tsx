@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { ArtistModal } from "@/components/ArtistModal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { SectionSkeleton } from "@/components/SectionSkeleton";
@@ -79,21 +78,19 @@ export function ArtistsSection({
               const isOtherHovered = hoveredId !== null && !isHovered;
 
               return (
-                <motion.button
+                <button
                   key={artist.id}
                   type="button"
                   onClick={() => onSetActiveArtist(artist)}
                   onMouseEnter={() => setHoveredId(artist.id)}
                   onMouseLeave={() => setHoveredId(null)}
-                  animate={{
+                  className="group font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(2.4rem,9vw,3.2rem)] sm:text-[clamp(2.4rem,7vw,3.5rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-normal text-center sm:text-left"
+                  style={{
                     opacity: isOtherHovered ? 0.2 : 1,
-                    scale: isHovered ? 1.25 : 1,
+                    transform: isHovered ? "scale(1.25)" : "scale(1)",
+                    transition: "opacity 0.4s, transform 0.35s ease-out",
+                    willChange: "transform, opacity",
                   }}
-                  transition={{
-                    opacity: { duration: 0.4 },
-                    scale: { duration: 0.35, ease: "easeOut" },
-                  }}
-                   className="group font-bebas uppercase leading-[0.85] tracking-normal text-stone-50/90 outline-none transition-colors duration-700 ease-out hover:text-white focus:text-white text-[clamp(2.4rem,9vw,3.2rem)] sm:text-[clamp(2.4rem,7vw,3.5rem)] md:text-[clamp(2.8rem,6vw,5.5rem)] origin-center whitespace-normal text-center sm:text-left"
                   aria-label={`Open ${artist.name} profile`}
                 >
                   <span
@@ -128,7 +125,7 @@ export function ArtistsSection({
                   <span className="mt-2 block text-xs font-normal uppercase tracking-[0.36em] text-stone-200/70 opacity-0 transition delay-150 duration-500 group-hover:opacity-100 group-focus:opacity-100">
                     {artist.origin} / {artist.genres.slice(0, 2).join(" / ")}
                   </span>
-                </motion.button>
+                </button>
               );
             })}
           </div>

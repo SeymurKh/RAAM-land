@@ -50,7 +50,7 @@ function TiltCard({
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ transformStyle: "preserve-3d", transition: "transform 0.15s ease-out" }}
+      style={{ transformStyle: "preserve-3d", transition: "transform 0.15s ease-out", willChange: "transform" }}
       className="group rounded-[1.25rem] border border-white/10 bg-white/[0.035] p-3 backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:border-stone-100/24 hover:bg-white/[0.065] sm:rounded-[1.5rem] sm:p-5"
     >
       {children}

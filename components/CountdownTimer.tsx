@@ -47,13 +47,39 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
   );
 
   useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | null = null;
+
     const tick = () => {
       setTimeLeft(calculateTimeLeft(targetDate));
     };
 
-    tick();
-    const interval = setInterval(tick, 1000);
-    return () => clearInterval(interval);
+    function start() {
+      tick();
+      interval = setInterval(tick, 1000);
+    }
+
+    function stop() {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    }
+
+    function handleVisibility() {
+      if (document.hidden) {
+        stop();
+      } else {
+        start();
+      }
+    }
+
+    start();
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, [targetDate]);
 
   if (!timeLeft) {

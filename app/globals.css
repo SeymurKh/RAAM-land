@@ -234,6 +234,11 @@ select {
   }
 }
 
+/* Off-screen sections — paint containment for GPU savings (no layout skip — keeps modals working) */
+section[id] {
+  contain: paint;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

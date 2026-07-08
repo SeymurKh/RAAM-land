@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Mail, Phone } from "lucide-react";
 import { BrandSocialIcon } from "@/components/BrandSocialIcon";
 import { ContactDialog, type InquiryType } from "@/components/ContactDialog";
@@ -10,10 +11,15 @@ import { ScrollReturnIndicator } from "@/components/ScrollReturnIndicator";
 import { VantaBackground } from "@/components/VantaBackground";
 import { ArtistsSection } from "@/sections/ArtistsSection";
 import { LiveStreamSection } from "@/sections/LiveStreamSection";
-import { ContactsSection } from "@/sections/ContactsSection";
+import { SectionSkeleton } from "@/components/SectionSkeleton";
 import { contactLinks } from "@/data/site";
 import type { Artist } from "@/types/content";
 import type { ReactNode } from "react";
+
+const ContactsSection = dynamic(
+  () => import("@/sections/ContactsSection").then((m) => ({ default: m.ContactsSection })),
+  { loading: () => <SectionSkeleton /> },
+);
 
 const brandKinds = new Set(["instagram", "soundcloud", "spotify", "youtube", "linktree"]);
 

@@ -117,6 +117,7 @@ export function ProjectsSection() {
                       transformStyle: "preserve-3d",
                       zIndex: isCenter ? 3 : 1,
                       pointerEvents: isCenter ? "auto" : "none",
+                      willChange: "transform, opacity",
                     }}
                   >
                     {project.image ? (

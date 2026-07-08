@@ -14,6 +14,22 @@ const SCROLL_THRESHOLD = 30;
 const RAMP_UP = 0.2;
 const DECAY_RATE = 0.94;
 const SCROLL_IDLE_MS = 120;
+const CHAOS_REST_THRESHOLD = 0.08; // slightly higher to stop RAF sooner
+
+let visibilityObserver: IntersectionObserver | null = null;
+
+function observeVisibility(el: Element, onHidden: () => void, onVisible: () => void) {
+  if (typeof IntersectionObserver === "undefined") return;
+  visibilityObserver?.disconnect();
+  visibilityObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) onVisible();
+      else onHidden();
+    },
+    { threshold: 0 },
+  );
+  visibilityObserver.observe(el);
+}
 
 export function VantaBackground() {
   const vantaRef = useRef<HTMLDivElement>(null);
@@ -55,7 +71,7 @@ export function VantaBackground() {
     } else {
       chaosRef.current =
         BASE_CHAOS + (chaosRef.current - BASE_CHAOS) * DECAY_RATE;
-      if (chaosRef.current - BASE_CHAOS < 0.05) {
+      if (chaosRef.current - BASE_CHAOS < CHAOS_REST_THRESHOLD) {
         chaosRef.current = BASE_CHAOS;
       }
     }
@@ -76,7 +92,7 @@ export function VantaBackground() {
 
     const needsMore =
       isScrollingRef.current ||
-      chaosRef.current - BASE_CHAOS > 0.05 ||
+      chaosRef.current - BASE_CHAOS > CHAOS_REST_THRESHOLD ||
       velocityRef.current > 0.3;
 
     if (needsMore) {
@@ -121,6 +137,23 @@ export function VantaBackground() {
     }
 
     initVanta();
+
+    // Pause when tab is hidden / element not visible
+    if (vantaRef.current) {
+      observeVisibility(
+        vantaRef.current,
+        () => {
+          // hidden — cancel any running RAF
+          if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = 0;
+          }
+        },
+        () => {
+          // visible again — restart if needed
+        },
+      );
+    }
 
     return () => {
       cancelled = true;

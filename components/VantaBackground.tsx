@@ -14,7 +14,7 @@ const SCROLL_THRESHOLD = 30;
 const RAMP_UP = 0.2;
 const DECAY_RATE = 0.94;
 const SCROLL_IDLE_MS = 120;
-const CHAOS_REST_THRESHOLD = 0.08; // slightly higher to stop RAF sooner
+const CHAOS_REST_THRESHOLD = 0.08;
 
 let visibilityObserver: IntersectionObserver | null = null;
 
@@ -42,13 +42,13 @@ export function VantaBackground() {
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Fixed pixel height — never changes on toolbar show/hide
   const [vh, setVh] = useState<number | null>(null);
   const lastWidthRef = useRef<number>(0);
+  const [p5Loaded, setP5Loaded] = useState(false);
 
+  // Fixed pixel height
   useEffect(() => {
     function measure() {
-      // Only update if width changed (orientation change), ignore toolbar
       if (lastWidthRef.current !== window.innerWidth) {
         lastWidthRef.current = window.innerWidth;
         setVh(window.innerHeight);
@@ -57,6 +57,27 @@ export function VantaBackground() {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // Dynamically load p5.js (non-blocking, only on pages that render VantaBackground)
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    if ((window as any).p5) {
+      setP5Loaded(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js";
+    script.async = true;
+    script.onload = () => setP5Loaded(true);
+    document.head.appendChild(script);
+
+    return () => {
+      // Don't remove — other instances might use it
+    };
   }, []);
 
   const animate = useCallback(() => {
@@ -102,14 +123,13 @@ export function VantaBackground() {
     }
   }, []);
 
+  // Init vanta after p5.js is loaded
   useEffect(() => {
+    if (!p5Loaded) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
-
-    if (!(window as any).p5) {
-      return;
-    }
+    if (!(window as any).p5) return;
 
     let cancelled = false;
 
@@ -138,19 +158,17 @@ export function VantaBackground() {
 
     initVanta();
 
-    // Pause when tab is hidden / element not visible
     if (vantaRef.current) {
       observeVisibility(
         vantaRef.current,
         () => {
-          // hidden — cancel any running RAF
           if (rafRef.current) {
             cancelAnimationFrame(rafRef.current);
             rafRef.current = 0;
           }
         },
         () => {
-          // visible again — restart if needed
+          // visible again
         },
       );
     }
@@ -160,7 +178,7 @@ export function VantaBackground() {
       effectRef.current?.destroy();
       effectRef.current = null;
     };
-  }, []);
+  }, [p5Loaded]);
 
   useEffect(() => {
     function handleScroll() {

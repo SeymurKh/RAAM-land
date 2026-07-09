@@ -1,6 +1,8 @@
 import { SignJWT, jwtVerify } from "jose";
 
-const secret = new TextEncoder().encode(process.env.ADMIN_PASSWORD ?? "");
+const secret = new TextEncoder().encode(
+  process.env.JWT_SECRET || process.env.ADMIN_PASSWORD || "",
+);
 
 export async function createToken(): Promise<string> {
   return new SignJWT({ role: "admin" })

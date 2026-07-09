@@ -8,7 +8,7 @@ import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { YouTubeModal } from "@/components/YouTubeModal";
 import { parseImagePosition } from "@/lib/utils";
-import type { Project, ProjectVideo } from "@/types/content";
+import type { Project } from "@/types/content";
 
 export function ProjectsSection() {
   const [projects, setProjects] = useState<Project[]>([]);

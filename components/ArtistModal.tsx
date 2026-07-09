@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -49,19 +50,19 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
     };
   }, [artist, onClose]);
 
-  return (
+  const modal = artist ? (
     <AnimatePresence>
-      {artist ? (
-        <motion.div
-          className="fixed inset-0 z-[80] overflow-y-auto overscroll-y-contain bg-black/72 px-4 pt-20 pb-5 backdrop-blur-2xl sm:px-6 sm:pt-24 sm:pb-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={`${artist.id}-title`}
-          onMouseDown={onClose}
-        >
+      <motion.div
+        key="artist-modal-overlay"
+        className="fixed inset-0 z-[80] flex items-center justify-center bg-black/72 px-4 backdrop-blur-2xl sm:px-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={`${artist.id}-title`}
+        onMouseDown={onClose}
+      >
           <motion.article
             initial={{ opacity: 0, y: 46, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -269,8 +270,9 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
               </div>
             </div>
           </motion.article>
-        </motion.div>
-      ) : null}
+      </motion.div>
     </AnimatePresence>
-  );
+  ) : null;
+
+  return modal ? createPortal(modal, document.body) : null;
 }

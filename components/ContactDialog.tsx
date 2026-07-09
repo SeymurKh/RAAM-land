@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { GraduationCap, Handshake, NotebookPen, Video, X } from "lucide-react";
 import type { Artist } from "@/types/content";
@@ -90,15 +91,15 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
     setSent(true);
   }
 
-  return (
+  const modal = open ? (
     <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
-          onClick={onClose}
+      <motion.div
+        key="contact-dialog-overlay"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+        onClick={onClose}
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -211,7 +212,8 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
             </form>
           </motion.div>
         </motion.div>
-      )}
     </AnimatePresence>
-  );
+  ) : null;
+
+  return modal ? createPortal(modal, document.body) : null;
 }

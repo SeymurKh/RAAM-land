@@ -428,7 +428,7 @@
       "category": "Audio Visual Series",
       "status": "Active",
       "accent": "Atmospheric Video Sets / Music & Nature",
-      "order": 1,
+      "order": 5,
       "videos": [
         {
           "id": "v-1783540021996",
@@ -472,7 +472,7 @@
     }
   ],
   "stream": {
-    "isLive": true,
+    "isLive": false,
     "disabled": true,
     "source": "twitch",
     "streamTitle": "RAAM Live Session",

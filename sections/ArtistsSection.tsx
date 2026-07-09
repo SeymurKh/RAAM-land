@@ -73,7 +73,7 @@ export function ArtistsSection({
               rowIdx % 2 === 0 ? "justify-center sm:justify-between" : "justify-center"
             }`}
           >
-            {row.map((artist, artistIdx) => {
+            {row.map((artist) => {
               const isHovered = hoveredId === artist.id;
               const isOtherHovered = hoveredId !== null && !isHovered;
 

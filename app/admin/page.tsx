@@ -7,6 +7,7 @@ interface DashboardData {
   artistCount: number;
   projectCount: number;
   isLive: boolean;
+  disabled: boolean;
   streamTitle: string;
 }
 
@@ -23,6 +24,7 @@ export default function AdminDashboard() {
         artistCount: artists.length,
         projectCount: projects.length,
         isLive: stream.isLive,
+        disabled: stream.disabled ?? false,
         streamTitle: stream.streamTitle,
       });
     });
@@ -74,7 +76,7 @@ export default function AdminDashboard() {
             Stream
           </p>
           <p className="mt-3 text-4xl font-semibold text-white">
-            {data.isLive ? "Live" : "Offline"}
+            {data.disabled ? "Disabled" : data.isLive ? "Live" : "Offline"}
           </p>
           <Link
             href="/admin/stream"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Play, X } from "lucide-react";
 import { getYouTubeEmbed } from "@/lib/utils";
@@ -43,19 +44,19 @@ export function YouTubeModal({
   const hasVideos = videos && videos.length > 0;
   const activeVideo = hasVideos ? videos.find((v) => v.url === activeUrl) : null;
 
-  return (
+  const modal = isOpen && embedUrl ? (
     <AnimatePresence>
-      {isOpen && embedUrl ? (
-        <motion.div
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/72 px-4 backdrop-blur-2xl sm:px-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${title} — YouTube player`}
-          onMouseDown={onClose}
-        >
+      <motion.div
+        key="youtube-modal-overlay"
+        className="fixed inset-0 z-[80] flex items-center justify-center bg-black/72 px-4 backdrop-blur-2xl sm:px-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${title} — YouTube player`}
+        onMouseDown={onClose}
+      >
           <motion.div
             initial={{ opacity: 0, y: 46, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -125,7 +126,8 @@ export function YouTubeModal({
             </div>
           </motion.div>
         </motion.div>
-      ) : null}
     </AnimatePresence>
-  );
+  ) : null;
+
+  return modal ? createPortal(modal, document.body) : null;
 }

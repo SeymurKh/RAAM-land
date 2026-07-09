@@ -38,7 +38,7 @@ export function VantaBackground() {
   const velocityRef = useRef(0);
   const rafRef = useRef<number>(0);
   const lastScrollYRef = useRef(0);
-  const lastScrollTimeRef = useRef(Date.now());
+  const lastScrollTimeRef = useRef(0);
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -59,11 +59,15 @@ export function VantaBackground() {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
+  // reduced motion check
+  const [reducedMotion] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
+
   // Dynamically load p5.js (non-blocking, only on pages that render VantaBackground)
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
+    if (reducedMotion) return;
     if ((window as any).p5) {
       setP5Loaded(true);
       return;
@@ -74,11 +78,7 @@ export function VantaBackground() {
     script.async = true;
     script.onload = () => setP5Loaded(true);
     document.head.appendChild(script);
-
-    return () => {
-      // Don't remove — other instances might use it
-    };
-  }, []);
+  }, [reducedMotion]);
 
   const animate = useCallback(() => {
     if (!effectRef.current) return;

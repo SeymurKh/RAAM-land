@@ -172,7 +172,11 @@ export function ProjectsSection() {
                             <div className="mt-4">
                               <button
                                 type="button"
-                                onClick={() => setModalVideo({ url: videos[0].url, title: project.title })}
+                                onClick={() => {
+                                  if (videos[0]?.url) {
+                                    setModalVideo({ url: videos[0].url, title: project.title });
+                                  }
+                                }}
                                 className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-5 py-2.5 text-sm text-stone-200/80 transition hover:border-white/20 hover:bg-white/[0.1] hover:text-white"
                               >
                                 <Play size={14} />

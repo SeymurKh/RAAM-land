@@ -4,19 +4,16 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+function usePrefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export function PageIntro() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(!usePrefersReducedMotion());
 
   useEffect(() => {
-    // Check if user has reduced motion preference
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (prefersReduced) {
-      setVisible(false);
-      return;
-    }
+    if (!visible) return;
 
     const timer = setTimeout(() => {
       setVisible(false);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import type { Artist } from "@/types/content";
 import { ArtistPhotoUpload } from "@/components/artist-form/ArtistPhotoUpload";
@@ -20,7 +20,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarVersion, setAvatarVersion] = useState(0);
   const avatarInputRef = useRef<HTMLInputElement>(null);
-  const tempIdRef = useRef(`new-${Date.now()}`);
+  const [tempId] = useState(() => `new-${Date.now()}`);
 
   const [form, setForm] = useState<Artist>(
     artist ?? {
@@ -41,21 +41,6 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
     },
   );
 
-  // Auto-generate initials from name when in create mode and initials haven't been manually edited
-  useEffect(() => {
-    if (mode === "create" && !initialsManuallyEdited && form.name) {
-      const initials = form.name
-        .split(" ")
-        .map((word) => word[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-      setForm((prev) => ({
-        ...prev,
-        visual: { ...prev.visual, initials },
-      }));
-    }
-  }, [form.name, mode, initialsManuallyEdited]);
 
   function updateField<K extends keyof Artist>(key: K, value: Artist[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -76,7 +61,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const artistId = form.id || tempIdRef.current;
+    const artistId = form.id || tempId;
     setUploadingAvatar(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -137,7 +122,7 @@ export function ArtistForm({ artist, mode }: ArtistFormProps) {
       {/* Фото артиста — Instagram-стиль */}
       <ArtistPhotoUpload
         value={form.photo}
-        artistId={form.id || tempIdRef.current}
+        artistId={form.id || tempId}
         onChange={(url) => updateField("photo", url)}
         onRemove={() => {
           updateField("photo", undefined);

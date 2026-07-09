@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { GraduationCap, Handshake, NotebookPen, Video, X } from "lucide-react";
@@ -45,17 +45,21 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
 
+  const prevOpenRef = useRef(false);
   useEffect(() => {
-    if (open) {
+    if (open && !prevOpenRef.current) {
       fetch("/api/artists")
         .then((r) => r.json())
         .then(setArtists);
+    }
+    if (open) {
       setSelectedArtists([]);
       setEmail("");
       setPhone("");
       setMessage("");
       setSent(false);
     }
+    prevOpenRef.current = open;
   }, [open]);
 
   if (!type) return null;

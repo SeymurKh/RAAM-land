@@ -54,7 +54,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
     <AnimatePresence>
       <motion.div
         key="artist-modal-overlay"
-        className="fixed inset-0 z-[80] flex items-center justify-center overflow-y-auto bg-black/72 px-4 py-8 backdrop-blur-2xl sm:px-6"
+        className="fixed inset-0 z-[80] overflow-y-auto overscroll-y-contain bg-black/72 px-4 pt-20 pb-5 backdrop-blur-2xl sm:px-6 sm:pt-24 sm:pb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -69,7 +69,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
             exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             onMouseDown={(event) => event.stopPropagation()}
-            className="relative mx-auto h-[80vh] max-w-4xl flex-shrink-0 overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#0b0a09]/92 shadow-[0_30px_140px_rgba(0,0,0,0.72)]"
+            className="relative mx-auto h-[80vh] max-w-4xl overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#0b0a09]/92 shadow-[0_30px_140px_rgba(0,0,0,0.72)]"
           >
             <button
               type="button"

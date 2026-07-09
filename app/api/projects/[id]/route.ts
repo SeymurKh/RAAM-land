@@ -1,3 +1,5 @@
+import { unlink } from "fs/promises";
+import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { deleteProject, getProject, updateProject } from "@/lib/db";
@@ -46,6 +48,18 @@ export async function DELETE(
   }
 
   const { id } = await params;
+
+  // Delete image file from disk
+  const project = await getProject(id);
+  if (project?.image) {
+    const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
+    const uploadDir = join(process.cwd(), "public", "uploads", "projects");
+    for (const ext of possibleExts) {
+      const filePath = join(uploadDir, `${id}.${ext}`);
+      try { await unlink(filePath); } catch { /* ok */ }
+    }
+  }
+
   const deleted = await deleteProject(id);
   if (!deleted) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

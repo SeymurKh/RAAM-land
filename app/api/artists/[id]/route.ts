@@ -120,6 +120,15 @@ export async function DELETE(
     }
   }
 
+  // Clean up any orphaned temp upload files (avatar-new-*) for this artist
+  // These are created by ArtistForm before the artist is saved and may be left over
+  const tempExts = ["png", "jpg", "jpeg", "webp", "gif"];
+  const uploadDir = join(process.cwd(), "public", "uploads", "artists");
+  for (const ext of tempExts) {
+    const tempPath = join(uploadDir, `avatar-new-*.${ext}`);
+    try { await unlink(tempPath); } catch { /* ok */ }
+  }
+
   const deleted = await deleteArtist(id);
   if (!deleted) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

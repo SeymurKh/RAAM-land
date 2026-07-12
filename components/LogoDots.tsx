@@ -41,8 +41,8 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
               transform: isActive
                 ? "translate(-50%, -50%) scale(2)"
                 : isOtherActive
-                  ? `translate(${i === 0 || i === 2 ? "0%, 0%" : "-50%, 0%"}) scale(0.85)`
-                  : "translate(0, 0) scale(1)",
+                  ? "scale(0.85)"
+                  : "scale(1)",
               opacity: isOtherActive ? 0.25 : 1,
               willChange: "transform, opacity",
             }}

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
@@ -89,26 +88,16 @@ export function ProjectsSection() {
                     : [];
 
                 return (
-                  <motion.article
+                  <article
                     key={project.id}
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={0.08}
-                    onDragEnd={(_, info) => {
-                      if (info.offset.x > 60) goTo(-1);
-                      if (info.offset.x < -60) goTo(1);
-                    }}
-                    animate={{
-                      scale: isCenter ? 1 : 0.85,
-                      x: isLeft ? "-24%" : isRight ? "24%" : "0%",
-                      opacity: isCenter ? 1 : 0.55,
-                    }}
-                    transition={{ duration: 0.3, ease: [0, 0, 0.2, 1] }}
-className="absolute w-full max-w-[44rem] origin-center rounded-[1.35rem] border border-white/12 bg-[#0b0a09]/95 shadow-[0_20px_100px_rgba(0,0,0,0.55)] overflow-hidden"
+                    className="absolute w-full max-w-[44rem] origin-center rounded-[1.35rem] border border-white/12 bg-[#0b0a09]/95 shadow-[0_20px_100px_rgba(0,0,0,0.55)] overflow-hidden"
                     style={{
+                      transition: "transform 0.3s cubic-bezier(0,0,0.2,1), opacity 0.3s cubic-bezier(0,0,0.2,1)",
+                      transform: `scale(${isCenter ? 1 : 0.85}) translateX(${isLeft ? "-24%" : isRight ? "24%" : "0%"})`,
+                      opacity: isCenter ? 1 : 0.55,
                       zIndex: isCenter ? 3 : 1,
                       pointerEvents: isCenter ? "auto" : "none",
-                      willChange: isCenter ? "transform" : "auto",
+                      willChange: "transform, opacity",
                     }}
                   >
                     {project.image ? (
@@ -187,7 +176,7 @@ className="absolute w-full max-w-[44rem] origin-center rounded-[1.35rem] border 
                         </div>
                       )}
                     </div>
-                  </motion.article>
+                  </article>
                 );
               })}
             </div>

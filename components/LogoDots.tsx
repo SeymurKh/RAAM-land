@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { GraduationCap, Handshake, NotebookPen, Video } from "lucide-react";
 
 const cornerPositions = [
@@ -29,20 +28,20 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
         const isOtherActive = activeDot !== null && !isActive;
 
         return (
-          <motion.button
+          <button
             key={i}
             type="button"
             className="absolute rounded-full border border-white/10 bg-white/90 shadow-[0_0_40px_rgba(255,255,255,0.06)]"
-            style={{ width: "48%", height: "48%" }}
-            animate={{
+            style={{
+              width: "48%",
+              height: "48%",
+              transition: "transform 0.3s cubic-bezier(0,0,0.2,1), opacity 0.3s cubic-bezier(0,0,0.2,1), left 0.3s cubic-bezier(0,0,0.2,1), top 0.3s cubic-bezier(0,0,0.2,1)",
               left: isActive ? "50%" : cornerPositions[i].left,
               top: isActive ? "50%" : cornerPositions[i].top,
-              x: isActive ? "-50%" : "0%",
-              y: isActive ? "-50%" : "0%",
-              scale: isActive ? 2.0 : isOtherActive ? 0.85 : 1,
+              transform: isActive ? "translate(-50%, -50%) scale(2)" : isOtherActive ? "scale(0.85)" : "scale(1)",
               opacity: isOtherActive ? 0.25 : 1,
+              willChange: "transform, opacity, left, top",
             }}
-            transition={{ duration: 0.3, ease: [0, 0, 0.2, 1] }}
             onMouseEnter={() => setActiveDot(i)}
             onMouseLeave={() => setActiveDot(null)}
             onClick={() => onSelect?.(inquiryTypes[i])}
@@ -62,7 +61,7 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
                 </div>
               );
             })()}
-          </motion.button>
+          </button>
         );
       })}
     </div>

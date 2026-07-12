@@ -71,10 +71,7 @@ export function ProjectsSection() {
           </MotionReveal>
         ) : (
           <div className="relative mx-auto max-w-5xl">
-            <div
-              className="relative flex items-center justify-center min-h-[420px] sm:min-h-[560px]"
-              style={{ perspective: "1200px" }}
-            >
+            <div className="relative flex items-center justify-center min-h-[420px] sm:min-h-[560px]">
               {projects.map((project, index) => {
                 let pos = index - activeIndex;
                 if (pos < 0) pos += total;

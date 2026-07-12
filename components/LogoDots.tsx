@@ -42,11 +42,7 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
               scale: isActive ? 2.0 : isOtherActive ? 0.85 : 1,
               opacity: isOtherActive ? 0.25 : 1,
             }}
-            transition={{
-              type: "spring",
-              stiffness: 240,
-              damping: 22,
-            }}
+            transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
             onMouseEnter={() => setActiveDot(i)}
             onMouseLeave={() => setActiveDot(null)}
             onClick={() => onSelect?.(inquiryTypes[i])}

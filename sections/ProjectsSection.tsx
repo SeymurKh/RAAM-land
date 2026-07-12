@@ -114,7 +114,6 @@ export function ProjectsSection() {
                     transition={{ type: "spring", stiffness: 200, damping: 24 }}
 className="absolute w-full max-w-[44rem] origin-center rounded-[1.35rem] border border-white/12 bg-[#0b0a09]/92 shadow-[0_20px_100px_rgba(0,0,0,0.55)] overflow-hidden"
                     style={{
-                      transformStyle: "preserve-3d",
                       zIndex: isCenter ? 3 : 1,
                       pointerEvents: isCenter ? "auto" : "none",
                       willChange: isCenter ? "transform" : "auto",

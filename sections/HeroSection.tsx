@@ -47,7 +47,7 @@ export function HeroSection() {
         style={{ y: textY, scale: contentScale, opacity: contentOpacity, filter: contentFilter }}
       >
         <Logo3D />
-        <p className="mt-1 text-xs uppercase tracking-[0.58em] text-stone-200/58">
+        <p className="mt-1 text-xs uppercase tracking-[0.58em] text-stone-200/58 pl-[0.58em]">
           {siteConfig.expandedName}
         </p>
         <p className="mt-2 w-full max-w-[19rem] px-1 text-sm leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">

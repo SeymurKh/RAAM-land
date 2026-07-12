@@ -102,16 +102,11 @@ export function ProjectsSection() {
                       if (info.offset.x < -60) goTo(1);
                     }}
                     animate={{
-                      z: isCenter ? 0 : -200,
-                      rotateY: isLeft ? 15 : isRight ? -15 : 0,
                       scale: isCenter ? 1 : 0.85,
                       x: isLeft ? "-24%" : isRight ? "24%" : "0%",
                       opacity: isCenter ? 1 : 0.55,
-                      filter: isCenter
-                        ? "blur(0px)"
-                        : "blur(2px)",
                     }}
-                    transition={{ type: "spring", stiffness: 200, damping: 24 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 32 }}
 className="absolute w-full max-w-[44rem] origin-center rounded-[1.35rem] border border-white/12 bg-[#0b0a09]/92 shadow-[0_20px_100px_rgba(0,0,0,0.55)] overflow-hidden"
                     style={{
                       zIndex: isCenter ? 3 : 1,

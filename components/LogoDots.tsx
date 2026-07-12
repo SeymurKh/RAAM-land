@@ -44,8 +44,8 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
             }}
             transition={{
               type: "spring",
-              stiffness: 140,
-              damping: 28,
+              stiffness: 240,
+              damping: 22,
             }}
             onMouseEnter={() => setActiveDot(i)}
             onMouseLeave={() => setActiveDot(null)}

@@ -45,7 +45,7 @@ export function MotionReveal({
         opacity: 0,
         x: offset.x,
         y: offset.y,
-        filter: "blur(10px)",
+        filter: "blur(0.1px)",
       }}
       whileInView={{
         opacity: 1,

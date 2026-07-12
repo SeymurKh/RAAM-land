@@ -3,6 +3,9 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 
+const PHOTO_MAX_WIDTH = 1920;
+const AVATAR_SIZE = 400;
+
 export async function POST(request: NextRequest) {
   const token = request.cookies.get("admin_token")?.value;
   if (!token || !(await verifyToken(token))) {
@@ -44,15 +47,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (file.size > 5 * 1024 * 1024) {
+  if (file.size > 8 * 1024 * 1024) {
     console.error("[upload] File too large:", file.size);
     return NextResponse.json(
-      { error: "File size must be under 5MB" },
+      { error: "File size must be under 8MB" },
       { status: 400 },
     );
   }
 
-  const ext = file.name.split(".").pop() ?? "png";
   const uploadDir = join(process.cwd(), "public", "uploads", subDir);
 
   // Ensure directory exists
@@ -74,12 +76,68 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const fileName = `${prefix}.${ext}`;
-  const filePath = join(uploadDir, fileName);
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(filePath, buffer);
+  // Dynamically import sharp to avoid conflict with next/og (both use libvips)
+  const sharp = (await import("sharp")).default;
 
-  console.log("[upload] Saved file:", filePath, "size:", buffer.length);
+  // Process image with sharp: always output JPEG for size control
+  const inputBuffer = Buffer.from(await file.arrayBuffer());
+  const fileName = `${prefix}.jpg`;
+  const filePath = join(uploadDir, fileName);
+
+  const SIZE_LIMIT = 1_000_000;
+
+  // Build pipeline: apply EXIF orientation + resize + JPEG encoding
+  let pipeline = sharp(inputBuffer).rotate().jpeg({ quality: 85, mozjpeg: true });
+
+  if (isAvatar) {
+    pipeline = pipeline.resize(AVATAR_SIZE, AVATAR_SIZE, { fit: "cover" });
+  } else {
+    pipeline = pipeline.resize(PHOTO_MAX_WIDTH, undefined, {
+      fit: "inside",
+      withoutEnlargement: true,
+    });
+  }
+
+  let outputBuffer = await pipeline.toBuffer();
+
+  // Adaptive quality reduction: try lower quality if > SIZE_LIMIT
+  if (outputBuffer.length > SIZE_LIMIT) {
+    for (const q of [80, 75, 70, 65]) {
+      pipeline = sharp(inputBuffer).rotate().jpeg({ quality: q, mozjpeg: true });
+      if (isAvatar) {
+        pipeline = pipeline.resize(AVATAR_SIZE, AVATAR_SIZE, { fit: "cover" });
+      } else {
+        pipeline = pipeline.resize(PHOTO_MAX_WIDTH, undefined, {
+          fit: "inside",
+          withoutEnlargement: true,
+        });
+      }
+      outputBuffer = await pipeline.toBuffer();
+      if (outputBuffer.length <= SIZE_LIMIT) break;
+    }
+  }
+
+  // Last resort: reduce dimensions
+  if (outputBuffer.length > SIZE_LIMIT) {
+    const fallbackW = isAvatar ? 300 : 1600;
+    pipeline = sharp(inputBuffer).rotate().jpeg({ quality: 70, mozjpeg: true });
+    if (isAvatar) {
+      pipeline = pipeline.resize(fallbackW, fallbackW, { fit: "cover" });
+    } else {
+      pipeline = pipeline.resize(fallbackW, undefined, {
+        fit: "inside",
+        withoutEnlargement: true,
+      });
+    }
+    outputBuffer = await pipeline.toBuffer();
+  }
+
+  await writeFile(filePath, outputBuffer);
+
+  const compression = inputBuffer.length > 0
+    ? ((1 - outputBuffer.length / inputBuffer.length) * 100).toFixed(0)
+    : 0;
+  console.log("[upload] Saved:", filePath, "| original:", inputBuffer.length, "→ compressed:", outputBuffer.length, `(${compression}% saved)`, outputBuffer.length > SIZE_LIMIT ? "⚠ OVER LIMIT" : "✓");
 
   const url = `/uploads/${subDir}/${fileName}`;
   console.log("[upload] Returning URL:", url);

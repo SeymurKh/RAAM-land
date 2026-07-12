@@ -53,7 +53,7 @@
       "photo": "/uploads/artists/pedro.png",
       "imagePosition": "50% 50% 1.0",
       "avatarPosition": "43% 42% 1.5",
-      "avatar": "/uploads/artists/avatar-pedro.JPG?v=1783539675724"
+      "avatar": "/uploads/artists/avatar-pedro.jpg?v=1783853477792"
     },
     {
       "id": "boraa",
@@ -111,7 +111,8 @@
         "tone": "from-zinc-100/20"
       },
       "photo": "/uploads/artists/boraa.png",
-      "avatar": "/uploads/artists/avatar-boraa.jpg"
+      "avatar": "/uploads/artists/avatar-boraa.jpg?v=1783853501679",
+      "avatarPosition": "50% 50% 1.0"
     },
     {
       "id": "farik-interlude",
@@ -165,7 +166,7 @@
       },
       "photo": "/uploads/artists/farik-interlude.png",
       "avatarPosition": "62% 56% 1.5",
-      "avatar": "/uploads/artists/avatar-farik-interlude.JPG"
+      "avatar": "/uploads/artists/avatar-farik-interlude.jpg?v=1783853523772"
     },
     {
       "id": "shayyo",
@@ -243,8 +244,8 @@
         "tone": "from-stone-400/20"
       },
       "photo": "/uploads/artists/shayyo.png",
-      "avatar": "/uploads/artists/avatar-shayyo.JPG",
-      "avatarPosition": "46% 62% 1.5"
+      "avatarPosition": "58% 85% 1.5",
+      "avatar": "/uploads/artists/avatar-shayyo.jpg?v=1783853537634"
     },
     {
       "id": "inmysoul",
@@ -307,8 +308,8 @@
         "tone": "from-zinc-300/20"
       },
       "photo": "/uploads/artists/inmysoul.png",
-      "avatar": "/uploads/artists/avatar-inmysoul.JPG",
-      "avatarPosition": "36% 44% 1.5"
+      "avatarPosition": "33% 68% 1.5",
+      "avatar": "/uploads/artists/avatar-inmysoul.jpg?v=1783853550221"
     }
   ],
   "projects": [
@@ -336,8 +337,9 @@
         "A collaborative platform for RAAM residents at FOMO Baku, one of Azerbaijan's most known clubs.",
         "The format brings together artist interviews, venue insight, and full video sets for YouTube release."
       ],
-      "image": "/uploads/projects/raam-fomo.jpg",
-      "imagePosition": "50% 50%"
+      "imagePosition": "50% 50%",
+      "brightness": 50,
+      "image": "/uploads/projects/raam-fomo.jpg?v=1783853781729"
     },
     {
       "id": "uptempo-jams",
@@ -358,7 +360,8 @@
         "A high-BPM electronic music format recorded at Finestra del Aperitivo.",
         "The series highlights residents, wider community artists, and graduates ready to present their sound."
       ],
-      "image": "/uploads/projects/uptempo-jams.png"
+      "image": "/uploads/projects/uptempo-jams.jpg?v=1783853800074",
+      "brightness": 40
     },
     {
       "id": "raam-live",
@@ -389,7 +392,8 @@
         "Audio sets recorded directly during live performances in RAAM venues.",
         "Each release documents the flow, energy, and atmosphere of the night as it actually happened."
       ],
-      "image": "/uploads/projects/raam-live.jpg"
+      "image": "/uploads/projects/raam-live.jpg?v=1783853813078",
+      "brightness": 40
     },
     {
       "id": "cassette-series",
@@ -420,7 +424,8 @@
         "An intimate audio-visual format recorded in close settings with a warm, analog aesthetic.",
         "Each episode captures a resident in a focused, personal set: raw sound, real atmosphere."
       ],
-      "image": "/uploads/projects/cassette-series.png"
+      "image": "/uploads/projects/cassette-series.jpg?v=1783853823948",
+      "brightness": 40
     },
     {
       "id": "grape-grooves",
@@ -468,7 +473,7 @@
       "overlayOpacity": 0,
       "imagePosition": "50% 50% 1.0",
       "brightness": 100,
-      "image": "/uploads/projects/grape-grooves.png?v=1783539182758"
+      "image": "/uploads/projects/grape-grooves.jpg?v=1783853832809"
     }
   ],
   "stream": {

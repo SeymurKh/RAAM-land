@@ -32,7 +32,7 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
           <motion.button
             key={i}
             type="button"
-            className="absolute rounded-full border border-white/10 bg-white/80 shadow-[0_0_60px_rgba(255,255,255,0.1)] backdrop-blur-sm"
+            className="absolute rounded-full border border-white/10 bg-white/90 shadow-[0_0_40px_rgba(255,255,255,0.06)]"
             style={{ width: "48%", height: "48%" }}
             animate={{
               left: isActive ? "50%" : cornerPositions[i].left,
@@ -44,8 +44,8 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
             }}
             transition={{
               type: "spring",
-              stiffness: 180,
-              damping: 22,
+              stiffness: 140,
+              damping: 28,
             }}
             onMouseEnter={() => setActiveDot(i)}
             onMouseLeave={() => setActiveDot(null)}

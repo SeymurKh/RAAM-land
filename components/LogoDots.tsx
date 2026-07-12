@@ -39,7 +39,13 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
               left: cornerPositions[i].left,
               top: cornerPositions[i].top,
               transform: isActive
-                ? "translate(-50%, -50%) scale(2)"
+                ? cornerPositions[i].left === "0%" && cornerPositions[i].top === "0%"
+                  ? "translate(54.17%, 54.17%) scale(2)"
+                  : cornerPositions[i].left === "50%" && cornerPositions[i].top === "0%"
+                    ? "translate(-50%, 54.17%) scale(2)"
+                    : cornerPositions[i].left === "0%" && cornerPositions[i].top === "50%"
+                      ? "translate(54.17%, -50%) scale(2)"
+                      : "translate(-50%, -50%) scale(2)"
                 : isOtherActive
                   ? "scale(0.85)"
                   : "scale(1)",

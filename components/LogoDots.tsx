@@ -35,12 +35,16 @@ export function LogoDots({ onSelect }: LogoDotsProps) {
             style={{
               width: "48%",
               height: "48%",
-              transition: "transform 0.3s cubic-bezier(0,0,0.2,1), opacity 0.3s cubic-bezier(0,0,0.2,1), left 0.3s cubic-bezier(0,0,0.2,1), top 0.3s cubic-bezier(0,0,0.2,1)",
-              left: isActive ? "50%" : cornerPositions[i].left,
-              top: isActive ? "50%" : cornerPositions[i].top,
-              transform: isActive ? "translate(-50%, -50%) scale(2)" : isOtherActive ? "scale(0.85)" : "scale(1)",
+              transition: "transform 0.3s cubic-bezier(0,0,0.2,1), opacity 0.3s cubic-bezier(0,0,0.2,1)",
+              left: cornerPositions[i].left,
+              top: cornerPositions[i].top,
+              transform: isActive
+                ? "translate(-50%, -50%) scale(2)"
+                : isOtherActive
+                  ? `translate(${i === 0 || i === 2 ? "0%, 0%" : "-50%, 0%"}) scale(0.85)`
+                  : "translate(0, 0) scale(1)",
               opacity: isOtherActive ? 0.25 : 1,
-              willChange: "transform, opacity, left, top",
+              willChange: "transform, opacity",
             }}
             onMouseEnter={() => setActiveDot(i)}
             onMouseLeave={() => setActiveDot(null)}

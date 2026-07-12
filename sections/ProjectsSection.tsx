@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
@@ -70,7 +70,27 @@ export function ProjectsSection() {
           </MotionReveal>
         ) : (
           <div className="relative mx-auto max-w-5xl">
-            <div className="relative flex items-center justify-center min-h-[420px] sm:min-h-[560px]">
+            <div
+              className="relative flex items-center justify-center min-h-[420px] sm:min-h-[560px]"
+              style={{ touchAction: "pan-y" }}
+              onPointerDown={(e) => {
+                const el = e.currentTarget;
+                el.dataset.swipeX = String(e.clientX);
+                el.setPointerCapture(e.pointerId);
+              }}
+              onPointerMove={(e) => {
+                const el = e.currentTarget;
+                if (!el.dataset.swipeX) return;
+              }}
+              onPointerUp={(e) => {
+                const el = e.currentTarget;
+                const startX = Number(el.dataset.swipeX || 0);
+                const delta = e.clientX - startX;
+                el.dataset.swipeX = "";
+                if (delta < -60) goTo(1);
+                if (delta > 60) goTo(-1);
+              }}
+            >
               {projects.map((project, index) => {
                 let pos = index - activeIndex;
                 if (pos < 0) pos += total;

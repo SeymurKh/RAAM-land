@@ -76,7 +76,6 @@ export function ProjectsSection() {
               onPointerDown={(e) => {
                 const el = e.currentTarget;
                 el.dataset.swipeX = String(e.clientX);
-                el.setPointerCapture(e.pointerId);
               }}
               onPointerMove={(e) => {
                 const el = e.currentTarget;

@@ -53,7 +53,7 @@ export function YouTubeModal({
     <AnimatePresence>
       <motion.div
         key="youtube-modal-overlay"
-        className="fixed inset-0 z-[80] flex items-center justify-center bg-black/72 px-4 backdrop-blur-2xl sm:px-6"
+        className="fixed inset-0 z-80 flex items-center justify-center bg-black/72 px-4 backdrop-blur-2xl sm:px-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -85,7 +85,7 @@ export function YouTubeModal({
                 <h3 className="mb-3 text-lg font-semibold uppercase leading-[0.9] tracking-normal text-stone-50">
                   {title}
                 </h3>
-                <div className="space-y-1.5 max-h-[360px] overflow-y-auto pr-1 artist-modal-scroll">
+                <div className="space-y-1.5 max-h-90 overflow-y-auto pr-1 artist-modal-scroll">
                   {videos.map((v) => (
                     <button
                       key={v.id}
@@ -93,7 +93,7 @@ export function YouTubeModal({
                       onClick={() => setActiveUrl(v.url)}
                       className={`group flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm transition ${
                         v.url === activeUrl
-                          ? "border-white/20 bg-white/[0.08] text-white"
+                          ? "border-white/20 bg-white/8 text-white"
                           : "border-white/8 bg-transparent text-stone-300/60 hover:border-white/15 hover:text-white"
                       }`}
                     >

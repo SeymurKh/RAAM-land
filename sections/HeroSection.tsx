@@ -43,19 +43,19 @@ export function HeroSection() {
 
       {/* Hero content */}
       <motion.div
-        className="hero-copy relative z-10 mx-auto flex w-full max-w-[56rem] flex-col items-center px-5 text-center"
+        className="hero-copy relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center px-5 text-center"
         style={{ y: textY, scale: contentScale, opacity: contentOpacity, filter: contentFilter }}
       >
         <Logo3D />
         <p className="mt-1 text-xs uppercase tracking-[0.58em] text-stone-200/58 pl-[0.58em]">
           {siteConfig.expandedName}
         </p>
-        <p className="mt-2 w-full max-w-[19rem] px-1 text-sm leading-7 text-stone-100/72 sm:max-w-[34rem] sm:text-lg">
+        <p className="mt-2 w-full max-w-76 px-1 text-sm leading-7 text-stone-100/72 sm:max-w-136 sm:text-lg">
           {siteConfig.description}
         </p>
         <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row">
-          <FluidButton href="#artists" className="min-w-[140px] sm:min-w-[160px]">Artists</FluidButton>
-          <FluidButton href="#projects" className="min-w-[140px] bg-black/20 sm:min-w-[160px]">
+          <FluidButton href="#artists" className="min-w-35 sm:min-w-40">Artists</FluidButton>
+          <FluidButton href="#projects" className="min-w-35 bg-black/20 sm:min-w-40">
             Projects
           </FluidButton>
         </div>

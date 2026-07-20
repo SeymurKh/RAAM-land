@@ -58,7 +58,7 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
   ) {
     const file = event.target.files?.[0];
     if (!file) return;
-    const projectId = form.id || "new-project";
+    const projectId = form.id || `new-project-${Date.now()}`;
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file);
@@ -191,7 +191,7 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-stone-100 transition hover:bg-white/[0.06] disabled:opacity-50"
+            className="rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-stone-100 transition hover:bg-white/6 disabled:opacity-50"
           >
             {uploading ? "Uploading..." : "Choose Image"}
           </button>
@@ -335,7 +335,7 @@ export function ProjectForm({ mode, project }: ProjectFormProps) {
         <button
           type="submit"
           disabled={saving}
-          className="rounded-full border border-white/15 bg-white/[0.06] px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10 disabled:opacity-50"
+          className="rounded-full border border-white/15 bg-white/6 px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10 disabled:opacity-50"
         >
           {saving
             ? "Saving..."

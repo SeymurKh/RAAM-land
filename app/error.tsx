@@ -9,7 +9,7 @@ export default function GlobalError({
 }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#080706] px-6 text-center">
-      <div className="relative mb-8 flex h-32 w-32 items-center justify-center rounded-full border border-white/10 bg-white/[0.03]">
+      <div className="relative mb-8 flex h-32 w-32 items-center justify-center rounded-full border border-white/10 bg-white/3">
         <span className="text-5xl font-semibold uppercase tracking-[0.16em] text-white/20">
           !
         </span>
@@ -27,7 +27,7 @@ export default function GlobalError({
       <button
         type="button"
         onClick={reset}
-        className="mt-8 rounded-full border border-white/15 bg-white/[0.06] px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10"
+        className="mt-8 rounded-full border border-white/15 bg-white/6 px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10"
       >
         Try again
       </button>

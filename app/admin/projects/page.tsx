@@ -40,7 +40,7 @@ export default function AdminProjects() {
         </h1>
         <Link
           href="/admin/projects/new"
-          className="rounded-full border border-white/15 bg-white/[0.06] px-5 py-2.5 text-xs font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10"
+          className="rounded-full border border-white/15 bg-white/6 px-5 py-2.5 text-xs font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10"
         >
           + Add Project
         </Link>

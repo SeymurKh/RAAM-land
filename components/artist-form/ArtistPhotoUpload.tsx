@@ -71,7 +71,7 @@ export function ArtistPhotoUpload({
     <div className="flex flex-col items-center gap-4">
       {/* Круглый аватар — Instagram-стиль */}
       <div className="group relative h-40 w-40 cursor-pointer" onClick={handleClick}>
-        <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-white/15 bg-white/[0.04]">
+        <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-white/15 bg-white/4">
           {value ? (
             <Image
               src={value}

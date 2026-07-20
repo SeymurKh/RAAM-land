@@ -54,7 +54,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
     <AnimatePresence>
       <motion.div
         key="artist-modal-overlay"
-        className="fixed inset-0 z-[80] overflow-y-auto overscroll-y-contain bg-black/72 px-4 pt-20 pb-5 backdrop-blur-2xl sm:px-6 sm:pt-24 sm:pb-8"
+        className="fixed inset-0 z-80 overflow-y-auto overscroll-y-contain bg-black/72 px-4 pt-20 pb-5 backdrop-blur-2xl sm:px-6 sm:pt-24 sm:pb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -83,7 +83,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
             <div className="absolute inset-0 opacity-70">
               <div
                 className={cn(
-                  "absolute -left-20 top-10 h-72 w-72 rounded-full bg-gradient-to-br blur-3xl",
+                  "absolute -left-20 top-10 h-72 w-72 rounded-full bg-linear-to-br blur-3xl",
                   artist.visual.tone,
                   "to-transparent",
                 )}
@@ -92,7 +92,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
             </div>
 
             <div className="relative grid h-full gap-0 lg:grid-cols-[0.88fr_1.12fr] lg:grid-rows-1">
-              <div className="relative min-h-[260px] overflow-hidden border-b border-white/10 sm:min-h-[320px] lg:min-h-0 lg:border-b-0 lg:border-r">
+              <div className="relative min-h-65 overflow-hidden border-b border-white/10 sm:min-h-80 lg:min-h-0 lg:border-b-0 lg:border-r">
                 {artist.photo ? (
                   <Image
                     src={artist.photo}
@@ -100,13 +100,13 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                     fill
                     sizes="(max-width: 768px) 100vw, 640px"
                     className="object-cover"
-                    style={(() => {
-                      const { position, zoom } = parseImagePosition(artist.imagePosition);
-                      return {
-                        objectPosition: position,
-                        transform: zoom !== 1 ? `scale(${zoom})` : undefined,
-                      };
-                    })()}
+                        style={(() => {
+                          const { position, zoom } = parseImagePosition(artist.imagePosition);
+                          return {
+                            transformOrigin: position,
+                            transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+                          };
+                        })()}
                     unoptimized
                   />
                 ) : (
@@ -121,7 +121,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                     </div>
                   </>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="relative z-10 flex h-full flex-col justify-end p-6 sm:p-8">
                   <p className="text-xs uppercase tracking-[0.45em] text-stone-300/55">
                     {artist.role} / {artist.origin}
@@ -141,7 +141,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                     {validGenres.map((genre) => (
                       <span
                         key={genre}
-                        className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-stone-200/72"
+                        className="rounded-full border border-white/10 bg-white/4 px-3 py-1.5 text-xs uppercase tracking-[0.16em] text-stone-200/72"
                       >
                         {genre}
                       </span>
@@ -162,7 +162,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                     {validHighlights.map((item) => (
                       <div
                         key={item}
-                        className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 text-sm leading-6 text-stone-200/72"
+                        className="rounded-3xl border border-white/10 bg-white/4 p-4 text-sm leading-6 text-stone-200/72"
                       >
                         {item}
                       </div>
@@ -189,7 +189,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                             </span>
                             <span className="flex items-center gap-2">
                               {hasUrl ? null : (
-                                <span className="rounded-full border border-white/8 bg-white/[0.03] px-2 py-0.5 text-[0.6rem] uppercase tracking-[0.2em] text-stone-400/60">
+                                <span className="rounded-full border border-white/8 bg-white/3 px-2 py-0.5 text-[0.6rem] uppercase tracking-[0.2em] text-stone-400/60">
                                   Soon
                                 </span>
                               )}
@@ -207,7 +207,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                               href={item.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="group flex items-center justify-between rounded-3xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-stone-200/24 hover:bg-white/[0.07]"
+                              className="group flex items-center justify-between rounded-3xl border border-white/10 bg-white/3.5 p-4 transition hover:border-stone-200/24 hover:bg-white/7"
                             >
                               {sharedInner}
                             </a>
@@ -217,7 +217,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                         return (
                           <div
                             key={item.id}
-                            className="flex items-center justify-between rounded-3xl border border-white/6 bg-white/[0.02] p-4 opacity-60"
+                            className="flex items-center justify-between rounded-3xl border border-white/6 bg-white/2 p-4 opacity-60"
                           >
                             {sharedInner}
                           </div>
@@ -233,7 +233,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                     <button
                       type="button"
                       onClick={onBook}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm text-stone-200/78 transition hover:border-stone-100/28 hover:text-white"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/4 px-5 py-2.5 text-sm text-stone-200/78 transition hover:border-stone-100/28 hover:text-white"
                     >
                       <NotebookPen size={16} strokeWidth={1.5} />
                       Book this artist
@@ -251,7 +251,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                           href={social.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-stone-200/78 transition hover:border-stone-100/28 hover:text-white"
+                          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/4 px-4 py-2 text-sm text-stone-200/78 transition hover:border-stone-100/28 hover:text-white"
                         >
                           {hasBrandIcon ? (
                             <BrandSocialIcon

@@ -52,7 +52,7 @@
       },
       "photo": "/uploads/artists/pedro.png",
       "imagePosition": "50% 50% 1.0",
-      "avatarPosition": "43% 42% 1.5",
+      "avatarPosition": "81% 32% 2.5",
       "avatar": "/uploads/artists/avatar-pedro.jpg?v=1783853477792"
     },
     {
@@ -112,7 +112,7 @@
       },
       "photo": "/uploads/artists/boraa.png",
       "avatar": "/uploads/artists/avatar-boraa.jpg?v=1783853501679",
-      "avatarPosition": "50% 50% 1.0"
+      "avatarPosition": "48% 84% 1.5"
     },
     {
       "id": "farik-interlude",
@@ -165,7 +165,7 @@
         "tone": "from-neutral-200/20"
       },
       "photo": "/uploads/artists/farik-interlude.png",
-      "avatarPosition": "62% 56% 1.5",
+      "avatarPosition": "55% 36% 2.5",
       "avatar": "/uploads/artists/avatar-farik-interlude.jpg?v=1783853523772"
     },
     {
@@ -244,7 +244,7 @@
         "tone": "from-stone-400/20"
       },
       "photo": "/uploads/artists/shayyo.png",
-      "avatarPosition": "44% 80% 1.5",
+      "avatarPosition": "65% 49% 2.5",
       "avatar": "/uploads/artists/avatar-shayyo.jpg?v=1783853537634"
     },
     {
@@ -308,7 +308,7 @@
         "tone": "from-zinc-300/20"
       },
       "photo": "/uploads/artists/inmysoul.png",
-      "avatarPosition": "33% 68% 1.5",
+      "avatarPosition": "62% 44% 2.0",
       "avatar": "/uploads/artists/avatar-inmysoul.jpg?v=1783853550221"
     }
   ],

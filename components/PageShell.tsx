@@ -77,7 +77,7 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
                       href={link.href}
                       target={link.kind === "linktree" ? "_blank" : undefined}
                       rel={link.kind === "linktree" ? "noreferrer" : undefined}
-                      className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-2 text-xs text-stone-300/70 transition hover:border-stone-100/20 hover:bg-white/[0.08] hover:text-white"
+                      className="group flex items-center gap-2 rounded-full border border-white/10 bg-white/4 px-3.5 py-2 text-xs text-stone-300/70 transition hover:border-stone-100/20 hover:bg-white/8 hover:text-white"
                     >
                       <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center">
                         {isBrand ? (

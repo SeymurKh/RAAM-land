@@ -70,7 +70,7 @@ export default function AdminStreamPage() {
       </h1>
 
       {/* Stream source selector */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+      <div className="rounded-xl border border-white/10 bg-white/3 p-5">
         <p className="text-xs uppercase tracking-[0.28em] text-stone-300/50">
           Stream Source
         </p>
@@ -78,7 +78,7 @@ export default function AdminStreamPage() {
           <label
             className={`flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm transition ${
               source === "youtube"
-                ? "border-white/25 bg-white/[0.08] text-stone-100"
+                ? "border-white/25 bg-white/8 text-stone-100"
                 : "border-white/10 bg-transparent text-stone-400 hover:text-stone-200"
             }`}
           >
@@ -98,7 +98,7 @@ export default function AdminStreamPage() {
           <label
             className={`flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm transition ${
               source === "twitch"
-                ? "border-white/25 bg-white/[0.08] text-stone-100"
+                ? "border-white/25 bg-white/8 text-stone-100"
                 : "border-white/10 bg-transparent text-stone-400 hover:text-stone-200"
             }`}
           >
@@ -136,7 +136,7 @@ export default function AdminStreamPage() {
       </div>
 
       {/* Stream kill switch */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-5">
+      <div className="rounded-xl border border-white/10 bg-white/3 p-5">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-stone-300/50">
@@ -227,7 +227,7 @@ export default function AdminStreamPage() {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-full border border-white/15 bg-white/[0.06] px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10 disabled:opacity-50"
+            className="rounded-full border border-white/15 bg-white/6 px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10 disabled:opacity-50"
           >
             {saving ? "Saving..." : "Save"}
           </button>

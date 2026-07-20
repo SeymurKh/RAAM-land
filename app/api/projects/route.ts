@@ -1,3 +1,5 @@
+import { rename, unlink } from "fs/promises";
+import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { createProject, getProjects } from "@/lib/db";
@@ -20,6 +22,30 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
+  // Если изображение было загружено с временным именем (new-project-xxx), переименовываем файл
+  if (body.image && body.image.includes("/uploads/projects/new-project")) {
+    const uploadDir = join(process.cwd(), "public", "uploads", "projects");
+    const oldFileName = body.image.split("/").pop()!;
+    const ext = oldFileName.split(".").pop()!;
+    const newFileName = `${body.id}.${ext}`;
+    const oldPath = join(uploadDir, oldFileName);
+    const newPath = join(uploadDir, newFileName);
+
+    try {
+      // Удаляем старый файл проекта если есть (другое расширение)
+      const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
+      for (const e of possibleExts) {
+        if (e === ext) continue;
+        const existingPath = join(uploadDir, `${body.id}.${e}`);
+        try { await unlink(existingPath); } catch { /* ok */ }
+      }
+      await rename(oldPath, newPath);
+      body.image = `/uploads/projects/${newFileName}`;
+    } catch {
+      // Продолжаем — файл может не существовать
+    }
+  }
+
   const project = await createProject(normalizeProject(body));
   return NextResponse.json(project, { status: 201 });
 }

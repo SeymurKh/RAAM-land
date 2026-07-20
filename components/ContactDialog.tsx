@@ -102,7 +102,7 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[85] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-85 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
         onClick={onClose}
         >
           <motion.div
@@ -110,7 +110,7 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="relative w-full max-w-lg rounded-[1.5rem] border border-white/10 bg-[#0b0a09]/95 p-5 shadow-2xl backdrop-blur-xl sm:p-7"
+            className="relative w-full max-w-lg rounded-3xl border border-white/10 bg-[#0b0a09]/95 p-5 shadow-2xl backdrop-blur-xl sm:p-7"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
@@ -139,7 +139,7 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
                   <label className="mb-1.5 block text-xs uppercase tracking-[0.2em] text-stone-300/60">
                     Select artists
                   </label>
-                  <div className="flex max-h-[180px] flex-wrap gap-1.5 overflow-y-auto rounded-2xl border border-white/10 bg-black/25 p-2.5">
+                  <div className="flex max-h-45 flex-wrap gap-1.5 overflow-y-auto rounded-2xl border border-white/10 bg-black/25 p-2.5">
                     {artists.length === 0 ? (
                       <p className="text-xs text-stone-400/50">Loading...</p>
                     ) : (
@@ -209,7 +209,7 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
               <button
                 type="submit"
                 disabled={!email}
-                className="w-full rounded-full border border-white/10 bg-white/[0.06] py-3 text-sm font-medium uppercase tracking-[0.22em] text-white transition hover:bg-white/[0.12] disabled:opacity-40"
+                className="w-full rounded-full border border-white/10 bg-white/6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-white transition hover:bg-white/12 disabled:opacity-40"
               >
                 {sent ? "Email opened ✓" : "Send request"}
               </button>

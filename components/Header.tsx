@@ -49,7 +49,7 @@ export function Header({ modalOpen }: HeaderProps) {
         }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "fixed left-0 right-0 top-0 z-[60] px-4 py-4 sm:px-6 will-change-transform",
+          "fixed left-0 right-0 top-0 z-60 px-4 py-4 sm:px-6 will-change-transform",
           shown && !shouldHide ? "pointer-events-auto" : "pointer-events-none",
         )}
       >
@@ -75,7 +75,7 @@ export function Header({ modalOpen }: HeaderProps) {
               <FluidButton
                 key={item.href}
                 href={item.href}
-                className="min-w-[120px] text-center text-xs tracking-[0.2em]"
+                className="min-w-30 text-center text-xs tracking-[0.2em]"
               >
                 {item.label}
               </FluidButton>
@@ -85,7 +85,7 @@ export function Header({ modalOpen }: HeaderProps) {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 text-white md:hidden"
             aria-label="Open navigation"
           >
             <Menu size={18} />
@@ -99,7 +99,7 @@ export function Header({ modalOpen }: HeaderProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-black/88 backdrop-blur-2xl md:hidden"
+            className="fixed inset-0 z-60 bg-black/88 backdrop-blur-2xl md:hidden"
           >
             <div className="flex items-center justify-between px-5 py-5">
               <a href="#hero" onClick={close} className="flex items-center gap-3">
@@ -115,7 +115,7 @@ export function Header({ modalOpen }: HeaderProps) {
               <button
                 type="button"
                 onClick={close}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white"
                 aria-label="Close navigation"
               >
                 <X size={18} />

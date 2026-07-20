@@ -39,8 +39,7 @@ function AdminNav() {
         type="button"
         onClick={async () => {
           await fetch("/api/auth", { method: "DELETE" });
-          router.push("/admin");
-          router.refresh();
+          window.location.href = "/admin";
         }}
         className="ml-auto text-xs uppercase tracking-[0.2em] text-stone-500 transition hover:text-stone-300"
       >
@@ -59,14 +58,10 @@ export default function AdminLayout({
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
 
   useEffect(() => {
-    fetch("/api/stream", { method: "GET" }).then(() => {
-      // If we can access protected routes, we're authed
-      // For now, check cookie existence
-      const hasCookie = document.cookie.includes("admin_token");
-      setAuthed(hasCookie);
+    fetch("/api/auth").then((res) => {
+      setAuthed(res.ok);
       setLoading(false);
     });
   }, []);
@@ -80,8 +75,7 @@ export default function AdminLayout({
       body: JSON.stringify({ password }),
     });
     if (res.ok) {
-      setAuthed(true);
-      router.refresh();
+      window.location.href = "/admin";
     } else {
       setError("Invalid password");
       setPassword("");
@@ -122,7 +116,7 @@ export default function AdminLayout({
           )}
           <button
             type="submit"
-            className="h-12 w-full rounded-full border border-white/15 bg-white/[0.06] text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10"
+            className="h-12 w-full rounded-full border border-white/15 bg-white/6 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10"
           >
             Login
           </button>

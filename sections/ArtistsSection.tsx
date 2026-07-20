@@ -112,7 +112,7 @@ export function ArtistsSection({
                           style={(() => {
                             const { position, zoom } = parseImagePosition(artist.avatarPosition);
                             return {
-                              objectPosition: position,
+                              transformOrigin: position,
                               transform: zoom !== 1 ? `scale(${zoom})` : undefined,
                             };
                           })()}

@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const baseClass =
-  "group relative inline-flex min-h-12 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/[0.06] px-6 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_18px_60px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-500 hover:border-stone-200/35 hover:bg-stone-100/12 focus:outline-none focus:ring-2 focus:ring-stone-200/40";
+  "group relative inline-flex min-h-12 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/6 px-6 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_18px_60px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-500 hover:border-stone-200/35 hover:bg-stone-100/12 focus:outline-none focus:ring-2 focus:ring-stone-200/40";
 
 function Inner({ children }: { children: ReactNode }) {
   return (

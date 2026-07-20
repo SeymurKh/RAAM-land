@@ -15,7 +15,7 @@ export function SectionSkeleton({ className }: { className?: string }) {
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="h-48 animate-shimmer rounded-[1.5rem] border border-white/5 bg-white/[0.02]"
+                className="h-48 animate-shimmer rounded-3xl border border-white/5 bg-white/2"
               />
             ))}
           </div>

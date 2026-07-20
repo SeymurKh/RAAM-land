@@ -30,7 +30,7 @@ export function LiveStreamSection() {
   }, []);
 
   if (!config) {
-    return <SectionSkeleton className="min-h-[320px] sm:min-h-[500px]" />;
+    return <SectionSkeleton className="min-h-80 sm:min-h-125" />;
   }
 
   const { nextStreamDate, streamTitle } = config;
@@ -91,7 +91,7 @@ export function LiveStreamSection() {
             </div>
           </MotionReveal>
         ) : nextStreamDate ? (
-          <MotionReveal className="flex min-h-[260px] flex-col items-center justify-center gap-6 bg-[#0b0a09]/92 px-4 py-8 sm:min-h-[400px] sm:gap-8 sm:px-6 sm:py-16">
+          <MotionReveal className="flex min-h-65 flex-col items-center justify-center gap-6 bg-[#0b0a09]/92 px-4 py-8 sm:min-h-100 sm:gap-8 sm:px-6 sm:py-16">
             <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
               Next stream
             </p>
@@ -101,11 +101,11 @@ export function LiveStreamSection() {
             <CountdownTimer targetDate={nextStreamDate} />
           </MotionReveal>
         ) : (
-          <MotionReveal className="flex min-h-[180px] flex-col items-center justify-center gap-4 bg-[#0b0a09]/92 px-4 py-8 sm:min-h-[300px] sm:px-6 sm:py-16">
+          <MotionReveal className="flex min-h-45 flex-col items-center justify-center gap-4 bg-[#0b0a09]/92 px-4 py-8 sm:min-h-75 sm:px-6 sm:py-16">
             <p className="text-lg text-stone-200/60">
               Stay tuned for the next stream
             </p>
-            <div className="h-px w-24 bg-gradient-to-r from-transparent via-stone-200/20 to-transparent" />
+            <div className="h-px w-24 bg-linear-to-r from-transparent via-stone-200/20 to-transparent" />
           </MotionReveal>
         )}
       </div>

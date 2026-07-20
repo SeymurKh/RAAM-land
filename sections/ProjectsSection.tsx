@@ -63,7 +63,7 @@ export function ProjectsSection() {
         aria-label="Projects gallery"
       >
         {total === 0 ? (
-          <MotionReveal className="flex min-h-[360px] items-center justify-center rounded-[1.5rem] border border-white/10 bg-[#0b0a09]/86 p-8 text-center">
+          <MotionReveal className="flex min-h-90 items-center justify-center rounded-3xl border border-white/10 bg-[#0b0a09]/86 p-8 text-center">
             <p className="text-sm uppercase tracking-[0.28em] text-stone-300/55">
               Projects will appear here soon
             </p>
@@ -89,7 +89,7 @@ export function ProjectsSection() {
             </button>
 
             <div
-              className="relative flex items-center justify-center min-h-[420px] sm:min-h-[560px]"
+              className="relative flex items-center justify-center min-h-105 sm:min-h-140"
               style={{ touchAction: "pan-y" }}
               onPointerDown={(e) => {
                 const el = e.currentTarget;
@@ -127,7 +127,7 @@ export function ProjectsSection() {
                 return (
                   <article
                     key={project.id}
-                    className="absolute w-full max-w-[44rem] origin-center rounded-[1.35rem] border border-white/12 bg-[#0b0a09]/95 shadow-[0_20px_100px_rgba(0,0,0,0.55)] overflow-hidden"
+                    className="absolute w-full max-w-176 origin-center rounded-[1.35rem] border border-white/12 bg-[#0b0a09]/95 shadow-[0_20px_100px_rgba(0,0,0,0.55)] overflow-hidden"
                     style={{
                       transition: "transform 0.3s cubic-bezier(0,0,0.2,1), opacity 0.3s cubic-bezier(0,0,0.2,1)",
                       transform: `scale(${isCenter ? 1 : 0.85}) translateX(${isLeft ? "-24%" : isRight ? "24%" : "0%"})`,
@@ -146,7 +146,7 @@ export function ProjectsSection() {
                         style={(() => {
                           const { position, zoom } = parseImagePosition(project.imagePosition);
                           return {
-                            objectPosition: position,
+                            transformOrigin: position,
                             transform: zoom !== 1 ? `scale(${zoom})` : undefined,
                             filter: `brightness(${(project.brightness ?? 25) / 100})`,
                           };
@@ -157,9 +157,9 @@ export function ProjectsSection() {
                     ) : (
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.05),transparent_50%)]" />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/80" />
+                    <div className="absolute inset-0 bg-linear-to-b from-black/55 via-black/30 to-black/80" />
 
-                    <div className="relative z-10 flex min-h-[440px] flex-col p-5 sm:min-h-[520px] sm:p-7 lg:p-9">
+                    <div className="relative z-10 flex min-h-110 flex-col p-5 sm:min-h-130 sm:p-7 lg:p-9">
                       {isCenter ? (
                         <>
                           <div>
@@ -194,7 +194,7 @@ export function ProjectsSection() {
                                     setModalVideo({ url: videos[0].url, title: project.title });
                                   }
                                 }}
-                                className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-5 py-2.5 text-sm text-stone-200/80 transition hover:border-white/20 hover:bg-white/[0.1] hover:text-white"
+                                className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm text-stone-200/80 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
                               >
                                 <Play size={14} />
                                 Watch
@@ -203,7 +203,7 @@ export function ProjectsSection() {
                           )}
                         </>
                       ) : (
-                        <div className="flex min-h-[200px] flex-col justify-center px-4">
+                        <div className="flex min-h-50 flex-col justify-center px-4">
                           <p className="text-[0.6rem] uppercase tracking-[0.3em] text-stone-300/30">
                             {project.category}
                           </p>

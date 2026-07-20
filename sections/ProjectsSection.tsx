@@ -70,6 +70,24 @@ export function ProjectsSection() {
           </MotionReveal>
         ) : (
           <div className="relative mx-auto max-w-5xl">
+            {/* Side arrows — desktop only */}
+            <button
+              type="button"
+              onClick={() => goTo(-1)}
+              className="absolute left-0 top-1/2 z-10 -translate-y-1/2 -translate-x-3 hidden sm:flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white backdrop-blur-md transition hover:scale-110 hover:bg-white/10 hover:border-white/20"
+              aria-label="Previous project"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={() => goTo(1)}
+              className="absolute right-0 top-1/2 z-10 -translate-y-1/2 translate-x-3 hidden sm:flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white backdrop-blur-md transition hover:scale-110 hover:bg-white/10 hover:border-white/20"
+              aria-label="Next project"
+            >
+              <ChevronRight size={20} />
+            </button>
+
             <div
               className="relative flex items-center justify-center min-h-[420px] sm:min-h-[560px]"
               style={{ touchAction: "pan-y" }}
@@ -205,7 +223,7 @@ export function ProjectsSection() {
               <button
                 type="button"
                 onClick={() => goTo(-1)}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white transition hover:bg-white/10"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white transition hover:bg-white/10 sm:hidden"
                 aria-label="Previous project"
               >
                 <ChevronLeft size={16} />
@@ -230,7 +248,7 @@ export function ProjectsSection() {
               <button
                 type="button"
                 onClick={() => goTo(1)}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white transition hover:bg-white/10"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white transition hover:bg-white/10 sm:hidden"
                 aria-label="Next project"
               >
                 <ChevronRight size={16} />

@@ -89,10 +89,14 @@ export async function POST(request: NextRequest) {
   ].filter((l): l is string => l !== null);
 
   try {
+    // Порт 587 (STARTTLS): 465 у Hetzner заблокирован для новых аккаунтов
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false,
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000,
       auth: { user: SMTP_USER, pass: SMTP_PASS },
     });
 

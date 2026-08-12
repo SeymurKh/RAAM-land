@@ -3,6 +3,7 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { getArtist, updateArtist, deleteArtist } from "@/lib/db";
+import { cleanUploadUrl } from "@/lib/uploads";
 
 export async function GET(
   _request: NextRequest,
@@ -27,6 +28,11 @@ export async function PUT(
 
   const { id } = await params;
   const body = await request.json();
+
+  // Отрезаем cache-buster (?v=...) от клиента
+  body.photo = cleanUploadUrl(body.photo);
+  body.avatar = cleanUploadUrl(body.avatar);
+
   console.log("[PUT /api/artists/:id] id:", id, "photo in body:", body.photo);
 
   // Если фото удалили (null), удалить файл с диска

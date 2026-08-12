@@ -3,6 +3,7 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { createProject, getProjects } from "@/lib/db";
+import { cleanUploadUrl } from "@/lib/uploads";
 import type { Project } from "@/types/content";
 
 export async function GET() {
@@ -22,6 +23,8 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
+  // Отрезаем cache-buster (?v=...) от клиента — для fs-операций нужен чистый путь
+  body.image = cleanUploadUrl(body.image);
   // Если изображение было загружено с временным именем (new-project-xxx), переименовываем файл
   if (body.image && body.image.includes("/uploads/projects/new-project")) {
     const uploadDir = join(process.cwd(), "public", "uploads", "projects");

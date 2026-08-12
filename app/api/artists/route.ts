@@ -3,6 +3,7 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { getArtists, createArtist } from "@/lib/db";
+import { cleanUploadUrl } from "@/lib/uploads";
 import type { Artist } from "@/types/content";
 
 export async function GET() {
@@ -20,6 +21,10 @@ export async function POST(request: NextRequest) {
   if (!body.id || !body.name) {
     return NextResponse.json({ error: "id and name are required" }, { status: 400 });
   }
+
+  // Отрезаем cache-buster (?v=...) от клиента — для fs-операций нужен чистый путь
+  body.photo = cleanUploadUrl(body.photo);
+  body.avatar = cleanUploadUrl(body.avatar);
 
   // Если фото было загружено с временным именем (new-xxx), переименовываем файл
   if (body.photo && body.photo.includes("/uploads/artists/new-")) {

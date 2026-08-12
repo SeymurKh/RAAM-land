@@ -3,6 +3,7 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { deleteProject, getProject, updateProject } from "@/lib/db";
+import { cleanUploadUrl } from "@/lib/uploads";
 import type { Project } from "@/types/content";
 
 export async function GET(
@@ -29,6 +30,8 @@ export async function PUT(
 
   const { id } = await params;
   const body = (await request.json()) as Project;
+  // Отрезаем cache-buster (?v=...) от клиента
+  body.image = cleanUploadUrl(body.image);
   const project = await updateProject(id, normalizeProject(body));
 
   if (!project) {

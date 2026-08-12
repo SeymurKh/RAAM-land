@@ -7,12 +7,42 @@ export const metadata: Metadata = {
   title: "RAAM | Room All About Music",
   description:
     "RAAM is a multi-disciplinary electronic music label and creative hub in Azerbaijan.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
+    type: "website",
+    url: "https://raam-label.com",
+    siteName: "RAAM — Room All About Music",
     title: "RAAM | Room All About Music",
     description:
       "A premium electronic music community, label, and creative hub shaping local talent and immersive formats.",
     images: ["/assets/images/logo.png"],
   },
+  twitter: {
+    card: "summary_large_image",
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  name: "RAAM",
+  alternateName: "Room All About Music",
+  url: "https://raam-label.com",
+  logo: "https://raam-label.com/assets/images/logo.png",
+  description:
+    "A multi-disciplinary music label and creative hub dedicated to the strategic development of electronic music in Azerbaijan.",
+  email: "roomallaboutmusic@gmail.com",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Baku",
+    addressCountry: "AZ",
+  },
+  sameAs: [
+    "https://www.youtube.com/@RAAMLabel",
+    "https://linktr.ee/raamlabel",
+  ],
 };
 
 export default function RootLayout({
@@ -23,6 +53,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="relative h-full antialiased">
       <body className="min-h-full bg-[#080706] text-stone-50">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <MotionConfig reducedMotion="user">
           <a
             href="#main-content"

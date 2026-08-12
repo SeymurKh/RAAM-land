@@ -3,7 +3,7 @@ import { MotionConfig } from "framer-motion";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://raamlabel.com"),
+  metadataBase: new URL("https://raam-label.com"),
   title: "RAAM | Room All About Music",
   description:
     "RAAM is a multi-disciplinary electronic music label and creative hub in Azerbaijan.",

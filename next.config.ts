@@ -20,6 +20,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   compress: true,
   poweredByHeader: false,
   images: {
@@ -42,7 +43,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/(.*)",
-        headers: securityHeaders,
+        headers: [
+          ...securityHeaders,
+          // Streaming через reverse proxy (Caddy/nginx) без буферизации
+          { key: "X-Accel-Buffering", value: "no" },
+        ],
       },
     ];
   },

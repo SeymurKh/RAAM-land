@@ -1,0 +1,21 @@
+node_modules
+.next
+.git
+.github
+.vscode
+
+# env и секреты в образ не попадают
+.env*
+
+# инфраструктурные файлы
+Dockerfile
+.dockerignore
+docker-compose.yml
+Caddyfile
+DEPLOY.md
+
+# логи и мусор
+*.log
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts

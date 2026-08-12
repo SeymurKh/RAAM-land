@@ -43,21 +43,31 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
+  // Сброс полей при открытии — во время рендера, без эффекта
+  const [prevOpen, setPrevOpen] = useState(false);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setSelectedArtists([]);
+      setEmail("");
+      setPhone("");
+      setMessage("");
+      setStatus("idle");
+    }
+  }
+
+  // Подгрузка списка артистов при первом открытии
   const prevOpenRef = useRef(false);
   useEffect(() => {
     if (open && !prevOpenRef.current) {
       fetch("/api/artists")
         .then((r) => r.json())
         .then(setArtists);
-    }
-    if (open) {
-      setSelectedArtists([]);
-      setEmail("");
-      setPhone("");
-      setMessage("");
-      setSent(false);
     }
     prevOpenRef.current = open;
   }, [open]);
@@ -71,28 +81,31 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
     );
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email) return;
+    if (!email || status === "sending") return;
+    setStatus("sending");
 
-    const artistNames = selectedArtists
-      .map((id) => artists.find((a) => a.id === id)?.name)
-      .filter(Boolean)
-      .join(", ");
-
-    const body = [
-      `Type: ${label}`,
-      artistNames && `Artists: ${artistNames}`,
-      phone && `Phone: ${phone}`,
-      `\n${message}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    const subject = encodeURIComponent(`RAAM Inquiry: ${label}`);
-    const mailBody = encodeURIComponent(body);
-    window.location.href = `mailto:roomallaboutmusic@gmail.com?subject=${subject}&body=${mailBody}`;
-    setSent(true);
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type,
+          artists: selectedArtists
+            .map((id) => artists.find((a) => a.id === id)?.name)
+            .filter(Boolean),
+          email,
+          phone,
+          message,
+          website: honeypotRef.current?.value ?? "",
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+    }
   }
 
   const modal = open ? (
@@ -205,14 +218,36 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
                 />
               </div>
 
+              {/* Honeypot — невидимое поле против ботов */}
+              <input
+                ref={honeypotRef}
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="pointer-events-none absolute -left-[9999px] h-0 w-0 opacity-0"
+              />
+
               {/* Submit */}
               <button
                 type="submit"
-                disabled={!email}
+                disabled={!email || status === "sending" || status === "sent"}
                 className="w-full rounded-full border border-white/10 bg-white/6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-white transition hover:bg-white/12 disabled:opacity-40"
               >
-                {sent ? "Email opened ✓" : "Send request"}
+                {status === "sending"
+                  ? "Sending..."
+                  : status === "sent"
+                    ? "Request sent ✓"
+                    : "Send request"}
               </button>
+
+              {status === "error" && (
+                <p className="text-center text-xs text-red-400/80">
+                  Something went wrong. Please try again or email us directly at
+                  roomallaboutmusic@gmail.com
+                </p>
+              )}
             </form>
           </motion.div>
         </motion.div>

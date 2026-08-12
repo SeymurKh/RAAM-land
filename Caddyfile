@@ -1,0 +1,11 @@
+# RAAM — production
+# SSL-сертификаты Let's Encrypt выпускаются и продлеваются автоматически.
+
+www.raam-label.com {
+	redir https://raam-label.com{uri} permanent
+}
+
+raam-label.com {
+	encode zstd gzip
+	reverse_proxy app:3000
+}

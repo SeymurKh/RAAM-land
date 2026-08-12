@@ -1,0 +1,40 @@
+name: raam
+
+services:
+  app:
+    # Образ собирается в GitHub Actions и пуллится из GHCR.
+    # Локально/вручную можно собрать: docker compose build
+    image: ghcr.io/seymurkh/raam-land:latest
+    build: .
+    restart: unless-stopped
+    env_file: .env.production
+    volumes:
+      - raam-data:/app/data
+      - raam-uploads:/app/public/uploads
+    networks:
+      - web
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - web
+
+volumes:
+  raam-data:
+  raam-uploads:
+  caddy-data:
+  caddy-config:
+
+networks:
+  web:

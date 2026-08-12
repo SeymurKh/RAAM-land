@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/admin/", "/api/"],
     },
-    sitemap: "https://raamlabel.com/sitemap.xml",
+    sitemap: "https://raam-label.com/sitemap.xml",
   };
 }

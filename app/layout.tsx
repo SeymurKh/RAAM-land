@@ -17,7 +17,6 @@ export const metadata: Metadata = {
     title: "RAAM | Room All About Music",
     description:
       "A premium electronic music community, label, and creative hub shaping local talent and immersive formats.",
-    images: ["/assets/images/logo.png"],
   },
   twitter: {
     card: "summary_large_image",

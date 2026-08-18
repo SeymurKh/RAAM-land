@@ -51,7 +51,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="relative h-full antialiased">
-      <body className="min-h-full bg-[#080706] text-stone-50">
+      <body className="min-h-full bg-black text-stone-50">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `history.scrollRestoration = "manual"; window.scrollTo(0, 0);`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

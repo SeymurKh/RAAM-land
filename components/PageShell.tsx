@@ -58,7 +58,7 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
         <footer className="border-t border-white/5 bg-[#080706] px-4 py-8 sm:px-8 sm:py-12 lg:px-12">
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between sm:gap-8">
-              <div className="text-center sm:text-left">
+              <div className="order-2 text-center sm:order-1 sm:text-left">
                 <p className="text-xs tracking-[0.2em] uppercase text-stone-400/50">
                   © {new Date().getFullYear()} RAAM — Room All About Music
                 </p>
@@ -67,7 +67,7 @@ export function PageShell({ hero, ecosystem, projects }: PageShellProps) {
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-3">
+              <div className="order-1 flex flex-wrap items-center justify-center gap-3 sm:order-2">
                 {contactLinks.map((link) => {
                   const LucideIcon = lucideIcons[link.kind];
                   const isBrand = brandKinds.has(link.kind);

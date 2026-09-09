@@ -3,7 +3,7 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { getArtists, createArtist } from "@/lib/db";
-import { cleanUploadUrl } from "@/lib/uploads";
+import { cleanUploadUrl, UPLOAD_EXTENSIONS } from "@/lib/uploads";
 import type { Artist } from "@/types/content";
 
 export async function GET() {
@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Удаляем старый файл артиста если есть (другое расширение)
-      const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
-      for (const e of possibleExts) {
+      for (const e of UPLOAD_EXTENSIONS) {
         if (e === ext) continue; // Не удалять файл который сейчас переименуем
         const existingPath = join(uploadDir, `${body.id}.${e}`);
         try { await unlink(existingPath); } catch { /* ok */ }
@@ -68,8 +67,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Удаляем старый аватар если есть (другое расширение)
-      const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
-      for (const e of possibleExts) {
+      for (const e of UPLOAD_EXTENSIONS) {
         if (e === avatarExt) continue;
         const existingPath = join(avatarUploadDir, `avatar-${body.id}.${e}`);
         try { await unlink(existingPath); } catch { /* ok */ }

@@ -3,7 +3,7 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { createProject, getProjects } from "@/lib/db";
-import { cleanUploadUrl } from "@/lib/uploads";
+import { cleanUploadUrl, UPLOAD_EXTENSIONS } from "@/lib/uploads";
 import type { Project } from "@/types/content";
 
 export async function GET() {
@@ -36,8 +36,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Удаляем старый файл проекта если есть (другое расширение)
-      const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
-      for (const e of possibleExts) {
+      for (const e of UPLOAD_EXTENSIONS) {
         if (e === ext) continue;
         const existingPath = join(uploadDir, `${body.id}.${e}`);
         try { await unlink(existingPath); } catch { /* ok */ }

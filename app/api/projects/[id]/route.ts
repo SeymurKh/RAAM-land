@@ -3,7 +3,7 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { deleteProject, getProject, updateProject } from "@/lib/db";
-import { cleanUploadUrl } from "@/lib/uploads";
+import { cleanUploadUrl, cleanupTempFiles, UPLOAD_EXTENSIONS } from "@/lib/uploads";
 import type { Project } from "@/types/content";
 
 export async function GET(
@@ -54,13 +54,19 @@ export async function DELETE(
 
   // Delete image file from disk
   const project = await getProject(id);
+  const uploadDir = join(process.cwd(), "public", "uploads", "projects");
+
   if (project?.image) {
-    const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
-    const uploadDir = join(process.cwd(), "public", "uploads", "projects");
-    for (const ext of possibleExts) {
+    for (const ext of UPLOAD_EXTENSIONS) {
       const filePath = join(uploadDir, `${id}.${ext}`);
       try { await unlink(filePath); } catch { /* ok */ }
     }
+  }
+
+  // Чистим осиротевшие temp-файлы (new-project-*)
+  const cleaned = await cleanupTempFiles(uploadDir);
+  if (cleaned.length) {
+    console.log("[DELETE /api/projects/:id] Cleaned temp files:", cleaned);
   }
 
   const deleted = await deleteProject(id);

@@ -3,7 +3,7 @@ import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { getArtist, updateArtist, deleteArtist } from "@/lib/db";
-import { cleanUploadUrl } from "@/lib/uploads";
+import { cleanUploadUrl, cleanupTempFiles, UPLOAD_EXTENSIONS } from "@/lib/uploads";
 
 export async function GET(
   _request: NextRequest,
@@ -40,9 +40,8 @@ export async function PUT(
     const existing = await getArtist(id);
     if (existing?.photo) {
       console.log("[PUT /api/artists/:id] Deleting photo file for:", id);
-      const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
       const uploadDir = join(process.cwd(), "public", "uploads", "artists");
-      for (const ext of possibleExts) {
+      for (const ext of UPLOAD_EXTENSIONS) {
         const filePath = join(uploadDir, `${id}.${ext}`);
         try {
           await unlink(filePath);
@@ -61,9 +60,8 @@ export async function PUT(
     const existing = await getArtist(id);
     if (existing?.avatar) {
       console.log("[PUT /api/artists/:id] Deleting avatar file for:", id);
-      const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
       const uploadDir = join(process.cwd(), "public", "uploads", "artists");
-      for (const ext of possibleExts) {
+      for (const ext of UPLOAD_EXTENSIONS) {
         const filePath = join(uploadDir, `avatar-${id}.${ext}`);
         try {
           await unlink(filePath);
@@ -97,11 +95,11 @@ export async function DELETE(
 
   // Удаляем фото с диска
   const artist = await getArtist(id);
+  const uploadDir = join(process.cwd(), "public", "uploads", "artists");
+
   if (artist?.photo) {
     console.log("[DELETE /api/artists/:id] Deleting photo for:", id);
-    const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
-    const uploadDir = join(process.cwd(), "public", "uploads", "artists");
-    for (const ext of possibleExts) {
+    for (const ext of UPLOAD_EXTENSIONS) {
       const filePath = join(uploadDir, `${id}.${ext}`);
       try {
         await unlink(filePath);
@@ -114,9 +112,7 @@ export async function DELETE(
   // Удаляем аватар с диска
   if (artist?.avatar) {
     console.log("[DELETE /api/artists/:id] Deleting avatar for:", id);
-    const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
-    const uploadDir = join(process.cwd(), "public", "uploads", "artists");
-    for (const ext of possibleExts) {
+    for (const ext of UPLOAD_EXTENSIONS) {
       const filePath = join(uploadDir, `avatar-${id}.${ext}`);
       try {
         await unlink(filePath);
@@ -126,13 +122,10 @@ export async function DELETE(
     }
   }
 
-  // Clean up any orphaned temp upload files (avatar-new-*) for this artist
-  // These are created by ArtistForm before the artist is saved and may be left over
-  const tempExts = ["png", "jpg", "jpeg", "webp", "gif"];
-  const uploadDir = join(process.cwd(), "public", "uploads", "artists");
-  for (const ext of tempExts) {
-    const tempPath = join(uploadDir, `avatar-new-*.${ext}`);
-    try { await unlink(tempPath); } catch { /* ok */ }
+  // Чистим осиротевшие temp-файлы (new-*, avatar-new-*)
+  const cleaned = await cleanupTempFiles(uploadDir);
+  if (cleaned.length) {
+    console.log("[DELETE /api/artists/:id] Cleaned temp files:", cleaned);
   }
 
   const deleted = await deleteArtist(id);

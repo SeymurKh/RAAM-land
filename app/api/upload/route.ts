@@ -2,6 +2,7 @@ import { writeFile, mkdir, unlink } from "fs/promises";
 import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
+import { UPLOAD_EXTENSIONS } from "@/lib/uploads";
 
 const PHOTO_MAX_WIDTH = 1920;
 const AVATAR_SIZE = 400;
@@ -47,10 +48,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (file.size > 8 * 1024 * 1024) {
+  if (file.size > 5 * 1024 * 1024) {
     console.error("[upload] File too large:", file.size);
     return NextResponse.json(
-      { error: "File size must be under 8MB" },
+      { error: "File size must be under 5MB" },
       { status: 400 },
     );
   }
@@ -65,8 +66,7 @@ export async function POST(request: NextRequest) {
   const prefix = isAvatar ? `avatar-${entityId}` : entityId;
 
   // Delete any existing file for this entity/kind (any extension)
-  const possibleExts = ["png", "jpg", "jpeg", "webp", "gif"];
-  for (const e of possibleExts) {
+  for (const e of UPLOAD_EXTENSIONS) {
     const existingPath = join(uploadDir, `${prefix}.${e}`);
     try {
       await unlink(existingPath);

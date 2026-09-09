@@ -33,6 +33,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Файловая "БД" (db.json сидится в named volume при первом запуске)
 COPY --from=builder --chown=nextjs:nodejs /app/data ./data
 
+# Утилитарные скриpts (cleanup-temps.mjs и т.д.)
+COPY --from=builder /app/scripts ./scripts
+
 # Каталоги для записи: БД + загруженные фото (сюда монтируются volumes)
 RUN mkdir -p /app/data /app/public/uploads \
   && chown -R nextjs:nodejs /app/data /app/public/uploads

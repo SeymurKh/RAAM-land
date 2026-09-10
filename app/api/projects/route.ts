@@ -23,7 +23,9 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
-  // Отрезаем cache-buster (?v=...) от клиента — для fs-операций нужен чистый путь
+  // Сохраняем оригинальный URL (с ?v=...) для записи в базу
+  const imageForDb = body.image;
+  // Чистый путь нужен только для fs-операций
   body.image = cleanUploadUrl(body.image);
   // Если изображение было загружено с временным именем (new-project-xxx), переименовываем файл
   if (body.image && body.image.includes("/uploads/projects/new-project")) {
@@ -46,6 +48,14 @@ export async function POST(request: NextRequest) {
     } catch {
       // Продолжаем — файл может не существовать
     }
+  }
+
+  // Восстанавливаем оригинальный URL (с ?v=...) для записи в базу
+  if (imageForDb && body.image) {
+    const qs = imageForDb.split("?")[1];
+    body.image = qs ? `${body.image}?${qs}` : body.image;
+  } else if (imageForDb) {
+    body.image = imageForDb;
   }
 
   const project = await createProject(normalizeProject(body));

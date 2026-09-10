@@ -22,7 +22,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "id and name are required" }, { status: 400 });
   }
 
-  // Отрезаем cache-buster (?v=...) от клиента — для fs-операций нужен чистый путь
+  // Сохраняем оригинальные URL (с ?v=...) для записи в базу
+  const photoForDb = body.photo;
+  const avatarForDb = body.avatar;
+  // Чистые пути нужны только для fs-операций
   body.photo = cleanUploadUrl(body.photo);
   body.avatar = cleanUploadUrl(body.avatar);
 
@@ -78,6 +81,23 @@ export async function POST(request: NextRequest) {
     } catch (err) {
       console.error("[POST /api/artists] Failed to rename avatar:", err);
     }
+  }
+
+  // Восстанавливаем оригинальные URL (с ?v=...) для записи в базу.
+  // Если фото было переименовано — берём новый путь + оригинальный ?v=.
+  if (photoForDb && body.photo && body.photo !== cleanUploadUrl(photoForDb)) {
+    // Фото было переименовано (new-xxx → id.ext) — добавляем ?v= к новому пути
+    const qs = photoForDb.split("?")[1];
+    body.photo = qs ? `${body.photo}?${qs}` : body.photo;
+  } else if (photoForDb) {
+    body.photo = photoForDb;
+  }
+
+  if (avatarForDb && body.avatar && body.avatar !== cleanUploadUrl(avatarForDb)) {
+    const qs = avatarForDb.split("?")[1];
+    body.avatar = qs ? `${body.avatar}?${qs}` : body.avatar;
+  } else if (avatarForDb) {
+    body.avatar = avatarForDb;
   }
 
   console.log("[POST /api/artists] Creating artist:", body.id, "photo:", body.photo);

@@ -29,7 +29,10 @@ export async function PUT(
   const { id } = await params;
   const body = await request.json();
 
-  // Отрезаем cache-buster (?v=...) от клиента
+  // Сохраняем оригинальные URL (с ?v=...) для записи в базу
+  const photoForDb = body.photo;
+  const avatarForDb = body.avatar;
+  // Чистые пути нужны только для fs-операций
   body.photo = cleanUploadUrl(body.photo);
   body.avatar = cleanUploadUrl(body.avatar);
 
@@ -72,6 +75,16 @@ export async function PUT(
       }
     }
     body.avatar = undefined;
+  }
+
+  // Восстанавливаем оригинальные URL (с ?v=...) для записи в базу
+  if (photoForDb && body.photo) {
+    const qs = photoForDb.split("?")[1];
+    body.photo = qs ? `${body.photo}?${qs}` : body.photo;
+  }
+  if (avatarForDb && body.avatar) {
+    const qs = avatarForDb.split("?")[1];
+    body.avatar = qs ? `${body.avatar}?${qs}` : body.avatar;
   }
 
   const artist = await updateArtist(id, body);

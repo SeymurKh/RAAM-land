@@ -30,8 +30,17 @@ export async function PUT(
 
   const { id } = await params;
   const body = (await request.json()) as Project;
-  // Отрезаем cache-buster (?v=...) от клиента
+  // Сохраняем оригинальный URL (с ?v=...) для записи в базу
+  const imageForDb = body.image;
+  // Чистый путь нужен только для fs-операций
   body.image = cleanUploadUrl(body.image);
+
+  // Восстанавливаем оригинальный URL (с ?v=...) для записи в базу
+  if (imageForDb && body.image) {
+    const qs = imageForDb.split("?")[1];
+    body.image = qs ? `${body.image}?${qs}` : body.image;
+  }
+
   const project = await updateProject(id, normalizeProject(body));
 
   if (!project) {

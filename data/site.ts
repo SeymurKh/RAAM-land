@@ -56,8 +56,8 @@ export const contactLinks: ContactLink[] = [
   {
     id: "email",
     label: "Email",
-    value: "roomallaboutmusic@gmail.com",
-    href: "mailto:roomallaboutmusic@gmail.com",
+    value: "support@raam-label.com",
+    href: "mailto:support@raam-label.com",
     kind: "email",
   },
   {

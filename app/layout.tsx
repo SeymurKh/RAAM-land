@@ -32,7 +32,7 @@ const jsonLd = {
   logo: "https://raam-label.com/assets/images/logo.png",
   description:
     "A multi-disciplinary music label and creative hub dedicated to the strategic development of electronic music in Azerbaijan.",
-  email: "roomallaboutmusic@gmail.com",
+  email: "support@raam-label.com",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Baku",

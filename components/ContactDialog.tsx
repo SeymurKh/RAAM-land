@@ -245,7 +245,7 @@ export function ContactDialog({ open, type, onClose }: ContactDialogProps) {
               {status === "error" && (
                 <p className="text-center text-xs text-red-400/80">
                   Something went wrong. Please try again or email us directly at
-                  roomallaboutmusic@gmail.com
+                  support@raam-label.com
                 </p>
               )}
             </form>

@@ -7,6 +7,8 @@ export type SocialKind =
   | "soundcloud"
   | "spotify"
   | "youtube"
+  | "twitch"
+  | "mixcloud"
   | "linktree"
   | "apple-music"
   | "telegram"

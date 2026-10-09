@@ -4,7 +4,7 @@ import {
   RadioTower,
   Sparkles,
 } from "lucide-react";
-import type { Capability, ContactLink } from "@/types/content";
+import type { Capability, ContactLink, SocialKind } from "@/types/content";
 
 export const siteConfig = {
   name: "RAAM",
@@ -66,5 +66,28 @@ export const contactLinks: ContactLink[] = [
     value: "linktr.ee/raamlabel",
     href: "https://linktr.ee/raamlabel",
     kind: "linktree",
+  },
+];
+
+export const headerSocials: { kind: SocialKind; href: string; label: string }[] = [
+  {
+    kind: "youtube",
+    label: "YouTube",
+    href: "https://www.youtube.com/@RAAMLabel",
+  },
+  {
+    kind: "twitch",
+    label: "Twitch",
+    href: "https://www.twitch.tv/raamlabel",
+  },
+  {
+    kind: "mixcloud",
+    label: "Mixcloud",
+    href: "https://www.mixcloud.com/raamlabel/",
+  },
+  {
+    kind: "instagram",
+    label: "Instagram",
+    href: "https://www.instagram.com/raam.label/",
   },
 ];

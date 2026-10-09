@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useScrollLock } from "@/lib/useScrollLock";
 import { FluidButton } from "@/components/FluidButton";
+import { HeaderSocials } from "@/components/HeaderSocials";
 
 const navItems = [
   { label: "Artists", href: "#artists" },
@@ -54,23 +55,26 @@ export function Header({ modalOpen }: HeaderProps) {
         )}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-black/30 px-4 py-3 shadow-[0_16px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-          <a
-            href="#hero"
-            className="flex items-center gap-3"
-            aria-label="RAAM home"
-          >
-            <Image
-              src="/assets/images/logoheader.png"
-              alt="RAAM"
-              width={176}
-              height={56}
-              sizes="(min-width: 640px) 160px, 144px"
-              className="h-6 w-36 sm:w-40"
-              priority
+          <div className="flex items-center gap-3">
+            <a href="#hero" className="flex items-center" aria-label="RAAM home">
+              <Image
+                src="/assets/images/logoheader.png"
+                alt="RAAM"
+                width={176}
+                height={56}
+                sizes="(min-width: 640px) 160px, 144px"
+                className="h-6 w-36 sm:w-40"
+                priority
+              />
+            </a>
+            <span
+              aria-hidden="true"
+              className="hidden h-6 w-px bg-white/10 sm:block"
             />
-          </a>
+            <HeaderSocials className="hidden sm:flex" />
+          </div>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden items-center gap-3 lg:flex">
             {navItems.map((item) => (
               <FluidButton
                 key={item.href}
@@ -85,7 +89,7 @@ export function Header({ modalOpen }: HeaderProps) {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 text-white md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 text-white lg:hidden"
             aria-label="Open navigation"
           >
             <Menu size={18} />
@@ -99,7 +103,7 @@ export function Header({ modalOpen }: HeaderProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-60 bg-black/88 backdrop-blur-2xl md:hidden"
+            className="fixed inset-0 z-60 bg-black/88 backdrop-blur-2xl lg:hidden"
           >
             <div className="flex items-center justify-between px-5 py-5">
               <a href="#hero" onClick={close} className="flex items-center gap-3">
@@ -144,6 +148,15 @@ export function Header({ modalOpen }: HeaderProps) {
                   {item.label}
                 </motion.a>
               ))}
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 24 },
+                  show: { opacity: 1, y: 0 },
+                }}
+                className="flex items-center gap-2 pt-4"
+              >
+                <HeaderSocials />
+              </motion.div>
             </motion.div>
           </motion.div>
         ) : null}

@@ -244,7 +244,7 @@ export function ArtistModal({ artist, onClose, onBook }: ArtistModalProps) {
                 {validSocials.length > 0 && (
                   <div className="mt-6 flex flex-wrap gap-3">
                     {validSocials.map((social) => {
-                      const hasBrandIcon = ["instagram", "soundcloud", "spotify", "youtube", "linktree", "apple-music", "telegram"].includes(social.kind);
+                      const hasBrandIcon = ["instagram", "soundcloud", "spotify", "youtube", "twitch", "mixcloud", "linktree", "apple-music", "telegram"].includes(social.kind);
                       return (
                         <a
                           key={social.label}

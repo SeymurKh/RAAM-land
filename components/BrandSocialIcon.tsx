@@ -11,6 +11,8 @@ const logoSrc: Partial<Record<SocialKind, string>> = {
   soundcloud: "/brand_logo/soundcloud-1.svg",
   spotify: "/brand_logo/spotify-2026-black-logo.svg",
   youtube: "/brand_logo/black-youtube.svg",
+  twitch: "/brand_logo/twitch.svg",
+  mixcloud: "/brand_logo/mixcloud.svg",
   linktree: "/brand_logo/linktree.svg",
   "apple-music": "/brand_logo/apple-music-3.svg",
   telegram: "/brand_logo/telegram-svgrepo-com.svg",

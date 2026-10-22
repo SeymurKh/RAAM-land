@@ -12,7 +12,7 @@
         "Indie Dance"
       ],
       "bio": [
-        "Hailing from Portugal, Pedro is a passionate selector, moving between deep house, funky house, minimal, and tech house with ease.",
+        "Hailing from Portugal, Pedro Palma is a passionate selector, moving between deep house, funky house, minimal, and tech house with ease.",
         "His journey began in the 90s as a light jockey in a club, where the DJs behind the decks sparked a lifelong dedication to music.",
         "With over 20 years on stage, Pedro has performed at iconic European venues, shaping dancefloors with groove, rhythm, and emotion."
       ],
@@ -24,13 +24,27 @@
       "portfolio": [
         {
           "id": "pedro-grape",
-          "title": "Pedro at Grape Grooves",
-          "kind": "video"
+          "title": "Pedro on Grape Grooves",
+          "kind": "video",
+          "url": "https://youtu.be/ic-K39bhe7Y?si=OkdfPdtB5T4U6Izp"
         },
         {
           "id": "pedro-shayyo",
-          "title": "Pedro b2b Shayyo at 4Loft",
-          "kind": "audio"
+          "title": "Pedro b2b Shayyo at 4Loft Baku",
+          "kind": "audio",
+          "url": "https://youtu.be/oegMY9riFfo?si=nrsTaenc5eQMwuTm"
+        },
+        {
+          "id": "item-1788968779941",
+          "title": "Pedro b2b Inmysoul at FOMO Baku",
+          "kind": "video",
+          "url": "https://youtu.be/kzyZgVoet0M?si=WUOgeidk9myPRjFP"
+        },
+        {
+          "id": "item-1788968796506",
+          "title": "Pedro at Full Moon Party (Tivat, Montenegro))",
+          "kind": "video",
+          "url": "https://youtu.be/SbcX1Cqoh7o?si=myqaO6VXMBpAL22s"
         }
       ],
       "socials": [
@@ -53,7 +67,7 @@
       "photo": "/uploads/artists/pedro.png",
       "imagePosition": "50% 50% 1.0",
       "avatarPosition": "81% 32% 2.5",
-      "avatar": "/uploads/artists/avatar-pedro.jpg?v=1783853477792"
+      "avatar": "/uploads/artists/avatar-pedro.jpg"
     },
     {
       "id": "boraa",
@@ -67,25 +81,39 @@
         "Organic House"
       ],
       "bio": [
-        "Boraa is one of the key figures behind the modern DJ scene in Azerbaijan, contributing to the sound and development of leading venues.",
+        "Boraa [Bora David] is one of the key figures behind the modern DJ scene in Azerbaijan, contributing to the sound and development of leading venues.",
         "With nearly two decades in electronic music, he has performed in Istanbul, Los Angeles, Baku, and several cities across Canada.",
         "Alongside his DJ career, Boraa produces progressive and organic house material that has helped define his artistic identity."
       ],
       "highlights": [
-        "Shared stages with Guy J and Jody Wisternoff",
+        "Shared stages with Guy J and Jody Wisternoff & etc.",
         "International performances",
-        "Latest release: Frozen Memories EP"
+        "Latest release: Infinity - Single"
       ],
       "portfolio": [
         {
           "id": "boraa-chirag",
-          "title": "Boraa at Chirag Gala",
-          "kind": "video"
+          "title": "Boraa at Chirag Gala [Solong Live]",
+          "kind": "video",
+          "url": "https://youtu.be/BoWvEuA5ySA?si=dBtX0YGVGLfwkeve"
         },
         {
           "id": "boraa-schirm",
-          "title": "Boraa at Schirmchendrink",
-          "kind": "audio"
+          "title": "Boraa on Schirmchendrink",
+          "kind": "audio",
+          "url": "https://youtu.be/FyWj4-IVYV0?si=daVCK1ff90SV0h3J"
+        },
+        {
+          "id": "item-1788969124671",
+          "title": "Frozen Memories - EP",
+          "kind": "audio",
+          "url": "https://tr.ee/wsO1PNDmTb"
+        },
+        {
+          "id": "item-1788969207871",
+          "title": "Infinity - Single",
+          "kind": "audio",
+          "url": "https://www.beatport.com/release/infinity/6409400"
         }
       ],
       "socials": [
@@ -103,6 +131,11 @@
           "kind": "soundcloud",
           "label": "Boraa on SoundCloud",
           "url": "https://soundcloud.com/search?q=Boraa"
+        },
+        {
+          "kind": "apple-music",
+          "label": "Boraa on Apple Music",
+          "url": "https://music.apple.com/az/artist/boraa/1720059916?ls"
         }
       ],
       "visual": {
@@ -111,7 +144,7 @@
         "tone": "from-zinc-100/20"
       },
       "photo": "/uploads/artists/boraa.png",
-      "avatar": "/uploads/artists/avatar-boraa.jpg?v=1783853501679",
+      "avatar": "/uploads/artists/avatar-boraa.jpg",
       "avatarPosition": "48% 84% 1.5"
     },
     {
@@ -126,25 +159,33 @@
         "Afro House"
       ],
       "bio": [
-        "Farik Interlude is a local DJ and one of the pioneers shaping early DJ culture at RAAM venues.",
+        "Farik Interlude [Farman Hasanov] is a local DJ and one of the pioneers shaping early DJ culture at RAAM venues.",
         "Known for a distinctive and recognizable style, he has become a consistent presence in the local electronic scene.",
         "He is currently focused on developing his music production practice and preparing original tracks for release."
       ],
       "highlights": [
         "Almost seven years behind the decks",
-        "Shared stages with Elif, Djolee, and Alican",
+        "Shared stages with Elif, Djolee, Alican & etc.",
         "Original productions in development"
       ],
       "portfolio": [
         {
           "id": "farik-grape",
           "title": "Farik at Grape Grooves",
-          "kind": "video"
+          "kind": "video",
+          "url": "https://youtu.be/TaVnaTPGqC4?si=CKI-jvgCxBGeuTtT"
         },
         {
           "id": "farik-afro",
           "title": "Farik's Afro House Set",
-          "kind": "audio"
+          "kind": "audio",
+          "url": "https://soundcloud.com/farik_interlude/afro-house-with-popular?si=385bb13d377e45fc8e9969e8fbded185&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+        },
+        {
+          "id": "item-1788969688792",
+          "title": "Shayyo b2b Farik Interlude at FOMO Baku",
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=xdwI9T41lTM&t=1654s"
         }
       ],
       "socials": [
@@ -166,13 +207,13 @@
       },
       "photo": "/uploads/artists/farik-interlude.png",
       "avatarPosition": "55% 36% 2.5",
-      "avatar": "/uploads/artists/avatar-farik-interlude.jpg?v=1783853523772"
+      "avatar": "/uploads/artists/avatar-farik-interlude.jpg"
     },
     {
       "id": "shayyo",
       "name": "Shayyo",
       "origin": "AZ",
-      "role": "Resident DJ / Mentor",
+      "role": "Resident DJ / Mentor / Producer",
       "genres": [
         "Tech House",
         "Indie Dance",
@@ -180,30 +221,45 @@
         "Downtempo"
       ],
       "bio": [
-        "Shayyo is a local DJ and one of the pioneers shaping the sound at RAAM venues, known for versatile and engaging sets.",
+        "Shayyo [Valid Mahalliyev] is a local DJ and one of the pioneers shaping the sound at RAAM venues, known for versatile and engaging sets.",
         "Over the years, he has shared stages with Secret Factory, Fel C, Kimonos, and Rafael.",
         "With nearly a decade of production experience, Shayyo also mentors emerging talent in RAAM's coaching program."
       ],
       "highlights": [
         "Nearly 10 years in music production",
         "Mentor in the coaching program",
-        "Resident of RAAM Live and Cassette formats"
+        "Stands out for his versatility in music production, creating across R&B, trap and hip-hop for Azerbaijan’s rap scene, as well as downtempo, experimental, alternative and various electronic genres."
       ],
       "portfolio": [
         {
           "id": "shayyo-grape",
-          "title": "Shayyo at Grape Grooves",
-          "kind": "video"
+          "title": "Shayyo on Grape Grooves",
+          "kind": "video",
+          "url": "https://youtu.be/riP7EuiDfTA?si=3BSXT9uPL3P9yvSE"
         },
         {
           "id": "shayyo-cassette",
-          "title": "Shayyo at Cassette",
-          "kind": "video"
+          "title": "Shayyo on RAAM Cassette",
+          "kind": "video",
+          "url": "https://youtu.be/QCeeF28WocA?si=qwKgKXKWpe8Z7Sye"
         },
         {
           "id": "shayyo-live",
-          "title": "Shayyo at RAAM Live",
-          "kind": "video"
+          "title": "Shayyo on RAAM Live",
+          "kind": "audio",
+          "url": "https://youtu.be/eYHX_so7gSk?si=MLKUuANbsIJ3tN97"
+        },
+        {
+          "id": "item-1788970006389",
+          "title": "Shayyo b2b Farik Interlude at FOMO Baku",
+          "kind": "video",
+          "url": "https://youtu.be/xdwI9T41lTM?si=KHqDmukt_5R3LJGv"
+        },
+        {
+          "id": "item-1788970033707",
+          "title": "Legend - Single",
+          "kind": "audio",
+          "url": "https://tr.ee/6WAX2mmSfg"
         }
       ],
       "socials": [
@@ -245,13 +301,14 @@
       },
       "photo": "/uploads/artists/shayyo.png",
       "avatarPosition": "65% 49% 2.5",
-      "avatar": "/uploads/artists/avatar-shayyo.jpg?v=1783853537634"
+      "avatar": "/uploads/artists/avatar-shayyo.jpg",
+      "imagePosition": "50% 50% 1.0"
     },
     {
       "id": "inmysoul",
       "name": "Inmysoul",
       "origin": "AZ",
-      "role": "DJ / Producer",
+      "role": "Resident DJ / Producer",
       "genres": [
         "House",
         "Deep House",
@@ -259,30 +316,69 @@
         "Fast Groove"
       ],
       "bio": [
-        "Inmysoul is a local DJ and producer with 9 years of music production experience and nearly 5 years of live performances.",
+        "Inmysoul [Emil Zahidli] is a local DJ and producer with 9 years of music production experience and nearly 5 years of live performances.",
         "After a recent debut at FOMO, sharing the stage with Yaya Tamango, he has become a dynamic voice in the local scene.",
         "His recorded videoset in Tbilisi highlights a precise, energetic, and versatile approach to performance."
       ],
       "highlights": [
         "9 years of production experience",
         "Nearly 5 years performing live",
-        "Latest release: The Path single"
+        "Electronic Music Production & Azerbaijan’s Rap Scene"
       ],
       "portfolio": [
         {
           "id": "inmysoul-hor",
-          "title": "Inmysoul for Berlin HOR",
-          "kind": "audio"
+          "title": "Inmysoul & Kha0s for Berlin HOR",
+          "kind": "audio",
+          "url": "https://soundcloud.com/inmysoulsky/maximum-heat-hor-by-s-and-kha0s?si=6cc99f25a26d4d57b1300f76834c663a&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
         },
         {
           "id": "inmysoul-uptempo",
-          "title": "Inmysoul at UpTempo Jams",
-          "kind": "video"
+          "title": "Inmysoul on UpTempo Jams",
+          "kind": "video",
+          "url": "https://youtu.be/qB9Qx5bwe4g?si=xSQddygUfNyyiny6"
         },
         {
           "id": "inmysoul-deep",
           "title": "Inmysoul's Deep House Set",
-          "kind": "audio"
+          "kind": "audio",
+          "url": "https://soundcloud.com/inmysoulsky/cold-night-deep-sunday-001?si=a229bfd1eebf4935b2cda4f4c77616bf&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+        },
+        {
+          "id": "item-1788972858440",
+          "title": "Pedro b2b Inmysoul at FOMO Baku",
+          "kind": "video",
+          "url": "https://youtu.be/kzyZgVoet0M?si=NNn3GcfKz-ZkUrpZ"
+        },
+        {
+          "id": "item-1788972894186",
+          "title": "The Path - Single",
+          "kind": "audio",
+          "url": "https://tr.ee/z3j3ZZuXwz"
+        },
+        {
+          "id": "item-1788972986441",
+          "title": "Fallin' - Single",
+          "kind": "audio",
+          "url": "https://soundcloud.com/inmysoulsky/fallin?si=3d86d26a6a184d3b89992b1f6219d241&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+        },
+        {
+          "id": "item-1788973035328",
+          "title": "Project_my_soul.wav - Single",
+          "kind": "audio",
+          "url": "https://soundcloud.com/inmysoulsky/project_my_soul-wav?si=0928c32d8a2b4ab0a4dc2dcc64e0d519&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+        },
+        {
+          "id": "item-1788973071504",
+          "title": "Drip - Single",
+          "kind": "audio",
+          "url": "https://soundcloud.com/inmysoulsky/drip?si=1de66c8b7a2d4f928686bb6f927f5d90&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+        },
+        {
+          "id": "item-1788973095443",
+          "title": "Live Jams - Single",
+          "kind": "audio",
+          "url": "https://soundcloud.com/inmysoulsky/live-jams?si=c5161ae71de34ab2afaf725f0f067a91&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
         }
       ],
       "socials": [
@@ -309,7 +405,75 @@
       },
       "photo": "/uploads/artists/inmysoul.png",
       "avatarPosition": "62% 44% 2.0",
-      "avatar": "/uploads/artists/avatar-inmysoul.jpg?v=1783853550221"
+      "avatar": "/uploads/artists/avatar-inmysoul.jpg"
+    },
+    {
+      "id": "Semi",
+      "name": "SEMI",
+      "origin": "AZ",
+      "role": "Resident DJ",
+      "genres": [
+        "House",
+        "UK-Garage",
+        "Breakbeat",
+        "Electronica"
+      ],
+      "bio": [
+        "SEMI [Samir Jafarzada] is an Azerbaijan-based DJ and producer with over 16 years of experience behind the decks and more than 10 years in music production.",
+        "Having performed in Kyiv, Kharkiv and Poltava, and previously holding a residency at Podium Club, he has built a reputation for deep musical selection and versatile performances.",
+        "His sound blends House, UK Garage, Breakbeat and Electronica, combining underground grooves, broken rhythms and atmospheric textures. Driven by a passion for discovering rare music and creating immersive journeys, SEMI delivers sets that balance energy, emotion and forward-thinking electronic sound."
+      ],
+      "highlights": [
+        "More than 10 years in music production.",
+        "Electronic Music & Azerbaijani Rap Production.",
+        "Art Direction, Event Production & Lineup Coordination."
+      ],
+      "portfolio": [
+        {
+          "id": "item-1788971574066",
+          "title": "SEMI at Fuzzy Coffee & Wine Baku",
+          "kind": "video",
+          "url": "https://youtu.be/ulue9J5-Ab4?si=3hRvXmnykQXZqbWW"
+        },
+        {
+          "id": "item-1788971638131",
+          "title": "SEMI on BER Baku",
+          "kind": "video",
+          "url": "https://www.youtube.com/watch?v=JjFxFXZ-i5A"
+        },
+        {
+          "id": "item-1788971676929",
+          "title": "MONOFORM - EP",
+          "kind": "audio",
+          "url": "https://soundcloud.com/thesemimusic/sets/monoform-ep?si=86ca620e583c4582ac593749e1511599&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+        }
+      ],
+      "socials": [
+        {
+          "kind": "instagram",
+          "label": "@semibeats",
+          "url": "https://www.instagram.com/semibeats/"
+        },
+        {
+          "kind": "youtube",
+          "label": "@SEMiBEATS",
+          "url": "https://www.youtube.com/@SEMiBEATS"
+        },
+        {
+          "kind": "soundcloud",
+          "label": "@thesemimusic",
+          "url": "https://soundcloud.com/thesemimusic"
+        }
+      ],
+      "imagePosition": "66% 94% 1.0",
+      "avatarPosition": "54% 33% 1.0",
+      "visual": {
+        "initials": "SM",
+        "position": "high",
+        "tone": "from-stone-300/20"
+      },
+      "photo": "/uploads/artists/Semi.jpg",
+      "avatar": "/uploads/artists/avatar-Semi.jpg?v=1789061987156"
     }
   ],
   "projects": [
@@ -347,29 +511,34 @@
       "category": "Audio Visual Series",
       "status": "Active",
       "accent": "High BPM / Visual Production",
-      "order": 2,
+      "order": 4,
       "youtubeUrl": "https://www.youtube.com/playlist?list=PLXMe8QzaK6KTjYTv9sNTbJqtszfohb7B5",
       "videos": [
         {
           "id": "uptempo-1",
-          "title": "Inmysoul [&S] | House | UK Bass | Acid | Fast Groove",
+          "title": "Inmysoul | House | UK Bass | Acid | Fast Groove",
           "url": "https://youtu.be/qB9Qx5bwe4g?si=XfW6hXbcDJTu3uYQ"
+        },
+        {
+          "id": "v-1788974197471",
+          "title": "Gussi | Hard House | Bounce | Trance | Fast Groove",
+          "url": "https://youtu.be/fYPJEaXKT_Q?si=U-WJeHXU_ZjBWS6z"
         }
       ],
       "description": [
         "A high-BPM electronic music format recorded at Finestra del Aperitivo.",
         "The series highlights residents, wider community artists, and graduates ready to present their sound."
       ],
-      "image": "/uploads/projects/uptempo-jams.jpg?v=1783853800074",
+      "image": "/uploads/projects/uptempo-jams.jpg",
       "brightness": 40
     },
     {
       "id": "raam-live",
-      "title": "RAAM LIVE",
+      "title": "RAAM Live",
       "category": "Audio Series",
       "status": "Active",
       "accent": "Real-time DJ Performances",
-      "order": 3,
+      "order": 5,
       "youtubeUrl": "https://youtube.com/playlist?list=PLXMe8QzaK6KSM-Hjia_RE5euiS75RXDao&si=oJYYS4ECGlviSxad",
       "videos": [
         {
@@ -392,7 +561,7 @@
         "Audio sets recorded directly during live performances in RAAM venues.",
         "Each release documents the flow, energy, and atmosphere of the night as it actually happened."
       ],
-      "image": "/uploads/projects/raam-live.jpg?v=1783853813078",
+      "image": "/uploads/projects/raam-live.jpg",
       "brightness": 40
     },
     {
@@ -401,7 +570,7 @@
       "category": "Audio Visual Series",
       "status": "Active",
       "accent": "Intimate Sets / Vinyl Aesthetic",
-      "order": 4,
+      "order": 6,
       "youtubeUrl": "https://youtube.com/playlist?list=PLXMe8QzaK6KSV0OBvj_fOEoq8PPbsltA2&si=ehU1mjUECC4KBGgd",
       "videos": [
         {
@@ -429,11 +598,11 @@
     },
     {
       "id": "grape-grooves",
-      "title": "GRAPE GROOVES",
+      "title": "Grape Grooves",
       "category": "Audio Visual Series",
       "status": "Active",
       "accent": "Atmospheric Video Sets / Music & Nature",
-      "order": 5,
+      "order": 3,
       "videos": [
         {
           "id": "v-1783540021996",
@@ -473,15 +642,37 @@
       "overlayOpacity": 0,
       "imagePosition": "50% 50% 1.0",
       "brightness": 100,
-      "image": "/uploads/projects/grape-grooves.jpg?v=1783853832809"
+      "image": "/uploads/projects/grape-grooves.jpg"
+    },
+    {
+      "id": "fullmoonparty",
+      "title": "Full Moon Party",
+      "category": "Collaboration",
+      "status": "Active",
+      "accent": "Beach Party / Video Sets",
+      "order": 2,
+      "videos": [
+        {
+          "id": "v-1788973546283",
+          "title": "Pedro LIVE @ Full Moon Party (Tivat, Montenegro)",
+          "url": "https://youtu.be/SbcX1Cqoh7o?si=CzOztahrnF2V21XF"
+        }
+      ],
+      "description": [
+        "A seasonal collaboration between RAAM and Full Moon Party, bringing our residents to the forefront of a series of monthly beach events from May through August.",
+        "We curated warm-up sets ahead of the main acts and hosted the after-parties, creating a continuous musical journey throughout each night."
+      ],
+      "image": "/uploads/projects/fullmoonparty.jpg",
+      "brightness": 45,
+      "imagePosition": "50% 50% 1.0"
     }
   ],
   "stream": {
     "isLive": false,
-    "disabled": true,
+    "disabled": false,
     "source": "twitch",
     "streamTitle": "RAAM Live Session",
-    "nextStreamDate": "2026-07-10T17:00:00.000Z",
+    "nextStreamDate": "2026-10-17T18:00:00.000Z",
     "twitchChannel": "RAAMLabel"
   }
 }

@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { getMediaCover, getMediaEmbedUrl } from "@/lib/media";
+import { getMediaCover, getMediaEmbedUrl, isLocalUpload } from "@/lib/media";
 import { useScrollLock } from "@/lib/useScrollLock";
 import type { MediaItem } from "@/types/content";
 
@@ -78,6 +78,31 @@ export function MediaModal({ item, onClose }: MediaModalProps) {
                   className="absolute inset-0 h-full w-full"
                 />
               </div>
+            ) : item.url && isLocalUpload(item.url) ? (
+              item.kind === "video" ? (
+                <video
+                  src={item.url}
+                  poster={item.image}
+                  controls
+                  playsInline
+                  className="w-full rounded-xl border border-white/10"
+                />
+              ) : (
+                <div>
+                  {cover ? (
+                    <div className="relative mx-auto mb-5 h-64 w-full max-w-md overflow-hidden rounded-xl border border-white/10">
+                      <Image
+                        src={cover}
+                        alt={item.title}
+                        fill
+                        sizes="448px"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : null}
+                  <audio src={item.url} controls className="w-full" />
+                </div>
+              )
             ) : cover ? (
               <div className="relative h-[70vh] w-full overflow-hidden rounded-xl border border-white/10">
                 <Image

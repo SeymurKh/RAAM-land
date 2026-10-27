@@ -1109,8 +1109,31 @@
         "src": "/uploads/venue/venue-hero-col-3.mp4?v=1793101847167",
         "poster": "/uploads/venue/venue-hero-col-3-poster.jpg?v=1793101847167"
       }
-    ],
-    "logo": "/uploads/venue/venue-logo.jpg?v=1793106792486"
+    ]
   },
-  "media": []
+  "media": [
+    {
+      "id": "full-moon-party-tivat",
+      "title": "Full Moon Party (Tivat)",
+      "date": "2026-10-04",
+      "kind": "photo",
+      "image": "/uploads/media/new-media-filler-photo.jpg"
+    },
+    {
+      "id": "grape-grooves-ep-6-narahat",
+      "title": "Grape Grooves Ep.6 - Narahat",
+      "date": "2026-09-20",
+      "kind": "video",
+      "provider": "youtube",
+      "url": "https://youtu.be/e-EZITWzaDc"
+    },
+    {
+      "id": "shayyo-on-spotify",
+      "title": "Shayyo on Spotify",
+      "date": "2026-09-06",
+      "kind": "audio",
+      "provider": "spotify",
+      "url": "https://open.spotify.com/artist/4aBVLrgNVCSnksgrJf0Had"
+    }
+  ]
 }

@@ -28,7 +28,6 @@ function collectVenueFiles(venue: VenuePageContent): Set<string> {
     const clean = cleanUploadUrl(url);
     if (clean && clean.startsWith("/uploads/")) files.add(clean);
   };
-  add(venue.logo);
   add(venue.heroImage);
   for (const media of venue.heroColumns ?? []) {
     add(media.src);
@@ -179,7 +178,6 @@ function normalizeVenue(
   if ("name" in body) result.name = str(body.name);
   if ("headline" in body) result.headline = str(body.headline);
   if ("tags" in body) result.tags = strList(body.tags);
-  if ("logo" in body) result.logo = opt(body.logo);
   if ("heroImage" in body) result.heroImage = opt(body.heroImage);
   if ("heroColumns" in body) result.heroColumns = normalizeHeroColumns(body.heroColumns);
 

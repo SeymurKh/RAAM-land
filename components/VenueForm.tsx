@@ -6,7 +6,6 @@ import { MenuEditor } from "@/components/venue-form/MenuEditor";
 import {
   HeroColumnsEditor,
   ImageSlotsEditor,
-  VenueImageUpload,
 } from "@/components/venue-form/VenueImageEditor";
 import type { VenuePageContent } from "@/types/content";
 
@@ -51,7 +50,7 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
     const response = await fetch("/api/venue", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, heroImage: form.heroImage ?? null }),
     });
     setSaving(false);
     if (response.ok) {
@@ -97,14 +96,6 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
           values={form.tags}
           onChange={(tags) => updateField("tags", tags)}
         />
-        <div className="grid gap-6 sm:grid-cols-2">
-          <VenueImageUpload
-            label="Logo"
-            imageKey="logo"
-            value={form.logo}
-            onChange={(logo) => updateField("logo", logo)}
-          />
-        </div>
         <HeroColumnsEditor
           label="Hero columns (9:16) - photo / video"
           columns={form.heroColumns ?? []}

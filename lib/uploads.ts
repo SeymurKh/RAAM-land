@@ -25,7 +25,7 @@ export const UPLOAD_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "gif"] as const;
 const TEMP_FILE_PATTERNS = [
   /^(avatar-)?new-\d+\.(png|jpg|jpeg|webp|gif)$/i,
   /^new-project-\d+\.(png|jpg|jpeg|webp|gif)$/i,
-  /^new-media-\d+\.(png|jpg|jpeg|webp|gif)$/i,
+  /^new-media-\d+(-poster)?\.(png|jpg|jpeg|webp|gif|mp4|mp3)$/i,
 ];
 
 /**

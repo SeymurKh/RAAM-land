@@ -124,18 +124,8 @@ export function VenueHero({ venue }: VenueHeroProps) {
       {/* Content */}
       <MotionReveal
         direction="none"
-        className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-14 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-12"
+        className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 pt-28 sm:px-6 sm:pb-24 sm:pt-32 lg:px-12"
       >
-        {venue.logo ? (
-          <Image
-            src={venue.logo}
-            alt={`${venue.name} logo`}
-            width={200}
-            height={80}
-            className="mb-6 h-10 w-auto object-contain object-left sm:h-12"
-          />
-        ) : null}
-
         <h1 className="font-bebas text-[clamp(3.2rem,10vw,8.5rem)] leading-[0.86] tracking-wide text-stone-50">
           <span className="inline-flex flex-wrap items-center gap-x-5 gap-y-2">
             {firstWord.toUpperCase()}
@@ -166,7 +156,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
 
         <a
           href="#venue-live"
-          className="group mt-10 inline-flex items-center gap-4"
+          className="group mt-16 inline-flex items-center gap-4"
         >
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-stone-100 transition group-hover:border-white/60 group-hover:bg-white/8">
             <ArrowDown

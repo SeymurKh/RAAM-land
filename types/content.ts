@@ -138,7 +138,6 @@ export interface VenuePageContent {
   name: string;
   headline: string;
   tags: string[];
-  logo?: string;
   heroImage?: string;
   /** Фон hero: 3 колонки 9:16 (фото/видео). Если пусто — heroImage или градиент. */
   heroColumns: HeroMedia[];
@@ -182,5 +181,4 @@ export interface MediaItem {
   provider?: ArchiveMediaProvider;
   url?: string;
   image?: string;
-  order: number;
 }

@@ -36,6 +36,22 @@ const VIDEO_EXTENSIONS = ["mp4", "webm"];
 const VIDEO_MAX_BYTES = 100 * 1024 * 1024; // входной лимит 100MB
 // Обрезка в 9:16 (колонка hero), H.264, без звука — фон всегда muted
 const VIDEO_TARGET = "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920";
+// Медиа-архив: исходные пропорции (длинная сторона до 1920), звук сохраняем
+const MEDIA_VIDEO_SCALE = "scale=w='if(gte(iw,ih),min(1920,iw),-2)':h='if(gte(iw,ih),-2,min(1920,ih))'";
+const AUDIO_ALLOWED_TYPES = [
+  "audio/mpeg",
+  "audio/mp3",
+  "audio/mp4",
+  "audio/m4a",
+  "audio/wav",
+  "audio/x-wav",
+  "audio/ogg",
+  "audio/aac",
+  "audio/flac",
+  "audio/x-flac",
+];
+const AUDIO_EXTENSIONS = ["mp3", "m4a", "ogg", "wav", "aac", "flac"];
+const AUDIO_MAX_BYTES = 50 * 1024 * 1024; // входной лимит 50MB
 
 export async function POST(request: NextRequest) {
   const token = request.cookies.get("admin_token")?.value;
@@ -107,22 +123,37 @@ export async function POST(request: NextRequest) {
 
   const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif"];
   const isVideo = VIDEO_ALLOWED_TYPES.includes(file.type);
-  if (!isVideo && !allowedTypes.includes(file.type)) {
+    const isAudio = AUDIO_ALLOWED_TYPES.includes(file.type);
+    if (isVideo && !venueKey && !mediaId) {
+      return NextResponse.json(
+        { error: "Video uploads are supported for the venue hero and media archive only" },
+        { status: 400 },
+      );
+    }
+    if (isAudio && !mediaId) {
+      return NextResponse.json(
+        { error: "Audio uploads are supported for the media archive only" },
+        { status: 400 },
+      );
+    }
+    if (!isVideo && !isAudio && !allowedTypes.includes(file.type)) {
     console.error("[upload] Invalid file type:", file.type);
     return NextResponse.json(
-      { error: "Only PNG, JPEG, WebP, GIF images or MP4/WebM videos are allowed" },
+      { error: "Only PNG, JPEG, WebP, GIF images, MP4/WebM videos or audio files are allowed" },
       { status: 400 },
     );
   }
 
-  const maxBytes = isVideo ? VIDEO_MAX_BYTES : 5 * 1024 * 1024;
+  const maxBytes = isVideo ? VIDEO_MAX_BYTES : isAudio ? AUDIO_MAX_BYTES : 5 * 1024 * 1024;
   if (file.size > maxBytes) {
     console.error("[upload] File too large:", file.size);
     return NextResponse.json(
       {
         error: isVideo
           ? "Video size must be under 100MB"
-          : "File size must be under 5MB",
+          : isAudio
+            ? "Audio size must be under 50MB"
+            : "File size must be under 5MB",
       },
       { status: 400 },
     );
@@ -134,7 +165,7 @@ export async function POST(request: NextRequest) {
   await mkdir(uploadDir, { recursive: true });
 
   // Delete any existing file for this entity/kind (any extension)
-  for (const e of [...UPLOAD_EXTENSIONS, ...VIDEO_EXTENSIONS]) {
+  for (const e of [...UPLOAD_EXTENSIONS, ...VIDEO_EXTENSIONS, ...AUDIO_EXTENSIONS]) {
     const existingPath = join(uploadDir, `${prefix}.${e}`);
     try {
       await unlink(existingPath);
@@ -152,6 +183,7 @@ export async function POST(request: NextRequest) {
 
   /* ─── Видео: транскодирование через ffmpeg → mp4 (9:16, H.264, без звука) ─── */
   if (isVideo) {
+    const isMediaVideo = !!mediaId;
     const ffmpeg = resolveFfmpeg();
     if (!ffmpeg) {
       console.error("[upload] ffmpeg binary not found");
@@ -180,16 +212,17 @@ export async function POST(request: NextRequest) {
           "-i",
           inputPath,
           "-vf",
-          VIDEO_TARGET,
+          isMediaVideo ? MEDIA_VIDEO_SCALE : VIDEO_TARGET,
           "-c:v",
           "libx264",
           "-preset",
           "veryfast",
           "-crf",
           "28",
+          "-pix_fmt", "yuv420p",
           "-r",
           "30",
-          "-an",
+          ...(isMediaVideo ? ["-c:a", "aac", "-b:a", "128k"] : ["-an"]),
           "-movflags",
           "+faststart",
           filePath,
@@ -227,6 +260,55 @@ export async function POST(request: NextRequest) {
       }
       return NextResponse.json(
         { error: "Video processing failed" },
+        { status: 500 },
+      );
+    } finally {
+      try {
+        await unlink(inputPath);
+      } catch {
+        // tmp
+      }
+    }
+  }
+
+  /* ─── Аудио (медиа-архив): конвертация в mp3 ─── */
+  if (isAudio) {
+    const ffmpeg = resolveFfmpeg();
+    if (!ffmpeg) {
+      console.error("[upload] ffmpeg binary not found");
+      return NextResponse.json(
+        { error: "Audio processing unavailable" },
+        { status: 500 },
+      );
+    }
+
+    const inputPath = join(uploadDir, `${prefix}-src.tmp`);
+    const fileName = `${prefix}.mp3`;
+    const filePath = join(uploadDir, fileName);
+    const inputBuffer = Buffer.from(await file.arrayBuffer());
+    await writeFile(inputPath, inputBuffer);
+
+    try {
+      const started = Date.now();
+      await execFileAsync(
+        ffmpeg,
+        ["-y", "-i", inputPath, "-vn", "-codec:a", "libmp3lame", "-b:a", "192k", filePath],
+        { maxBuffer: 32 * 1024 * 1024 },
+      );
+      const outSize = (await stat(filePath)).size;
+      console.log(
+        `[upload] Audio saved: ${filePath} | original: ${inputBuffer.length} → ${outSize} in ${Date.now() - started}ms`,
+      );
+      return NextResponse.json({ url: `/uploads/${subDir}/${fileName}` });
+    } catch (err) {
+      console.error("[upload] Audio processing failed:", err);
+      try {
+        await unlink(filePath);
+      } catch {
+        // Могло не создаться
+      }
+      return NextResponse.json(
+        { error: "Audio processing failed" },
         { status: 500 },
       );
     } finally {

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Music, Play } from "lucide-react";
 import { MediaModal } from "@/components/MediaModal";
-import { getMediaCover } from "@/lib/media";
+import { formatMediaDate, getMediaCover } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import type { ArchiveMediaKind, MediaItem } from "@/types/content";
 
@@ -131,7 +131,7 @@ export function MediaArchive() {
                     {item.title}
                   </p>
                   <p className="mt-1 text-[0.65rem] uppercase tracking-[0.2em] text-stone-400/70">
-                    {item.date}
+                    {formatMediaDate(item.date)}
                   </p>
                 </div>
               </button>

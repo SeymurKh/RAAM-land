@@ -1,9 +1,12 @@
-import { rename, unlink } from "fs/promises";
-import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
-import { createMedia, getMedia } from "@/lib/db";
-import { cleanUploadUrl, UPLOAD_EXTENSIONS } from "@/lib/uploads";
+import { createMedia, getMedia, getMediaItem } from "@/lib/db";
+import {
+  detectMediaKind,
+  normalizeMediaItem,
+  slugifyMediaId,
+} from "@/lib/media";
+import { finalizeMediaFiles } from "@/lib/media-files";
 import type { MediaItem } from "@/types/content";
 
 export async function GET(request: NextRequest) {
@@ -26,21 +29,6 @@ export async function GET(request: NextRequest) {
   });
 }
 
-function normalizeMedia(item: MediaItem): MediaItem {
-  return {
-    ...item,
-    title: item.title.trim(),
-    date: item.date?.trim() || new Date().toISOString().slice(0, 10),
-    kind: item.kind === "photo" || item.kind === "audio" ? item.kind : "video",
-    provider: (item.provider?.trim() || undefined) as
-      | MediaItem["provider"]
-      | undefined,
-    url: item.url?.trim() || undefined,
-    image: item.image?.trim() || undefined,
-    order: Number(item.order) || 0,
-  };
-}
-
 export async function POST(request: NextRequest) {
   const token = request.cookies.get("admin_token")?.value;
   if (!token || !(await verifyToken(token))) {
@@ -48,48 +36,33 @@ export async function POST(request: NextRequest) {
   }
 
   const body = (await request.json()) as MediaItem;
-  if (!body.id || !body.title) {
+  if (!body.title?.trim()) {
+    return NextResponse.json({ error: "Title is required" }, { status: 400 });
+  }
+  if (!detectMediaKind(body)) {
     return NextResponse.json(
-      { error: "id and title are required" },
+      {
+        error:
+          "Add a photo, video or audio file / link (YouTube, SoundCloud or Spotify)",
+      },
       { status: 400 },
     );
   }
 
-  // Сохраняем оригинальный URL (с ?v=...) для записи в базу
-  const imageForDb = body.image;
-  // Чистый путь нужен только для fs-операций
-  body.image = cleanUploadUrl(body.image);
-
-  // Если изображение было загружено с временным именем (new-media-xxx), переименовываем
-  if (body.image && body.image.includes("/uploads/media/new-media")) {
-    const uploadDir = join(process.cwd(), "public", "uploads", "media");
-    const oldFileName = body.image.split("/").pop()!;
-    const ext = oldFileName.split(".").pop()!;
-    const newFileName = `${body.id}.${ext}`;
-    const oldPath = join(uploadDir, oldFileName);
-    const newPath = join(uploadDir, newFileName);
-
-    try {
-      for (const e of UPLOAD_EXTENSIONS) {
-        if (e === ext) continue;
-        const existingPath = join(uploadDir, `${body.id}.${e}`);
-        try { await unlink(existingPath); } catch { /* ok */ }
-      }
-      await rename(oldPath, newPath);
-      body.image = `/uploads/media/${newFileName}`;
-    } catch {
-      // Продолжаем — файл может не существовать
-    }
+  // Авто-id: слаг из названия; при коллизии — короткий суффикс
+  let id = body.id?.trim() || slugifyMediaId(body.title) || "media-" + Date.now();
+  if (await getMediaItem(id)) {
+    id = id + "-" + Date.now().toString(36);
   }
 
-  // Восстанавливаем оригинальный URL (с ?v=...) для записи в базу
-  if (imageForDb && body.image) {
-    const qs = imageForDb.split("?")[1];
-    body.image = qs ? `${body.image}?${qs}` : body.image;
-  } else if (imageForDb) {
-    body.image = imageForDb;
-  }
+  // Загруженные файлы (new-media-*) доводятся до постоянных имён {id}.*
+  const files = await finalizeMediaFiles(id, {
+    url: body.url?.trim() || undefined,
+    image: body.image?.trim() || undefined,
+  });
 
-  const item = await createMedia(normalizeMedia(body));
+  const item = await createMedia(
+    normalizeMediaItem({ ...body, id, url: files.url, image: files.image }),
+  );
   return NextResponse.json(item, { status: 201 });
 }

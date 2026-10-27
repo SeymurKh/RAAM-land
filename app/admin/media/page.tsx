@@ -57,8 +57,7 @@ export default function AdminMedia() {
                 <p className="font-semibold text-white">{item.title}</p>
                 <p className="text-sm text-stone-400">
                   {item.kind}
-                  {item.provider ? ` / ${item.provider}` : ""} / {item.date} / #
-                  {item.order}
+                  {item.provider ? ` / ${item.provider}` : ""} / {item.date}
                 </p>
               </div>
               <div className="flex gap-3">

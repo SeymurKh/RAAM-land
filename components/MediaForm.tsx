@@ -2,84 +2,134 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type {
-  ArchiveMediaKind,
-  ArchiveMediaProvider,
-  MediaItem,
-} from "@/types/content";
+import {
+  detectKindFromFileUrl,
+  detectProviderFromUrl,
+  slugifyMediaId,
+} from "@/lib/media";
+import type { ArchiveMediaKind, MediaItem } from "@/types/content";
 
 interface MediaFormProps {
   mode: "create" | "edit";
   item?: MediaItem;
 }
 
-const kinds: ArchiveMediaKind[] = ["photo", "video", "audio"];
-const providers: ArchiveMediaProvider[] = ["youtube", "soundcloud", "spotify"];
+const kindLabels: Record<ArchiveMediaKind, string> = {
+  photo: "Photo",
+  video: "Video",
+  audio: "Audio",
+};
+
+/** Тип определяется автоматически: ссылка → сервис, файл → расширение. */
+function detect(
+  content: string,
+): { kind: ArchiveMediaKind; provider?: MediaItem["provider"] } | undefined {
+  const value = content.trim();
+  if (!value) return undefined;
+  if (value.startsWith("/uploads/")) {
+    const kind = detectKindFromFileUrl(value);
+    return kind ? { kind } : undefined;
+  }
+  const link = detectProviderFromUrl(value);
+  return link ? { kind: link.kind, provider: link.provider } : undefined;
+}
 
 export function MediaForm({ mode, item }: MediaFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [form, setForm] = useState<MediaItem>(
-    item ?? {
-      id: "",
-      title: "",
-      date: new Date().toISOString().slice(0, 10),
-      kind: "photo",
-      order: 1,
-    },
+  const [title, setTitle] = useState(item?.title ?? "");
+  const [date, setDate] = useState(
+    item?.date ?? new Date().toISOString().slice(0, 10),
+  );
+  // Одно поле контента: внешняя ссылка или загруженный файл
+  const [content, setContent] = useState(item?.url ?? item?.image ?? "");
+  // Обложка/постер (для видео и аудио); для фото не используется
+  const [cover, setCover] = useState<string | undefined>(
+    item?.kind === "photo" ? undefined : item?.image,
   );
 
-  function updateField<K extends keyof MediaItem>(key: K, value: MediaItem[K]) {
-    setForm((current) => ({ ...current, [key]: value }));
-  }
+  const detected = detect(content);
 
-  async function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
+  async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
-    const mediaId = form.id || `new-media-${Date.now()}`;
     setUploading(true);
+    setError(null);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("mediaId", mediaId);
+    formData.append("mediaId", item?.id || `new-media-${Date.now()}`);
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
-      if (response.ok) {
-        const data = await response.json();
-        updateField("image", `${data.url}?v=${Date.now()}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setError(data.error || "Upload failed");
+        return;
       }
+      setContent(`${data.url}?v=${Date.now()}`);
+      if (data.poster) setCover(`${data.poster}?v=${Date.now()}`);
+      else if (file.type.startsWith("image/")) setCover(undefined);
     } catch {
-      // Upload failed silently
+      setError("Upload failed");
     } finally {
       setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    const current = detect(content);
+    if (!current) {
+      setError(
+        content.trim()
+          ? "Unsupported link - use YouTube, SoundCloud or Spotify"
+          : "Add a photo, video or audio file / link",
+      );
+      return;
+    }
+    if (!title.trim()) {
+      setError("Title is required");
+      return;
+    }
     setSaving(true);
-    const url = mode === "create" ? "/api/media" : `/api/media/${form.id}`;
-    const method = mode === "create" ? "POST" : "PUT";
-    const response = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...form,
-        order: Number(form.order) || 0,
-        provider: form.kind === "photo" ? undefined : form.provider,
-        url: form.url?.trim() || undefined,
-        image: form.image?.trim() || undefined,
-      }),
-    });
-    setSaving(false);
-    if (response.ok) {
-      router.push("/admin/media");
-      router.refresh();
+    setError(null);
+    const isPhoto = current.kind === "photo";
+    const payload: MediaItem = {
+      id: item?.id ?? slugifyMediaId(title),
+      title: title.trim(),
+      date,
+      kind: current.kind,
+      provider: current.provider,
+      url: isPhoto ? undefined : content.trim(),
+      image: isPhoto ? content.trim() : cover?.trim() || undefined,
+    };
+    try {
+      const response = await fetch(
+        mode === "create" ? "/api/media" : `/api/media/${item?.id}`,
+        {
+          method: mode === "create" ? "POST" : "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+      if (response.ok) {
+        router.push("/admin/media");
+        router.refresh();
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      setError(data.error || "Save failed");
+    } catch {
+      setError("Save failed");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -90,151 +140,71 @@ export function MediaForm({ mode, item }: MediaFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className={labelClass}>ID (slug)</label>
-          <input
-            className={inputClass}
-            value={form.id}
-            onChange={(event) => updateField("id", event.target.value)}
-            disabled={mode === "edit"}
-            required
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Title</label>
-          <input
-            className={inputClass}
-            value={form.title}
-            onChange={(event) => updateField("title", event.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Date</label>
-          <input
-            type="date"
-            className={inputClass}
-            value={form.date}
-            onChange={(event) => updateField("date", event.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Order</label>
-          <input
-            type="number"
-            min={0}
-            className={inputClass}
-            value={form.order}
-            onChange={(event) => updateField("order", Number(event.target.value))}
-            required
-          />
-        </div>
-        <div>
-          <label className={labelClass}>Kind</label>
-          <select
-            className={inputClass}
-            value={form.kind}
-            onChange={(event) => {
-              const kind = event.target.value as ArchiveMediaKind;
-              updateField("kind", kind);
-              if (kind === "photo") {
-                updateField("provider", undefined);
-                updateField("url", undefined);
-              }
-            }}
-          >
-            {kinds.map((kind) => (
-              <option key={kind} value={kind} className="bg-[#0b0a09]">
-                {kind}
-              </option>
-            ))}
-          </select>
-        </div>
-        {form.kind !== "photo" ? (
-          <div>
-            <label className={labelClass}>Provider</label>
-            <select
-              className={inputClass}
-              value={form.provider ?? "youtube"}
-              onChange={(event) =>
-                updateField("provider", event.target.value as ArchiveMediaProvider)
-              }
-            >
-              {providers.map((provider) => (
-                <option key={provider} value={provider} className="bg-[#0b0a09]">
-                  {provider}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : null}
+      <div>
+        <label className={labelClass}>Title</label>
+        <input
+          className={inputClass}
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="Grape Grooves Ep.6 - Narahat"
+          required
+        />
       </div>
 
-      {form.kind !== "photo" ? (
-        <div>
-          <label className={labelClass}>Media URL</label>
-          <input
-            className={inputClass}
-            value={form.url ?? ""}
-            onChange={(event) => updateField("url", event.target.value)}
-            placeholder={
-              form.provider === "soundcloud"
-                ? "https://soundcloud.com/..."
-                : form.provider === "spotify"
-                  ? "https://open.spotify.com/track/..."
-                  : "https://www.youtube.com/watch?v=..."
-            }
-            required
-          />
-          <p className="mt-1 text-xs text-stone-500">
-            YouTube video / SoundCloud or Spotify link — embeds into the player.
-          </p>
-        </div>
-      ) : null}
+      <div>
+        <label className={labelClass}>Date</label>
+        <input
+          type="date"
+          className={inputClass}
+          value={date}
+          onChange={(event) => setDate(event.target.value)}
+          required
+        />
+      </div>
 
       <div>
-        <label className={labelClass}>
-          {form.kind === "photo" ? "Photo" : "Cover image (optional)"}
-        </label>
+        <label className={labelClass}>Link or file</label>
         <div className="flex items-center gap-4">
+          <input
+            className={inputClass}
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+            placeholder="https://youtu.be/... or upload a file"
+          />
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
+            accept="image/*,video/*,audio/*"
+            onChange={handleUpload}
             className="hidden"
           />
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-stone-100 transition hover:bg-white/6 disabled:opacity-50"
+            className="h-12 shrink-0 rounded-xl border border-white/10 bg-black/25 px-4 text-sm text-stone-100 transition hover:bg-white/6 disabled:opacity-50"
           >
-            {uploading ? "Uploading..." : "Choose Image"}
+            {uploading ? "Uploading..." : "Upload"}
           </button>
-          {form.image ? (
-            <button
-              type="button"
-              onClick={() => updateField("image", undefined)}
-              className="text-xs text-red-400/70 hover:text-red-400"
-            >
-              Remove
-            </button>
-          ) : null}
         </div>
-        {form.kind !== "photo" ? (
-          <p className="mt-1 text-xs text-stone-500">
-            Without a cover the YouTube thumbnail is used automatically.
+        <p className="mt-1 text-xs text-stone-500">
+          Paste a YouTube / SoundCloud / Spotify link or upload a photo, video
+          or audio file - the type is detected automatically.
+        </p>
+        {detected ? (
+          <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[#E82919]">
+            {kindLabels[detected.kind]}
+            {detected.provider ? ` · ${detected.provider}` : ""}
           </p>
         ) : null}
       </div>
 
+      {error ? <p className="text-sm text-red-400">{error}</p> : null}
+
       <div className="flex gap-4 pt-4">
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || uploading}
           className="rounded-full border border-white/15 bg-white/6 px-8 py-3 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 transition hover:bg-white/10 disabled:opacity-50"
         >
           {saving

@@ -69,6 +69,9 @@ async function ensureDbShape(data: DbData): Promise<DbData> {
     // Старая форма db.json: фон hero без колонок 9:16
     data.venue.heroColumns = [];
   }
+
+  // Легаси: поле logo удалено из модели — вычищаем остатки старых db.json
+  delete (data.venue as { logo?: string }).logo;
   if (!Array.isArray(data.media)) {
     data.media = [];
   }
@@ -217,7 +220,7 @@ export async function updateVenue(
 export async function getMedia(): Promise<MediaItem[]> {
   const db = await readDb();
   return [...db.media].sort(
-    (a, b) => a.order - b.order || b.date.localeCompare(a.date),
+    (a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id),
   );
 }
 

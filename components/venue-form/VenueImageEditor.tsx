@@ -25,7 +25,7 @@ const labelClass =
 
 interface VenueImageUploadProps {
   label: string;
-  imageKey: string; // фиксированный ключ: "logo" | "hero" | "video-thumb"
+  imageKey: string; // фиксированный ключ: "hero" | "video-thumb"
   value?: string;
   onChange: (url: string | undefined) => void;
 }

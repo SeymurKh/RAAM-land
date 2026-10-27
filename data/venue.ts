@@ -9,6 +9,8 @@ export const seedVenue: VenuePageContent = {
   name: "Radio Stream Bar",
   headline: "Azerbaijan's first live streaming space for artists.",
   tags: ["Streaming", "Music", "Events", "Production"],
+  // Фон hero: 3 колонки 9:16 (фото/видео) — заполняется через админку (/admin/venue)
+  heroColumns: [],
   live: {
     eyebrow: "Live Streaming",
     title: "Live streaming from Baku. Broadcasting worldwide.",

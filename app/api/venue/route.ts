@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { unlink } from "fs/promises";
+import { join, normalize } from "path";
 import { verifyToken } from "@/lib/auth";
 import { getVenue, updateVenue } from "@/lib/db";
+import { cleanUploadUrl } from "@/lib/uploads";
 import type {
+  HeroMedia,
   MenuCategory,
   MenuItem,
   VenueCTA,
@@ -15,6 +19,46 @@ export async function GET() {
   return NextResponse.json(venue);
 }
 
+const UPLOADS_ROOT = join(process.cwd(), "public");
+
+/** Все файловые ссылки контента venue (очищенные от ?v=). */
+function collectVenueFiles(venue: VenuePageContent): Set<string> {
+  const files = new Set<string>();
+  const add = (url?: string) => {
+    const clean = cleanUploadUrl(url);
+    if (clean && clean.startsWith("/uploads/")) files.add(clean);
+  };
+  add(venue.logo);
+  add(venue.heroImage);
+  for (const media of venue.heroColumns ?? []) {
+    add(media.src);
+    add(media.poster);
+  }
+  for (const image of venue.events?.gallery ?? []) add(image.src);
+  for (const image of venue.bar?.images ?? []) add(image.src);
+  return files;
+}
+
+/** Удаляет файлы, пропавшие из контента после сохранения (Remove ✕ / замена). */
+async function removeOrphanedFiles(
+  before: Set<string>,
+  after: Set<string>,
+): Promise<void> {
+  for (const url of before) {
+    if (after.has(url)) continue;
+    // Файл только внутри public/uploads — защита от path traversal
+    const rel = normalize(url).replace(/^([/\\])+/, "");
+    const filePath = join(UPLOADS_ROOT, rel);
+    if (!filePath.startsWith(UPLOADS_ROOT)) continue;
+    try {
+      await unlink(filePath);
+      console.log("[PUT /api/venue] Removed orphaned file:", filePath);
+    } catch {
+      // Уже нет на диске (например, заменён через upload-роут) — норма
+    }
+  }
+}
+
 export async function PUT(request: NextRequest) {
   const token = request.cookies.get("admin_token")?.value;
   if (!token || !(await verifyToken(token))) {
@@ -22,7 +66,10 @@ export async function PUT(request: NextRequest) {
   }
 
   const body = (await request.json()) as Partial<VenuePageContent>;
-  const venue = await updateVenue(normalizeVenue(body));
+  const current = await getVenue();
+  const before = collectVenueFiles(current);
+  const venue = await updateVenue(normalizeVenue(body, current));
+  await removeOrphanedFiles(before, collectVenueFiles(venue));
   return NextResponse.json(venue);
 }
 
@@ -57,6 +104,24 @@ function normalizeImages(value: unknown): VenueImage[] {
       };
     })
     .filter((img) => img.src);
+}
+
+/** Медиа-слоты фона hero: максимум 3, только image|video. */
+function normalizeHeroColumns(value: unknown): HeroMedia[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .slice(0, 3)
+    .map((entry, index) => {
+      const media = (entry ?? {}) as Partial<HeroMedia>;
+      return {
+        id: str(media.id) || `hero-${index + 1}`,
+        kind: media.kind === "video" ? ("video" as const) : ("image" as const),
+        src: str(media.src),
+        poster: opt(media.poster),
+        alt: opt(media.alt),
+      };
+    })
+    .filter((media) => media.src);
 }
 
 function normalizePlatforms(value: unknown): VenuePlatform[] {
@@ -106,6 +171,7 @@ function normalizeMenu(value: unknown): MenuCategory[] {
 
 function normalizeVenue(
   body: Partial<VenuePageContent>,
+  current: VenuePageContent,
 ): Partial<VenuePageContent> {
   const result: Partial<VenuePageContent> = {};
 
@@ -114,42 +180,52 @@ function normalizeVenue(
   if ("tags" in body) result.tags = strList(body.tags);
   if ("logo" in body) result.logo = opt(body.logo);
   if ("heroImage" in body) result.heroImage = opt(body.heroImage);
+  if ("heroColumns" in body) result.heroColumns = normalizeHeroColumns(body.heroColumns);
 
+  // Секции обновляются пополево: непереданные поля сохраняются из current.
+  // Иначе частичный PUT (например, только gallery) затирает тексты секции.
   if ("live" in body && body.live) {
-    result.live = {
-      eyebrow: str(body.live.eyebrow),
-      title: str(body.live.title),
-      description: strList(body.live.description),
-      platforms: normalizePlatforms(body.live.platforms),
-    };
+    const live = { ...current.live };
+    if ("eyebrow" in body.live) live.eyebrow = str(body.live.eyebrow);
+    if ("title" in body.live) live.title = str(body.live.title);
+    if ("description" in body.live)
+      live.description = strList(body.live.description);
+    if ("platforms" in body.live)
+      live.platforms = normalizePlatforms(body.live.platforms);
+    result.live = live;
   }
 
   if ("events" in body && body.events) {
-    result.events = {
-      eyebrow: str(body.events.eyebrow),
-      title: str(body.events.title),
-      description: strList(body.events.description),
-      manifesto: strList(body.events.manifesto),
-      cta: normalizeCta(body.events.cta),
-      gallery: normalizeImages(body.events.gallery),
-    };
+    const events = { ...current.events };
+    if ("eyebrow" in body.events) events.eyebrow = str(body.events.eyebrow);
+    if ("title" in body.events) events.title = str(body.events.title);
+    if ("description" in body.events)
+      events.description = strList(body.events.description);
+    if ("manifesto" in body.events)
+      events.manifesto = strList(body.events.manifesto);
+    if ("cta" in body.events) events.cta = normalizeCta(body.events.cta);
+    if ("gallery" in body.events)
+      events.gallery = normalizeImages(body.events.gallery);
+    result.events = events;
   }
 
   if ("bar" in body && body.bar) {
-    result.bar = {
-      eyebrow: str(body.bar.eyebrow),
-      title: str(body.bar.title),
-      description: strList(body.bar.description),
-      images: normalizeImages(body.bar.images),
-      menu: normalizeMenu(body.bar.menu),
-    };
+    const bar = { ...current.bar };
+    if ("eyebrow" in body.bar) bar.eyebrow = str(body.bar.eyebrow);
+    if ("title" in body.bar) bar.title = str(body.bar.title);
+    if ("description" in body.bar)
+      bar.description = strList(body.bar.description);
+    if ("images" in body.bar) bar.images = normalizeImages(body.bar.images);
+    if ("menu" in body.bar) bar.menu = normalizeMenu(body.bar.menu);
+    result.bar = bar;
   }
 
   if ("contacts" in body && body.contacts) {
-    result.contacts = {
-      address: str(body.contacts.address),
-      hours: str(body.contacts.hours),
-    };
+    const contacts = { ...current.contacts };
+    if ("address" in body.contacts)
+      contacts.address = str(body.contacts.address);
+    if ("hours" in body.contacts) contacts.hours = str(body.contacts.hours);
+    result.contacts = contacts;
   }
 
   return result;

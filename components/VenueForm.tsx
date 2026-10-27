@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ListEditor } from "@/components/venue-form/ListEditor";
 import { MenuEditor } from "@/components/venue-form/MenuEditor";
 import {
+  HeroColumnsEditor,
   ImageSlotsEditor,
   VenueImageUpload,
 } from "@/components/venue-form/VenueImageEditor";
@@ -103,13 +104,12 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
             value={form.logo}
             onChange={(logo) => updateField("logo", logo)}
           />
-          <VenueImageUpload
-            label="Hero background"
-            imageKey="hero"
-            value={form.heroImage}
-            onChange={(heroImage) => updateField("heroImage", heroImage)}
-          />
         </div>
+        <HeroColumnsEditor
+          label="Hero columns (9:16) - photo / video"
+          columns={form.heroColumns ?? []}
+          onChange={(heroColumns) => updateField("heroColumns", heroColumns)}
+        />
       </div>
 
       {/* ─── 01 Live Streaming ─── */}

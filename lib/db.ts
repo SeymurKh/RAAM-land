@@ -65,6 +65,9 @@ async function ensureDbShape(data: DbData): Promise<DbData> {
   if (!data.venue || typeof data.venue !== "object") {
     const { seedVenue } = await import("@/data/venue");
     data.venue = seedVenue;
+  } else if (!Array.isArray(data.venue.heroColumns)) {
+    // Старая форма db.json: фон hero без колонок 9:16
+    data.venue.heroColumns = [];
   }
   if (!Array.isArray(data.media)) {
     data.media = [];

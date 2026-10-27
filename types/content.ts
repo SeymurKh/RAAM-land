@@ -111,6 +111,16 @@ export interface VenueImage {
   alt?: string;
 }
 
+/** Медиа слота фона hero: фото или видео (колонки 9:16). */
+export interface HeroMedia {
+  id: string;
+  kind: "image" | "video";
+  src: string;
+  /** Постер для видео (первый кадр, генерируется при загрузке). */
+  poster?: string;
+  alt?: string;
+}
+
 export interface VenuePlatform {
   kind: SocialKind;
   label: string;
@@ -128,6 +138,8 @@ export interface VenuePageContent {
   tags: string[];
   logo?: string;
   heroImage?: string;
+  /** Фон hero: 3 колонки 9:16 (фото/видео). Если пусто — heroImage или градиент. */
+  heroColumns: HeroMedia[];
   live: {
     eyebrow: string;
     title: string;

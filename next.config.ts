@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
   output: "standalone",
   compress: true,
   poweredByHeader: false,
+  // ffmpeg-бинарь нужен в standalone-сборке (транскодирование видео в /api/upload)
+  outputFileTracingIncludes: {
+    "/api/upload": ["./node_modules/ffmpeg-static/**"],
+  },
   images: {
     localPatterns: [
       {

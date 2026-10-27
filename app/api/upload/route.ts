@@ -1,11 +1,41 @@
-import { writeFile, mkdir, unlink } from "fs/promises";
+import { writeFile, mkdir, unlink, stat } from "fs/promises";
+import { existsSync } from "fs";
+import { execFile } from "child_process";
+import { promisify } from "util";
 import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
+import ffmpegPath from "ffmpeg-static";
 import { verifyToken } from "@/lib/auth";
 import { UPLOAD_EXTENSIONS } from "@/lib/uploads";
 
+const execFileAsync = promisify(execFile);
+
+/**
+ * Путь к ffmpeg-бинарю. `ffmpeg-static` резолвит через __dirname,
+ * который Turbopack в dev подменяет на \ROOT — подставляем фолбэк
+ * через process.cwd() (работает и в standalone-контейнере).
+ */
+function resolveFfmpeg(): string | null {
+  const binary = process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg";
+  const candidates = [
+    ffmpegPath ?? "",
+    join(process.cwd(), "node_modules", "ffmpeg-static", binary),
+  ];
+  for (const candidate of candidates) {
+    if (candidate && existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
 const PHOTO_MAX_WIDTH = 1920;
 const AVATAR_SIZE = 400;
+
+/* ─── Video (hero columns 9:16) ─── */
+const VIDEO_ALLOWED_TYPES = ["video/mp4", "video/webm"];
+const VIDEO_EXTENSIONS = ["mp4", "webm"];
+const VIDEO_MAX_BYTES = 100 * 1024 * 1024; // входной лимит 100MB
+// Обрезка в 9:16 (колонка hero), H.264, без звука — фон всегда muted
+const VIDEO_TARGET = "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920";
 
 export async function POST(request: NextRequest) {
   const token = request.cookies.get("admin_token")?.value;
@@ -76,18 +106,24 @@ export async function POST(request: NextRequest) {
   }
 
   const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif"];
-  if (!allowedTypes.includes(file.type)) {
+  const isVideo = VIDEO_ALLOWED_TYPES.includes(file.type);
+  if (!isVideo && !allowedTypes.includes(file.type)) {
     console.error("[upload] Invalid file type:", file.type);
     return NextResponse.json(
-      { error: "Only PNG, JPEG, WebP, and GIF images are allowed" },
+      { error: "Only PNG, JPEG, WebP, GIF images or MP4/WebM videos are allowed" },
       { status: 400 },
     );
   }
 
-  if (file.size > 5 * 1024 * 1024) {
+  const maxBytes = isVideo ? VIDEO_MAX_BYTES : 5 * 1024 * 1024;
+  if (file.size > maxBytes) {
     console.error("[upload] File too large:", file.size);
     return NextResponse.json(
-      { error: "File size must be under 5MB" },
+      {
+        error: isVideo
+          ? "Video size must be under 100MB"
+          : "File size must be under 5MB",
+      },
       { status: 400 },
     );
   }
@@ -98,13 +134,107 @@ export async function POST(request: NextRequest) {
   await mkdir(uploadDir, { recursive: true });
 
   // Delete any existing file for this entity/kind (any extension)
-  for (const e of UPLOAD_EXTENSIONS) {
+  for (const e of [...UPLOAD_EXTENSIONS, ...VIDEO_EXTENSIONS]) {
     const existingPath = join(uploadDir, `${prefix}.${e}`);
     try {
       await unlink(existingPath);
       console.log("[upload] Deleted old file:", existingPath);
     } catch {
       // File doesn't exist, that's fine
+    }
+  }
+  // Старый постер видео (если был)
+  try {
+    await unlink(join(uploadDir, `${prefix}-poster.jpg`));
+  } catch {
+    // Постера нет — норма
+  }
+
+  /* ─── Видео: транскодирование через ffmpeg → mp4 (9:16, H.264, без звука) ─── */
+  if (isVideo) {
+    const ffmpeg = resolveFfmpeg();
+    if (!ffmpeg) {
+      console.error("[upload] ffmpeg binary not found");
+      return NextResponse.json(
+        { error: "Video processing unavailable" },
+        { status: 500 },
+      );
+    }
+
+    const inputPath = join(uploadDir, `${prefix}-src.tmp`);
+    const fileName = `${prefix}.mp4`;
+    const filePath = join(uploadDir, fileName);
+    const posterName = `${prefix}-poster.jpg`;
+    const posterPath = join(uploadDir, posterName);
+
+    // Сохраняем оригинал во временный файл (ffmpeg работает с файлом)
+    const inputBuffer = Buffer.from(await file.arrayBuffer());
+    await writeFile(inputPath, inputBuffer);
+
+    try {
+      const started = Date.now();
+      await execFileAsync(
+        ffmpeg,
+        [
+          "-y",
+          "-i",
+          inputPath,
+          "-vf",
+          VIDEO_TARGET,
+          "-c:v",
+          "libx264",
+          "-preset",
+          "veryfast",
+          "-crf",
+          "28",
+          "-r",
+          "30",
+          "-an",
+          "-movflags",
+          "+faststart",
+          filePath,
+        ],
+        { maxBuffer: 32 * 1024 * 1024 },
+      );
+
+      // Постер — первый кадр обработанного видео
+      await execFileAsync(
+        ffmpeg,
+        ["-y", "-i", filePath, "-frames:v", "1", "-q:v", "4", posterPath],
+        { maxBuffer: 32 * 1024 * 1024 },
+      );
+
+      const outSize = (await stat(filePath)).size;
+      const saved = inputBuffer.length > 0
+        ? ((1 - outSize / inputBuffer.length) * 100).toFixed(0)
+        : 0;
+      console.log(
+        `[upload] Video saved: ${filePath} | original: ${inputBuffer.length} → ${outSize} (${saved}% saved) in ${Date.now() - started}ms`,
+      );
+
+      return NextResponse.json({
+        url: `/uploads/${subDir}/${fileName}`,
+        poster: `/uploads/${subDir}/${posterName}`,
+      });
+    } catch (err) {
+      console.error("[upload] Video processing failed:", err);
+      for (const p of [filePath, posterPath]) {
+        try {
+          await unlink(p);
+        } catch {
+          // Могло не создаться
+        }
+      }
+      return NextResponse.json(
+        { error: "Video processing failed" },
+        { status: 500 },
+      );
+    } finally {
+      try {
+        await unlink(inputPath);
+      } catch {
+        // tmp
+      }
     }
   }
 

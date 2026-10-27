@@ -674,5 +674,116 @@
     "streamTitle": "RAAM Live Session",
     "nextStreamDate": "2026-10-17T18:00:00.000Z",
     "twitchChannel": "RAAMLabel"
-  }
+  },
+  "venue": {
+    "name": "Radio Stream Bar",
+    "headline": "Azerbaijan's first live streaming space for artists.",
+    "tags": [
+      "Streaming",
+      "Music",
+      "Events",
+      "Production"
+    ],
+    "live": {
+      "eyebrow": "Live Streaming",
+      "title": "Live streaming from Baku. Broadcasting worldwide.",
+      "description": [
+        "Every DJ set from our Thursday to Saturday lineup is streamed live across:"
+      ],
+      "platforms": [
+        {
+          "kind": "youtube",
+          "label": "YouTube",
+          "url": "https://www.youtube.com/@RAAMLabel"
+        },
+        {
+          "kind": "twitch",
+          "label": "Twitch",
+          "url": "https://www.twitch.tv/raamlabel"
+        },
+        {
+          "kind": "instagram",
+          "label": "Instagram",
+          "url": "https://www.instagram.com/radiostreambar/"
+        },
+        {
+          "kind": "mixcloud",
+          "label": "Mixcloud",
+          "url": "https://www.mixcloud.com/raamlabel/"
+        }
+      ]
+    },
+    "events": {
+      "eyebrow": "Events",
+      "title": "A space for music events.",
+      "description": [
+        "A space for different kinds of music events - from DJ sets and live performances to exclusive private events."
+      ],
+      "manifesto": [
+        "No genre limits.",
+        "Only music."
+      ],
+      "cta": {
+        "label": "See upcoming events",
+        "href": "https://www.instagram.com/raam.label/"
+      },
+      "gallery": []
+    },
+    "bar": {
+      "eyebrow": "The Bar",
+      "title": "The bar is part of the experience.",
+      "description": [
+        "Our bartender is one more reason to rewatch the stream you were part of."
+      ],
+      "images": [],
+      "menu": [
+        {
+          "id": "cocktails",
+          "title": "Cocktails",
+          "order": 1,
+          "items": [
+            {
+              "id": "negroni",
+              "name": "Negroni",
+              "description": "Classic bitter & balanced",
+              "price": "12 AZN",
+              "order": 1
+            },
+            {
+              "id": "aperol-spritz",
+              "name": "Aperol Spritz",
+              "description": "Bright, sparkling, refreshing",
+              "price": "10 AZN",
+              "order": 2
+            }
+          ]
+        }
+      ]
+    },
+    "contacts": {
+      "address": "12 Tarlan Aliyarbeyov st., Baku, Azerbaijan",
+      "hours": "Thu, Fri, Sat, Sun · 20:00-04:00"
+    },
+    "heroColumns": [
+      {
+        "id": "hero-1",
+        "kind": "video",
+        "src": "/uploads/venue/venue-hero-col-1.mp4?v=1793101830948",
+        "poster": "/uploads/venue/venue-hero-col-1-poster.jpg?v=1793101830948"
+      },
+      {
+        "id": "hero-2",
+        "kind": "video",
+        "src": "/uploads/venue/venue-hero-col-2.mp4?v=1793101839268",
+        "poster": "/uploads/venue/venue-hero-col-2-poster.jpg?v=1793101839268"
+      },
+      {
+        "id": "hero-3",
+        "kind": "video",
+        "src": "/uploads/venue/venue-hero-col-3.mp4?v=1793101847167",
+        "poster": "/uploads/venue/venue-hero-col-3-poster.jpg?v=1793101847167"
+      }
+    ]
+  },
+  "media": []
 }

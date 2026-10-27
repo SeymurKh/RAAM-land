@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ArrowDown } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
-import type { VenuePageContent } from "@/types/content";
+import type { HeroMedia, VenuePageContent } from "@/types/content";
 
 /** Декоративная звуковая волна в заголовке (как в макете). */
 function SoundWave({ className }: { className?: string }) {
@@ -36,6 +36,56 @@ function SoundWave({ className }: { className?: string }) {
   );
 }
 
+/** Одна колонка фона 9:16: фото, видео или градиент-заглушка. */
+function HeroColumn({ media }: { media?: HeroMedia }) {
+  return (
+    <div className="relative aspect-[9/16] w-full shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 sm:rounded-3xl">
+      {media?.kind === "video" ? (
+        <video
+          src={media.src}
+          poster={media.poster}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : media?.kind === "image" ? (
+        <Image
+          src={media.src}
+          alt={media.alt ?? ""}
+          fill
+          sizes="(min-width: 640px) 33vw, 85vw"
+          className="object-cover"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(226,59,59,0.14),transparent_55%),linear-gradient(180deg,#141010,#080706_85%)]" />
+      )}
+    </div>
+  );
+}
+
+/** Фон hero: 3 колонки 9:16 (десктоп) / snap-скролл (мобайл). */
+function HeroColumns({ columns }: { columns: HeroMedia[] }) {
+  const slots: (HeroMedia | undefined)[] = [0, 1, 2].map((i) => columns[i]);
+
+  return (
+    <div className="absolute inset-x-0 bottom-0 top-16 flex justify-center overflow-hidden">
+      <div className="flex w-full max-w-7xl snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-4 sm:snap-none sm:gap-4 sm:overflow-visible sm:px-6 lg:px-12">
+        {slots.map((media, index) => (
+          <div
+            key={media?.id ?? `empty-${index}`}
+            className="flex h-full w-[85vw] items-center sm:w-1/3 sm:min-w-0"
+          >
+            <HeroColumn media={media} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface VenueHeroProps {
   venue: VenuePageContent;
 }
@@ -50,8 +100,10 @@ export function VenueHero({ venue }: VenueHeroProps) {
       id="venue-hero"
       className="relative isolate flex min-h-[100svh] w-full items-end overflow-hidden"
     >
-      {/* Background */}
-      {venue.heroImage ? (
+      {/* Background: 3 колонки 9:16 (фото/видео), фолбэк — heroImage или градиент */}
+      {venue.heroColumns.length > 0 ? (
+        <HeroColumns columns={venue.heroColumns} />
+      ) : venue.heroImage ? (
         <Image
           src={venue.heroImage}
           alt=""
@@ -64,10 +116,10 @@ export function VenueHero({ venue }: VenueHeroProps) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(226,59,59,0.14),transparent_55%),linear-gradient(180deg,#141010,#080706_85%)]" />
       )}
 
-      {/* Overlays */}
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.88),rgba(0,0,0,0.45)_55%,rgba(0,0,0,0.6))]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.55),transparent_28%,rgba(8,7,6,0.92))]" />
-      <div className="pointer-events-none absolute inset-0 vignette" />
+      {/* Overlays — лёгкие: видео колонок должны просвечивать, текст читается за счёт нижнего скрима */}
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.5),rgba(0,0,0,0.15)_55%,rgba(0,0,0,0.3))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.25),transparent_28%,rgba(8,7,6,0.8))]" />
+      <div className="pointer-events-none absolute inset-0 vignette opacity-40" />
 
       {/* Content */}
       <MotionReveal

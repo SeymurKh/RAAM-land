@@ -8,6 +8,8 @@ import type { VenuePageContent } from "@/types/content";
 /** Декоративная звуковая волна в заголовке (как в макете). */
 function SoundWave({ className }: { className?: string }) {
   const bars = [6, 12, 20, 10, 26, 14, 22, 8, 18, 12, 24, 10, 16, 6];
+  // Разная скорость/фаза — полосы «пляшут» как настоящий эквалайзер
+  const durations = [0.9, 1.15, 0.8, 1.05, 1.25, 0.95, 1.1, 0.85, 1.2, 1.0, 0.9, 1.15, 1.05, 0.95];
   return (
     <svg
       viewBox="0 0 120 32"
@@ -23,6 +25,11 @@ function SoundWave({ className }: { className?: string }) {
           width="3"
           height={height}
           rx="1.5"
+          className="eq-bar"
+          style={{
+            animationDuration: `${durations[index]}s`,
+            animationDelay: `${-index * 0.13}s`,
+          }}
         />
       ))}
     </svg>
@@ -80,16 +87,12 @@ export function VenueHero({ venue }: VenueHeroProps) {
         <h1 className="font-bebas text-[clamp(3.2rem,10vw,8.5rem)] leading-[0.86] tracking-wide text-stone-50">
           <span className="inline-flex flex-wrap items-center gap-x-5 gap-y-2">
             {firstWord.toUpperCase()}
-            <SoundWave className="h-5 w-24 text-[#e23b3b] sm:h-7 sm:w-32" />
+            <SoundWave className="h-7 w-28 text-[#E82919] sm:h-9 sm:w-40" />
           </span>
           {restWords ? (
             <span className="block">{restWords.toUpperCase()}</span>
           ) : null}
         </h1>
-
-        <p className="mt-4 text-xs uppercase tracking-[0.42em] text-stone-300/60">
-          {venue.byLabel}
-        </p>
 
         <p className="mt-6 max-w-xl text-base uppercase leading-7 tracking-[0.06em] text-stone-100/85 sm:text-lg">
           {venue.headline}
@@ -97,24 +100,16 @@ export function VenueHero({ venue }: VenueHeroProps) {
 
         {venue.tags.length > 0 ? (
           <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-            {venue.tags.map((tag, index) => (
+            {venue.tags.map((tag) => (
               <span
                 key={tag}
                 className="flex items-center gap-4 text-xs uppercase tracking-[0.32em] text-stone-200/75"
               >
+                <span className="h-1.5 w-1.5 rounded-full bg-[#E82919]" />
                 {tag}
-                {index < venue.tags.length - 1 ? (
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#e23b3b]" />
-                ) : null}
               </span>
             ))}
           </div>
-        ) : null}
-
-        {venue.slogan ? (
-          <p className="mt-6 text-sm uppercase tracking-[0.32em] text-[#e23b3b] sm:text-base">
-            {venue.slogan}
-          </p>
         ) : null}
 
         <a

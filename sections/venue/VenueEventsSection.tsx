@@ -19,16 +19,12 @@ export function VenueEventsSection({ events }: VenueEventsSectionProps) {
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-2 md:items-center md:gap-14">
         {/* Copy */}
         <MotionReveal>
-          <div className="flex items-center gap-4">
-            <span className="font-bebas text-5xl leading-none text-white/12 sm:text-6xl">
-              02
-            </span>
-            <p className="text-xs uppercase tracking-[0.48em] text-[#e23b3b]">
+          <div>
+            <p className="text-xs uppercase tracking-[0.48em] text-[#E82919]">
               {events.eyebrow}
             </p>
-          </div>
 
-          <h2 className="mt-4 text-3xl font-semibold uppercase leading-[0.95] tracking-normal text-stone-100 sm:text-5xl">
+            <h2 className="mt-4 text-3xl font-semibold uppercase leading-[0.95] tracking-normal text-stone-100 sm:text-5xl">
             {events.title}
           </h2>
 
@@ -61,6 +57,7 @@ export function VenueEventsSection({ events }: VenueEventsSectionProps) {
               {events.cta.label}
             </FluidButton>
           ) : null}
+          </div>
         </MotionReveal>
 
         {/* Photo collage */}

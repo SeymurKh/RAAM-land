@@ -124,10 +124,8 @@ export interface VenueCTA {
 
 export interface VenuePageContent {
   name: string;
-  byLabel: string;
   headline: string;
   tags: string[];
-  slogan: string;
   logo?: string;
   heroImage?: string;
   live: {
@@ -135,11 +133,6 @@ export interface VenuePageContent {
     title: string;
     description: string[];
     platforms: VenuePlatform[];
-    note: string;
-    cta: VenueCTA;
-    videoThumb?: string;
-    videoUrl?: string;
-    liveBadge?: boolean;
   };
   events: {
     eyebrow: string;
@@ -158,8 +151,6 @@ export interface VenuePageContent {
   };
   contacts: {
     address: string;
-    phone: string;
-    phoneHref: string;
     hours: string;
   };
 }

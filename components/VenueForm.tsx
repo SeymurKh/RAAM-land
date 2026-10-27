@@ -74,24 +74,14 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
       {/* ─── Hero ─── */}
       <div className={sectionClass}>
         <p className={sectionTitleClass}>Hero</p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Name</label>
-            <input
-              className={inputClass}
-              value={form.name}
-              onChange={(event) => updateField("name", event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className={labelClass}>By-line</label>
-            <input
-              className={inputClass}
-              value={form.byLabel}
-              onChange={(event) => updateField("byLabel", event.target.value)}
-            />
-          </div>
+        <div>
+          <label className={labelClass}>Name</label>
+          <input
+            className={inputClass}
+            value={form.name}
+            onChange={(event) => updateField("name", event.target.value)}
+            required
+          />
         </div>
         <div>
           <label className={labelClass}>Headline</label>
@@ -101,16 +91,8 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
             onChange={(event) => updateField("headline", event.target.value)}
           />
         </div>
-        <div>
-          <label className={labelClass}>Slogan (red line)</label>
-          <input
-            className={inputClass}
-            value={form.slogan}
-            onChange={(event) => updateField("slogan", event.target.value)}
-          />
-        </div>
         <ListEditor
-          label="Tags (streaming / music / events)"
+          label="Tags"
           values={form.tags}
           onChange={(tags) => updateField("tags", tags)}
         />
@@ -132,7 +114,7 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
 
       {/* ─── 01 Live Streaming ─── */}
       <div className={sectionClass}>
-        <p className={sectionTitleClass}>01 — Live Streaming</p>
+        <p className={sectionTitleClass}>Live Streaming</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className={labelClass}>Eyebrow</label>
@@ -161,16 +143,6 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
           onChange={(description) => updateSection("live", { description })}
           multiline
         />
-        <div>
-          <label className={labelClass}>Note</label>
-          <input
-            className={inputClass}
-            value={form.live.note}
-            onChange={(event) =>
-              updateSection("live", { note: event.target.value })
-            }
-          />
-        </div>
         <div className="space-y-3">
           <label className={labelClass}>Platforms</label>
           {form.live.platforms.map((platform, index) => (
@@ -256,67 +228,11 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
             + Add platform
           </button>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>CTA label</label>
-            <input
-              className={inputClass}
-              value={form.live.cta.label}
-              onChange={(event) =>
-                updateSection("live", {
-                  cta: { ...form.live.cta, label: event.target.value },
-                })
-              }
-            />
-          </div>
-          <div>
-            <label className={labelClass}>CTA link</label>
-            <input
-              className={inputClass}
-              value={form.live.cta.href}
-              onChange={(event) =>
-                updateSection("live", {
-                  cta: { ...form.live.cta, href: event.target.value },
-                })
-              }
-            />
-          </div>
-        </div>
-        <div>
-          <label className={labelClass}>Video URL (YouTube)</label>
-          <input
-            className={inputClass}
-            value={form.live.videoUrl ?? ""}
-            onChange={(event) =>
-              updateSection("live", {
-                videoUrl: event.target.value || undefined,
-              })
-            }
-            placeholder="https://www.youtube.com/watch?v=..."
-          />
-        </div>
-        <VenueImageUpload
-          label="Video thumbnail"
-          imageKey="video-thumb"
-          value={form.live.videoThumb}
-          onChange={(videoThumb) => updateSection("live", { videoThumb })}
-        />
-        <label className="flex cursor-pointer items-center gap-3 text-sm text-stone-200/80">
-          <input
-            type="checkbox"
-            checked={Boolean(form.live.liveBadge)}
-            onChange={(event) =>
-              updateSection("live", { liveBadge: event.target.checked })
-            }
-            className="h-4 w-4 accent-[#e23b3b]"
-          />
-          Show LIVE badge on the video card
-        </label>
       </div>
 
       {/* ─── 02 Events ─── */}
       <div className={sectionClass}>
-        <p className={sectionTitleClass}>02 — Events</p>
+        <p className={sectionTitleClass}>Events</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className={labelClass}>Eyebrow</label>
@@ -389,7 +305,7 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
 
       {/* ─── 03 The Bar ─── */}
       <div className={sectionClass}>
-        <p className={sectionTitleClass}>03 — The Bar</p>
+        <p className={sectionTitleClass}>The Bar</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className={labelClass}>Eyebrow</label>
@@ -445,31 +361,12 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
             />
           </div>
           <div>
-            <label className={labelClass}>Phone</label>
-            <input
-              className={inputClass}
-              value={form.contacts.phone}
-              onChange={(event) => updateContacts({ phone: event.target.value })}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Phone link</label>
-            <input
-              className={inputClass}
-              value={form.contacts.phoneHref}
-              onChange={(event) =>
-                updateContacts({ phoneHref: event.target.value })
-              }
-              placeholder="tel:+994..."
-            />
-          </div>
-          <div>
             <label className={labelClass}>Working hours</label>
             <input
               className={inputClass}
               value={form.contacts.hours}
               onChange={(event) => updateContacts({ hours: event.target.value })}
-              placeholder="Thu, Fri, Sat, Sun · 20:00–04:00"
+              placeholder="Thu, Fri, Sat, Sun · 20:00-04:00"
             />
           </div>
         </div>

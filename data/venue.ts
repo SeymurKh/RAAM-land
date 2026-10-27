@@ -7,10 +7,8 @@ import type { VenuePageContent } from "@/types/content";
  */
 export const seedVenue: VenuePageContent = {
   name: "Radio Stream Bar",
-  byLabel: "[ BY RAAM LABEL ]",
   headline: "Azerbaijan's first live streaming space for artists.",
-  tags: ["Streaming", "Music", "Events"],
-  slogan: "One space. Multiple frequencies.",
+  tags: ["Streaming", "Music", "Events", "Production"],
   live: {
     eyebrow: "Live Streaming",
     title: "Live streaming from Baku. Broadcasting worldwide.",
@@ -35,20 +33,14 @@ export const seedVenue: VenuePageContent = {
         url: "https://www.mixcloud.com/raamlabel/",
       },
     ],
-    note: "Catch the stream on our in-house screen while you're here.",
-    cta: {
-      label: "Watch our streams",
-      href: "https://www.youtube.com/@RAAMLabel",
-    },
-    liveBadge: true,
   },
   events: {
     eyebrow: "Events",
     title: "A space for music events.",
     description: [
-      "A space for different kinds of music events — from DJ sets and live performances to exclusive private events.",
+      "A space for different kinds of music events - from DJ sets and live performances to exclusive private events.",
     ],
-    manifesto: ["No genre limits.", "No language barriers.", "Only music."],
+    manifesto: ["No genre limits.", "Only music."],
     cta: {
       label: "See upcoming events",
       href: "https://www.instagram.com/raam.label/",
@@ -88,9 +80,7 @@ export const seedVenue: VenuePageContent = {
     ],
   },
   contacts: {
-    address: "17 Tarlan Aliyarbeyov st., Baku, Azerbaijan",
-    phone: "+994 993 01 00 69",
-    phoneHref: "tel:+994993010069",
-    hours: "Thu, Fri, Sat, Sun · 20:00–04:00",
+    address: "12 Tarlan Aliyarbeyov st., Baku, Azerbaijan",
+    hours: "Thu, Fri, Sat, Sun · 20:00-04:00",
   },
 };

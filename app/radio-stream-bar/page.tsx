@@ -3,7 +3,7 @@ import { VenuePageShell } from "@/components/VenuePageShell";
 
 const title = "Radio Stream Bar | RAAM";
 const description =
-  "Radio Stream Bar by RAAM Label — Azerbaijan's first live streaming space for artists. Live broadcasts, music events, and a bar in the heart of Baku.";
+  "Radio Stream Bar by RAAM Label - Azerbaijan's first live streaming space for artists. Live broadcasts, music events, and a bar in the heart of Baku.";
 
 export const metadata: Metadata = {
   title,
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://raam-label.com/radio-stream-bar",
-    siteName: "RAAM — Room All About Music",
+    siteName: "RAAM - Room All About Music",
     title,
     description,
   },
@@ -35,7 +35,7 @@ const jsonLd = {
   telephone: "+994 993 01 00 69",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "17 Tarlan Aliyarbeyov st.",
+    streetAddress: "12 Tarlan Aliyarbeyov st.",
     addressLocality: "Baku",
     addressCountry: "AZ",
   },

@@ -94,7 +94,7 @@ export function MediaArchive() {
         </div>
       ) : items.length === 0 ? (
         <p className="mt-8 text-sm text-stone-400/70">
-          No media items yet — check back soon.
+          No media items yet - check back soon.
         </p>
       ) : (
         <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">

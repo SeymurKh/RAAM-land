@@ -110,10 +110,8 @@ function normalizeVenue(
   const result: Partial<VenuePageContent> = {};
 
   if ("name" in body) result.name = str(body.name);
-  if ("byLabel" in body) result.byLabel = str(body.byLabel);
   if ("headline" in body) result.headline = str(body.headline);
   if ("tags" in body) result.tags = strList(body.tags);
-  if ("slogan" in body) result.slogan = str(body.slogan);
   if ("logo" in body) result.logo = opt(body.logo);
   if ("heroImage" in body) result.heroImage = opt(body.heroImage);
 
@@ -123,11 +121,6 @@ function normalizeVenue(
       title: str(body.live.title),
       description: strList(body.live.description),
       platforms: normalizePlatforms(body.live.platforms),
-      note: str(body.live.note),
-      cta: normalizeCta(body.live.cta),
-      videoThumb: opt(body.live.videoThumb),
-      videoUrl: opt(body.live.videoUrl),
-      liveBadge: Boolean(body.live.liveBadge),
     };
   }
 
@@ -155,8 +148,6 @@ function normalizeVenue(
   if ("contacts" in body && body.contacts) {
     result.contacts = {
       address: str(body.contacts.address),
-      phone: str(body.contacts.phone),
-      phoneHref: str(body.contacts.phoneHref),
       hours: str(body.contacts.hours),
     };
   }

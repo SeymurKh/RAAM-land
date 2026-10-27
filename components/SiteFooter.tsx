@@ -16,7 +16,7 @@ export function SiteFooter() {
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between sm:gap-8">
           <div className="order-2 text-center sm:order-1 sm:text-left">
             <p className="text-xs tracking-[0.2em] uppercase text-stone-400/50">
-              © {new Date().getFullYear()} RAAM — Room All About Music
+              © {new Date().getFullYear()} RAAM - Room All About Music
             </p>
             <p className="mt-1 text-[0.6rem] tracking-[0.15em] uppercase text-stone-500/40">
               All rights reserved

@@ -215,6 +215,24 @@ select {
   animation: shimmer 2s ease-in-out infinite;
 }
 
+/* Equalizer bars (Radio Stream Bar hero) — vertical pulse around bar center */
+@keyframes eq-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.eq-bar {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: eq-bar 1s ease-in-out infinite;
+}
+
 /* Hide scrollbar on horizontal scroll containers (used by ProjectsSection carousel) */
 .scroll-hide::-webkit-scrollbar {
   display: none;

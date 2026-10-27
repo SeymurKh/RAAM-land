@@ -233,6 +233,34 @@ select {
   animation: eq-bar 1s ease-in-out infinite;
 }
 
+/* RSB mark button (header) — live-pulse: red halo breathing + subtle scale */
+@keyframes rsb-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(232, 41, 25, 0.55));
+  }
+
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 10px rgba(232, 41, 25, 0.9));
+  }
+}
+
+.rsb-pulse {
+  animation: rsb-pulse 2.2s ease-in-out infinite;
+}
+
+/* RSB wordmark: постоянная тень для контраста + красное свечение на активной странице */
+.rsb-wordmark {
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.5));
+}
+
+.rsb-wordmark-active {
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 12px rgba(232, 41, 25, 0.4));
+}
+
 /* Hide scrollbar on horizontal scroll containers (used by ProjectsSection carousel) */
 .scroll-hide::-webkit-scrollbar {
   display: none;

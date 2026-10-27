@@ -13,7 +13,6 @@ import { HeaderSocials } from "@/components/HeaderSocials";
 
 const navItems = [
   { label: "Artists", href: "/#artists" },
-  { label: "Live", href: "/#live" },
   { label: "Projects", href: "/#projects" },
   { label: "Contact Us", href: "/#contacts" },
 ];
@@ -75,59 +74,74 @@ export function Header({ modalOpen }: HeaderProps) {
               className="hidden h-6 w-px bg-white/10 sm:block"
             />
             <HeaderSocials className="hidden sm:flex" />
-            <span
-              aria-hidden="true"
-              className="hidden h-6 w-px bg-white/10 sm:block"
-            />
-            <FluidButton
-              href="/radio-stream-bar"
-              aria-label="Radio Stream Bar"
-              aria-current={pathname === "/radio-stream-bar" ? "page" : undefined}
-              className={cn(
-                "min-w-30",
-                pathname === "/radio-stream-bar" &&
-                  "border-[#e23b3b]/60 text-white shadow-[0_0_28px_rgba(226,59,59,0.22)]",
-              )}
-            >
-              <Image
-                src="/assets/images/rsb-logo.png"
-                alt="Radio Stream Bar"
-                width={120}
-                height={45}
-                sizes="120px"
-                className="h-5 w-auto"
-              />
-            </FluidButton>
           </div>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            {navItems.map((item) => {
-              const isActive = item.href === pathname;
-              return (
-                <FluidButton
-                  key={item.href}
-                  href={item.href}
-                  aria-current={isActive ? "page" : undefined}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Логотип RSB, разделённый на две органичные кнопки без обвязки */}
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <Link
+                href="/#live"
+                aria-label="Live"
+                className="inline-flex items-center justify-center rounded-full transition-transform duration-500 hover:scale-110"
+              >
+                <Image
+                  src="/assets/images/rsb-mark.png"
+                  alt=""
+                  width={148}
+                  height={148}
+                  sizes="32px"
+                  className="rsb-pulse h-7 w-7 rounded-full sm:h-8 sm:w-8"
+                />
+              </Link>
+              <Link
+                href="/radio-stream-bar"
+                aria-label="Radio Stream Bar"
+                aria-current={pathname === "/radio-stream-bar" ? "page" : undefined}
+                className="inline-flex items-center transition duration-500 hover:opacity-75"
+              >
+                <Image
+                  src="/assets/images/rsb-wordmark.png"
+                  alt="Radio Stream Bar"
+                  width={338}
+                  height={189}
+                  sizes="(min-width: 640px) 72px, 64px"
                   className={cn(
-                    "min-w-30 text-center text-xs tracking-[0.2em]",
-                    isActive &&
-                      "border-[#e23b3b]/60 text-white shadow-[0_0_28px_rgba(226,59,59,0.22)]",
+                    "rsb-wordmark h-9 w-auto sm:h-10",
+                    pathname === "/radio-stream-bar" && "rsb-wordmark-active",
                   )}
-                >
-                  {item.label}
-                </FluidButton>
-              );
-            })}
-          </div>
+                />
+              </Link>
+            </div>
 
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 text-white lg:hidden"
-            aria-label="Open navigation"
-          >
-            <Menu size={18} />
-          </button>
+            <div className="hidden items-center gap-3 lg:flex">
+              {navItems.map((item) => {
+                const isActive = item.href === pathname;
+                return (
+                  <FluidButton
+                    key={item.href}
+                    href={item.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "min-w-30 text-center text-xs tracking-[0.2em]",
+                      isActive &&
+                        "border-[#E82919]/60 text-white shadow-[0_0_28px_rgba(232,41,25,0.22)]",
+                    )}
+                  >
+                    {item.label}
+                  </FluidButton>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/4 text-white lg:hidden"
+              aria-label="Open navigation"
+            >
+              <Menu size={18} />
+            </button>
+          </div>
         </nav>
       </motion.header>
 
@@ -184,7 +198,7 @@ export function Header({ modalOpen }: HeaderProps) {
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
                         "block border-b border-white/10 py-5 text-4xl font-semibold uppercase leading-none tracking-normal sm:text-5xl",
-                        isActive ? "text-[#e23b3b]" : "text-stone-100",
+                        isActive ? "text-[#E82919]" : "text-stone-100",
                       )}
                     >
                       {item.label}
@@ -199,24 +213,44 @@ export function Header({ modalOpen }: HeaderProps) {
                 }}
                 className="flex items-center gap-3 pt-4"
               >
-                <FluidButton
-                  href="/radio-stream-bar"
-                  onClick={close}
-                  aria-label="Radio Stream Bar"
-                  aria-current={
-                    pathname === "/radio-stream-bar" ? "page" : undefined
-                  }
-                  className="min-w-30"
-                >
-                  <Image
-                    src="/assets/images/rsb-logo.png"
-                    alt="Radio Stream Bar"
-                    width={120}
-                    height={45}
-                    sizes="120px"
-                    className="h-5 w-auto"
-                  />
-                </FluidButton>
+                <div className="flex items-center gap-2.5">
+                  <Link
+                    href="/#live"
+                    onClick={close}
+                    aria-label="Live"
+                    className="inline-flex items-center justify-center rounded-full transition-transform duration-500 hover:scale-110"
+                  >
+                    <Image
+                      src="/assets/images/rsb-mark.png"
+                      alt=""
+                      width={148}
+                      height={148}
+                      sizes="32px"
+                      className="rsb-pulse h-8 w-8 rounded-full"
+                    />
+                  </Link>
+                  <Link
+                    href="/radio-stream-bar"
+                    onClick={close}
+                    aria-label="Radio Stream Bar"
+                    aria-current={
+                      pathname === "/radio-stream-bar" ? "page" : undefined
+                    }
+                    className="inline-flex items-center transition duration-500 hover:opacity-75"
+                  >
+                    <Image
+                      src="/assets/images/rsb-wordmark.png"
+                      alt="Radio Stream Bar"
+                      width={338}
+                      height={189}
+                      sizes="72px"
+                      className={cn(
+                        "rsb-wordmark h-10 w-auto",
+                        pathname === "/radio-stream-bar" && "rsb-wordmark-active",
+                      )}
+                    />
+                  </Link>
+                </div>
                 <HeaderSocials />
               </motion.div>
             </motion.div>

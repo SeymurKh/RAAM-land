@@ -18,23 +18,59 @@ export async function POST(request: NextRequest) {
   const file = formData.get("file") as File | null;
   const artistId = formData.get("artistId") as string | null;
   const projectId = formData.get("projectId") as string | null;
+  const mediaId = formData.get("mediaId") as string | null;
+  const venueKey = formData.get("venueKey") as string | null;
   const kind = formData.get("kind") as string | null; // "avatar" | "photo" | undefined
-  const entityId = artistId || projectId;
-  const subDir = projectId ? "projects" : "artists";
 
   console.log("[upload] Received:", {
     artistId,
     projectId,
+    mediaId,
+    venueKey,
     kind,
     fileName: file?.name,
     fileSize: file?.size,
     fileType: file?.type,
   });
 
-  if (!file || !entityId) {
-    console.error("[upload] Missing file or entityId");
+  if (!file) {
+    console.error("[upload] Missing file");
+    return NextResponse.json({ error: "File is required" }, { status: 400 });
+  }
+
+  // Radio Stream Bar: venueKey (hero, logo, video-thumb, img-<ts>) → /uploads/venue
+  // Media archive: mediaId → /uploads/media
+  // Artists / projects — как раньше
+  let subDir: string;
+  let prefix: string;
+  let isAvatar = false;
+
+  if (venueKey) {
+    if (!/^[a-zA-Z0-9-]{1,60}$/.test(venueKey)) {
+      console.error("[upload] Invalid venueKey:", venueKey);
+      return NextResponse.json({ error: "Invalid venueKey" }, { status: 400 });
+    }
+    subDir = "venue";
+    prefix = `venue-${venueKey}`;
+  } else if (mediaId) {
+    if (!/^[a-zA-Z0-9-]{1,80}$/.test(mediaId)) {
+      console.error("[upload] Invalid mediaId:", mediaId);
+      return NextResponse.json({ error: "Invalid mediaId" }, { status: 400 });
+    }
+    subDir = "media";
+    prefix = mediaId;
+  } else if (artistId || projectId) {
+    const entityId = (artistId || projectId)!;
+    subDir = projectId ? "projects" : "artists";
+    isAvatar = kind === "avatar" && !projectId;
+    prefix = isAvatar ? `avatar-${entityId}` : entityId;
+  } else {
+    console.error("[upload] Missing entityId");
     return NextResponse.json(
-      { error: "File and artistId or projectId are required" },
+      {
+        error:
+          "File and one of artistId, projectId, mediaId, venueKey are required",
+      },
       { status: 400 },
     );
   }
@@ -60,10 +96,6 @@ export async function POST(request: NextRequest) {
 
   // Ensure directory exists
   await mkdir(uploadDir, { recursive: true });
-
-  // Determine file name prefix
-  const isAvatar = kind === "avatar" && !projectId;
-  const prefix = isAvatar ? `avatar-${entityId}` : entityId;
 
   // Delete any existing file for this entity/kind (any extension)
   for (const e of UPLOAD_EXTENSIONS) {

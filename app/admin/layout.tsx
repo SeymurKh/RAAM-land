@@ -11,6 +11,8 @@ function AdminNav() {
     { href: "/admin", label: "Dashboard" },
     { href: "/admin/artists", label: "Artists" },
     { href: "/admin/projects", label: "Projects" },
+    { href: "/admin/venue", label: "Venue" },
+    { href: "/admin/media", label: "Media" },
     { href: "/admin/stream", label: "Stream" },
   ];
 

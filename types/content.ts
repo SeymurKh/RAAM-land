@@ -87,3 +87,95 @@ export interface ContactLink {
   href: string;
   kind: SocialKind;
 }
+
+/* ─── Radio Stream Bar (venue page) ─── */
+
+export interface MenuItem {
+  id: string;
+  name: string;
+  description?: string;
+  price: string;
+  order: number;
+}
+
+export interface MenuCategory {
+  id: string;
+  title: string;
+  order: number;
+  items: MenuItem[];
+}
+
+export interface VenueImage {
+  id: string;
+  src: string;
+  alt?: string;
+}
+
+export interface VenuePlatform {
+  kind: SocialKind;
+  label: string;
+  url: string;
+}
+
+export interface VenueCTA {
+  label: string;
+  href: string;
+}
+
+export interface VenuePageContent {
+  name: string;
+  byLabel: string;
+  headline: string;
+  tags: string[];
+  slogan: string;
+  logo?: string;
+  heroImage?: string;
+  live: {
+    eyebrow: string;
+    title: string;
+    description: string[];
+    platforms: VenuePlatform[];
+    note: string;
+    cta: VenueCTA;
+    videoThumb?: string;
+    videoUrl?: string;
+    liveBadge?: boolean;
+  };
+  events: {
+    eyebrow: string;
+    title: string;
+    description: string[];
+    manifesto: string[];
+    cta: VenueCTA;
+    gallery: VenueImage[];
+  };
+  bar: {
+    eyebrow: string;
+    title: string;
+    description: string[];
+    images: VenueImage[];
+    menu: MenuCategory[];
+  };
+  contacts: {
+    address: string;
+    phone: string;
+    phoneHref: string;
+    hours: string;
+  };
+}
+
+/* ─── Media archive (grows over time) ─── */
+
+export type ArchiveMediaKind = "photo" | "video" | "audio";
+export type ArchiveMediaProvider = "youtube" | "soundcloud" | "spotify";
+
+export interface MediaItem {
+  id: string;
+  title: string;
+  date: string; // ISO date "YYYY-MM-DD"
+  kind: ArchiveMediaKind;
+  provider?: ArchiveMediaProvider;
+  url?: string;
+  image?: string;
+  order: number;
+}

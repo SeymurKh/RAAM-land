@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { motion, type HTMLMotionProps } from "framer-motion";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const baseClass =
   "group relative inline-flex min-h-12 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/6 px-6 text-sm font-medium uppercase tracking-[0.2em] text-stone-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_18px_60px_rgba(0,0,0,0.32)] backdrop-blur-xl transition duration-500 hover:border-stone-200/35 hover:bg-stone-100/12 focus:outline-none focus:ring-2 focus:ring-stone-200/40";
+
+const MotionLink = motion.create(Link);
 
 function Inner({ children }: { children: ReactNode }) {
   return (
@@ -36,8 +39,11 @@ export function FluidButton({
 }: AnchorFluidProps | ButtonFluidProps) {
   if ("href" in props && props.href) {
     const { href, ...rest } = props as AnchorFluidProps;
+    // Внутренние маршруты — через next/link (prefetch, SPA-переходы)
+    const isInternal = href.startsWith("/") && !href.startsWith("//");
+    const Component = (isInternal ? MotionLink : motion.a) as typeof motion.a;
     return (
-      <motion.a
+      <Component
         href={href}
         className={cn(baseClass, className)}
         whileHover={{ scale: 1.03 }}
@@ -46,7 +52,7 @@ export function FluidButton({
         {...rest}
       >
         <Inner>{children}</Inner>
-      </motion.a>
+      </Component>
     );
   }
 

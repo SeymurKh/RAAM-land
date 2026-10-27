@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,10 +12,10 @@ import { FluidButton } from "@/components/FluidButton";
 import { HeaderSocials } from "@/components/HeaderSocials";
 
 const navItems = [
-  { label: "Artists", href: "#artists" },
-  { label: "Live", href: "#live" },
-  { label: "Projects", href: "#projects" },
-  { label: "Contact Us", href: "#contacts" },
+  { label: "Artists", href: "/#artists" },
+  { label: "Live", href: "/#live" },
+  { label: "Projects", href: "/#projects" },
+  { label: "Contact Us", href: "/#contacts" },
 ];
 
 interface HeaderProps {
@@ -23,6 +25,7 @@ interface HeaderProps {
 export function Header({ modalOpen }: HeaderProps) {
   const [shown, setShown] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => {
@@ -56,7 +59,7 @@ export function Header({ modalOpen }: HeaderProps) {
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-black/30 px-4 py-3 shadow-[0_16px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <div className="flex items-center gap-3">
-            <a href="#hero" className="flex items-center" aria-label="RAAM home">
+            <Link href="/" className="flex items-center" aria-label="RAAM home">
               <Image
                 src="/assets/images/logoheader.png"
                 alt="RAAM"
@@ -66,24 +69,55 @@ export function Header({ modalOpen }: HeaderProps) {
                 className="h-6 w-36 sm:w-40"
                 priority
               />
-            </a>
+            </Link>
             <span
               aria-hidden="true"
               className="hidden h-6 w-px bg-white/10 sm:block"
             />
             <HeaderSocials className="hidden sm:flex" />
+            <span
+              aria-hidden="true"
+              className="hidden h-6 w-px bg-white/10 sm:block"
+            />
+            <FluidButton
+              href="/radio-stream-bar"
+              aria-label="Radio Stream Bar"
+              aria-current={pathname === "/radio-stream-bar" ? "page" : undefined}
+              className={cn(
+                "min-w-30",
+                pathname === "/radio-stream-bar" &&
+                  "border-[#e23b3b]/60 text-white shadow-[0_0_28px_rgba(226,59,59,0.22)]",
+              )}
+            >
+              <Image
+                src="/assets/images/rsb-logo.png"
+                alt="Radio Stream Bar"
+                width={120}
+                height={45}
+                sizes="120px"
+                className="h-5 w-auto"
+              />
+            </FluidButton>
           </div>
 
           <div className="hidden items-center gap-3 lg:flex">
-            {navItems.map((item) => (
-              <FluidButton
-                key={item.href}
-                href={item.href}
-                className="min-w-30 text-center text-xs tracking-[0.2em]"
-              >
-                {item.label}
-              </FluidButton>
-            ))}
+            {navItems.map((item) => {
+              const isActive = item.href === pathname;
+              return (
+                <FluidButton
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "min-w-30 text-center text-xs tracking-[0.2em]",
+                    isActive &&
+                      "border-[#e23b3b]/60 text-white shadow-[0_0_28px_rgba(226,59,59,0.22)]",
+                  )}
+                >
+                  {item.label}
+                </FluidButton>
+              );
+            })}
           </div>
 
           <button
@@ -106,7 +140,7 @@ export function Header({ modalOpen }: HeaderProps) {
             className="fixed inset-0 z-60 bg-black/88 backdrop-blur-2xl lg:hidden"
           >
             <div className="flex items-center justify-between px-5 py-5">
-              <a href="#hero" onClick={close} className="flex items-center gap-3">
+              <Link href="/" onClick={close} className="flex items-center gap-3">
                 <Image
                   src="/assets/images/logoheader.png"
                   alt="RAAM"
@@ -115,7 +149,7 @@ export function Header({ modalOpen }: HeaderProps) {
                   sizes="(min-width: 640px) 160px, 144px"
                   className="h-6 w-36 sm:w-40"
                 />
-              </a>
+              </Link>
               <button
                 type="button"
                 onClick={close}
@@ -134,27 +168,55 @@ export function Header({ modalOpen }: HeaderProps) {
               }}
               className="flex h-[calc(100vh-84px)] flex-col justify-center gap-5 px-6"
             >
-              {navItems.map((item) => (
-                <motion.a
-                  key={item.href}
-                  href={item.href}
-                  onClick={close}
-                  variants={{
-                    hidden: { opacity: 0, y: 24 },
-                    show: { opacity: 1, y: 0 },
-                  }}
-                  className="border-b border-white/10 py-5 text-5xl font-semibold uppercase leading-none tracking-normal text-stone-100"
-                >
-                  {item.label}
-                </motion.a>
-              ))}
+              {navItems.map((item) => {
+                const isActive = item.href === pathname;
+                return (
+                  <motion.div
+                    key={item.href}
+                    variants={{
+                      hidden: { opacity: 0, y: 24 },
+                      show: { opacity: 1, y: 0 },
+                    }}
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={close}
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "block border-b border-white/10 py-5 text-4xl font-semibold uppercase leading-none tracking-normal sm:text-5xl",
+                        isActive ? "text-[#e23b3b]" : "text-stone-100",
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                );
+              })}
               <motion.div
                 variants={{
                   hidden: { opacity: 0, y: 24 },
                   show: { opacity: 1, y: 0 },
                 }}
-                className="flex items-center gap-2 pt-4"
+                className="flex items-center gap-3 pt-4"
               >
+                <FluidButton
+                  href="/radio-stream-bar"
+                  onClick={close}
+                  aria-label="Radio Stream Bar"
+                  aria-current={
+                    pathname === "/radio-stream-bar" ? "page" : undefined
+                  }
+                  className="min-w-30"
+                >
+                  <Image
+                    src="/assets/images/rsb-logo.png"
+                    alt="Radio Stream Bar"
+                    width={120}
+                    height={45}
+                    sizes="120px"
+                    className="h-5 w-auto"
+                  />
+                </FluidButton>
                 <HeaderSocials />
               </motion.div>
             </motion.div>

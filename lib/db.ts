@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import type { Artist, Project } from "@/types/content";
+import type { Artist, MediaItem, Project, VenuePageContent } from "@/types/content";
 import type { StreamConfig } from "@/data/stream";
 
 const DB_PATH = join(process.cwd(), "data", "db.json");
@@ -26,6 +26,8 @@ interface DbData {
   artists: Artist[];
   projects: Project[];
   stream: StreamConfig;
+  venue: VenuePageContent;
+  media: MediaItem[];
 }
 
 async function readDb(): Promise<DbData> {
@@ -36,10 +38,13 @@ async function readDb(): Promise<DbData> {
     const { seedArtists } = await import("@/data/seed");
     const { seedProjects } = await import("@/data/projects");
     const { streamConfig } = await import("@/data/stream");
+    const { seedVenue } = await import("@/data/venue");
     const initial: DbData = {
       artists: seedArtists,
       projects: seedProjects,
       stream: streamConfig,
+      venue: seedVenue,
+      media: [],
     };
     await writeFile(DB_PATH, JSON.stringify(initial, null, 2), "utf-8");
     return initial;
@@ -56,6 +61,13 @@ async function ensureDbShape(data: DbData): Promise<DbData> {
   if (!data.stream || typeof data.stream !== "object") {
     const { streamConfig } = await import("@/data/stream");
     data.stream = streamConfig;
+  }
+  if (!data.venue || typeof data.venue !== "object") {
+    const { seedVenue } = await import("@/data/venue");
+    data.venue = seedVenue;
+  }
+  if (!Array.isArray(data.media)) {
+    data.media = [];
   }
 
   return data;
@@ -174,6 +186,77 @@ export async function deleteProject(id: string): Promise<boolean> {
     }
 
     db.projects.splice(index, 1);
+    await writeDb(db);
+    return true;
+  });
+}
+
+/* ─── Radio Stream Bar (venue page) ─── */
+
+export async function getVenue(): Promise<VenuePageContent> {
+  const db = await readDb();
+  return db.venue;
+}
+
+export async function updateVenue(
+  data: Partial<VenuePageContent>,
+): Promise<VenuePageContent> {
+  return withLock(async () => {
+    const db = await readDb();
+    db.venue = { ...db.venue, ...data };
+    await writeDb(db);
+    return db.venue;
+  });
+}
+
+/* ─── Media archive ─── */
+
+export async function getMedia(): Promise<MediaItem[]> {
+  const db = await readDb();
+  return [...db.media].sort(
+    (a, b) => a.order - b.order || b.date.localeCompare(a.date),
+  );
+}
+
+export async function getMediaItem(id: string): Promise<MediaItem | undefined> {
+  const media = await getMedia();
+  return media.find((item) => item.id === id);
+}
+
+export async function createMedia(item: MediaItem): Promise<MediaItem> {
+  return withLock(async () => {
+    const db = await readDb();
+    db.media.push(item);
+    await writeDb(db);
+    return item;
+  });
+}
+
+export async function updateMedia(
+  id: string,
+  data: Partial<MediaItem>,
+): Promise<MediaItem | null> {
+  return withLock(async () => {
+    const db = await readDb();
+    const index = db.media.findIndex((item) => item.id === id);
+    if (index === -1) {
+      return null;
+    }
+    db.media[index] = { ...db.media[index], ...data, id };
+    await writeDb(db);
+    return db.media[index];
+  });
+}
+
+export async function deleteMedia(id: string): Promise<boolean> {
+  return withLock(async () => {
+    const db = await readDb();
+    const index = db.media.findIndex((item) => item.id === id);
+    if (index === -1) {
+      return false;
+    }
+
+    db.media.splice(index, 1);
     await writeDb(db);
     return true;
   });

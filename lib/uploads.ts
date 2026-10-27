@@ -20,10 +20,12 @@ export const UPLOAD_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "gif"] as const;
  * - `new-<timestamp>.ext`          — фото нового артиста
  * - `avatar-new-<timestamp>.ext`   — аватар нового артиста
  * - `new-project-<timestamp>.ext`  — изображение нового проекта
+ * - `new-media-<timestamp>.ext`    — изображение нового элемента медиа-архива
  */
 const TEMP_FILE_PATTERNS = [
   /^(avatar-)?new-\d+\.(png|jpg|jpeg|webp|gif)$/i,
   /^new-project-\d+\.(png|jpg|jpeg|webp|gif)$/i,
+  /^new-media-\d+\.(png|jpg|jpeg|webp|gif)$/i,
 ];
 
 /**

@@ -1,0 +1,137 @@
+"use client";
+
+import Image from "next/image";
+import { ArrowDown } from "lucide-react";
+import { MotionReveal } from "@/components/MotionReveal";
+import type { VenuePageContent } from "@/types/content";
+
+/** Декоративная звуковая волна в заголовке (как в макете). */
+function SoundWave({ className }: { className?: string }) {
+  const bars = [6, 12, 20, 10, 26, 14, 22, 8, 18, 12, 24, 10, 16, 6];
+  return (
+    <svg
+      viewBox="0 0 120 32"
+      className={className}
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      {bars.map((height, index) => (
+        <rect
+          key={index}
+          x={index * 8.5}
+          y={(32 - height) / 2}
+          width="3"
+          height={height}
+          rx="1.5"
+        />
+      ))}
+    </svg>
+  );
+}
+
+interface VenueHeroProps {
+  venue: VenuePageContent;
+}
+
+export function VenueHero({ venue }: VenueHeroProps) {
+  const words = venue.name.trim().split(/\s+/);
+  const firstWord = words[0] ?? venue.name;
+  const restWords = words.slice(1).join(" ");
+
+  return (
+    <section
+      id="venue-hero"
+      className="relative isolate flex min-h-[100svh] w-full items-end overflow-hidden"
+    >
+      {/* Background */}
+      {venue.heroImage ? (
+        <Image
+          src={venue.heroImage}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(226,59,59,0.14),transparent_55%),linear-gradient(180deg,#141010,#080706_85%)]" />
+      )}
+
+      {/* Overlays */}
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.88),rgba(0,0,0,0.45)_55%,rgba(0,0,0,0.6))]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.55),transparent_28%,rgba(8,7,6,0.92))]" />
+      <div className="pointer-events-none absolute inset-0 vignette" />
+
+      {/* Content */}
+      <MotionReveal
+        direction="none"
+        className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-14 pt-28 sm:px-6 sm:pb-20 sm:pt-32 lg:px-12"
+      >
+        {venue.logo ? (
+          <Image
+            src={venue.logo}
+            alt={`${venue.name} logo`}
+            width={200}
+            height={80}
+            className="mb-6 h-10 w-auto object-contain object-left sm:h-12"
+          />
+        ) : null}
+
+        <h1 className="font-bebas text-[clamp(3.2rem,10vw,8.5rem)] leading-[0.86] tracking-wide text-stone-50">
+          <span className="inline-flex flex-wrap items-center gap-x-5 gap-y-2">
+            {firstWord.toUpperCase()}
+            <SoundWave className="h-5 w-24 text-[#e23b3b] sm:h-7 sm:w-32" />
+          </span>
+          {restWords ? (
+            <span className="block">{restWords.toUpperCase()}</span>
+          ) : null}
+        </h1>
+
+        <p className="mt-4 text-xs uppercase tracking-[0.42em] text-stone-300/60">
+          {venue.byLabel}
+        </p>
+
+        <p className="mt-6 max-w-xl text-base uppercase leading-7 tracking-[0.06em] text-stone-100/85 sm:text-lg">
+          {venue.headline}
+        </p>
+
+        {venue.tags.length > 0 ? (
+          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+            {venue.tags.map((tag, index) => (
+              <span
+                key={tag}
+                className="flex items-center gap-4 text-xs uppercase tracking-[0.32em] text-stone-200/75"
+              >
+                {tag}
+                {index < venue.tags.length - 1 ? (
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#e23b3b]" />
+                ) : null}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        {venue.slogan ? (
+          <p className="mt-6 text-sm uppercase tracking-[0.32em] text-[#e23b3b] sm:text-base">
+            {venue.slogan}
+          </p>
+        ) : null}
+
+        <a
+          href="#venue-live"
+          className="group mt-10 inline-flex items-center gap-4"
+        >
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-stone-100 transition group-hover:border-white/60 group-hover:bg-white/8">
+            <ArrowDown
+              size={16}
+              className="transition-transform duration-500 group-hover:translate-y-1"
+            />
+          </span>
+          <span className="text-xs uppercase tracking-[0.32em] text-stone-200/80">
+            Explore the space
+          </span>
+        </a>
+      </MotionReveal>
+    </section>
+  );
+}

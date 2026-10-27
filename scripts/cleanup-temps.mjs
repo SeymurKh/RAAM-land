@@ -19,11 +19,13 @@ import { join, resolve } from "path";
 const TEMP_PATTERNS = [
   /^(avatar-)?new-\d+\.(png|jpg|jpeg|webp|gif)$/i,
   /^new-project-\d+\.(png|jpg|jpeg|webp|gif)$/i,
+  /^new-media-\d+\.(png|jpg|jpeg|webp|gif)$/i,
 ];
 
 const DIRS = [
   "public/uploads/artists",
   "public/uploads/projects",
+  "public/uploads/media",
 ];
 
 const doDelete = process.argv.includes("--delete");

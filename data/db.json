@@ -727,7 +727,20 @@
         "label": "See upcoming events",
         "href": "https://www.instagram.com/raam.label/"
       },
-      "gallery": []
+      "gallery": [
+        {
+          "id": "img-1793106834726",
+          "src": "/uploads/venue/venue-img-1793106834726.jpg?v=1793106834903"
+        },
+        {
+          "id": "img-1793106839319",
+          "src": "/uploads/venue/venue-img-1793106839319.jpg?v=1793106839513"
+        },
+        {
+          "id": "img-1793106843940",
+          "src": "/uploads/venue/venue-img-1793106843940.jpg?v=1793106844097"
+        }
+      ]
     },
     "bar": {
       "eyebrow": "The Bar",
@@ -738,23 +751,336 @@
       "images": [],
       "menu": [
         {
-          "id": "cocktails",
-          "title": "Cocktails",
+          "id": "beer",
+          "title": "Beer",
           "order": 1,
+          "banner": false,
           "items": [
             {
-              "id": "negroni",
-              "name": "Negroni",
-              "description": "Classic bitter & balanced",
-              "price": "12 AZN",
+              "id": "beer-1",
+              "name": "Corona, Heineken",
+              "price": "10 ₼",
               "order": 1
             },
             {
-              "id": "aperol-spritz",
-              "name": "Aperol Spritz",
-              "description": "Bright, sparkling, refreshing",
-              "price": "10 AZN",
+              "id": "beer-2",
+              "name": "Heineken Zero",
+              "price": "8 ₼",
               "order": 2
+            }
+          ]
+        },
+        {
+          "id": "whiskey",
+          "title": "Whiskey",
+          "order": 2,
+          "banner": false,
+          "items": [
+            {
+              "id": "whiskey-1",
+              "name": "Jack Daniel's",
+              "price": "8 ₼",
+              "order": 1
+            },
+            {
+              "id": "whiskey-2",
+              "name": "Jack Daniel's Honey",
+              "price": "8 ₼",
+              "order": 2
+            },
+            {
+              "id": "whiskey-3",
+              "name": "Jameson",
+              "price": "8 ₼",
+              "order": 3
+            },
+            {
+              "id": "whiskey-4",
+              "name": "Jim Beam",
+              "price": "8 ₼",
+              "order": 4
+            }
+          ]
+        },
+        {
+          "id": "gin",
+          "title": "Gin",
+          "order": 3,
+          "banner": false,
+          "items": [
+            {
+              "id": "gin-1",
+              "name": "Hendrick's",
+              "price": "12 ₼",
+              "order": 1
+            },
+            {
+              "id": "gin-2",
+              "name": "Gordon's",
+              "price": "8 ₼",
+              "order": 2
+            },
+            {
+              "id": "gin-3",
+              "name": "Local Craft",
+              "price": "7 ₼",
+              "order": 3
+            }
+          ]
+        },
+        {
+          "id": "rum",
+          "title": "Rum",
+          "order": 4,
+          "banner": false,
+          "items": [
+            {
+              "id": "rum-1",
+              "name": "Bacardi Superior, Captain Morgan Black/Spiced",
+              "price": "8 ₼",
+              "order": 1
+            },
+            {
+              "id": "rum-2",
+              "name": "Craft Rum",
+              "price": "7 ₼",
+              "order": 2
+            }
+          ]
+        },
+        {
+          "id": "tequila",
+          "title": "Tequila",
+          "order": 5,
+          "banner": false,
+          "items": [
+            {
+              "id": "tequila-1",
+              "name": "Olmeca Silver/Gold",
+              "price": "8 ₼",
+              "order": 1
+            }
+          ]
+        },
+        {
+          "id": "vodka",
+          "title": "Vodka",
+          "order": 6,
+          "banner": false,
+          "items": [
+            {
+              "id": "vodka-1",
+              "name": "Russian Standard",
+              "price": "8 ₼",
+              "order": 1
+            },
+            {
+              "id": "vodka-2",
+              "name": "Grey Goose",
+              "price": "11 ₼",
+              "order": 2
+            },
+            {
+              "id": "vodka-3",
+              "name": "Craft Vodka",
+              "price": "7 ₼",
+              "order": 3
+            }
+          ]
+        },
+        {
+          "id": "liqueur",
+          "title": "Liqueur",
+          "order": 7,
+          "banner": false,
+          "items": [
+            {
+              "id": "liqueur-1",
+              "name": "Jägermeister, Cointreau, Aperol, Campari",
+              "price": "8 ₼",
+              "order": 1
+            }
+          ]
+        },
+        {
+          "id": "wine",
+          "title": "Wine",
+          "order": 8,
+          "banner": false,
+          "items": [
+            {
+              "id": "wine-1",
+              "name": "Chabiant Red dry/semi-sweet",
+              "price": "5/29 ₼",
+              "order": 1
+            },
+            {
+              "id": "wine-2",
+              "name": "Chabiant White dry/semi-sweet",
+              "price": "5/29 ₼",
+              "order": 2
+            }
+          ]
+        },
+        {
+          "id": "soft-drinks",
+          "title": "Soft Drinks",
+          "order": 9,
+          "banner": false,
+          "items": [
+            {
+              "id": "soft-drinks-1",
+              "name": "Tonic, Cola, Sprite, Juice (330 ml)",
+              "price": "5 ₼",
+              "order": 1
+            },
+            {
+              "id": "soft-drinks-2",
+              "name": "Red Bull (250 ml)",
+              "price": "8 ₼",
+              "order": 2
+            },
+            {
+              "id": "soft-drinks-3",
+              "name": "Still/Sparkling Water (500 ml)",
+              "price": "3 ₼",
+              "order": 3
+            }
+          ]
+        },
+        {
+          "id": "cocktails",
+          "title": "Cocktails",
+          "order": 1,
+          "banner": true,
+          "items": [
+            {
+              "id": "cocktails-1",
+              "name": "Cuba Libre",
+              "description": "White rum, lime juice, cola",
+              "price": "11 ₼",
+              "order": 1
+            },
+            {
+              "id": "cocktails-2",
+              "name": "Tequila Sunrise",
+              "description": "Tequila, grenadine, orange juice",
+              "price": "13 ₼",
+              "order": 2
+            },
+            {
+              "id": "cocktails-3",
+              "name": "Sex on the Beach",
+              "description": "Vodka, peach schnapps, cranberry juice, orange juice",
+              "price": "15 ₼",
+              "order": 3
+            },
+            {
+              "id": "cocktails-4",
+              "name": "Long Island Iced Tea",
+              "description": "Tequila, Bacardi, vodka, gin, Cointreau, lemon, cola",
+              "price": "19 ₼",
+              "order": 4
+            },
+            {
+              "id": "cocktails-5",
+              "name": "Espresso Martini",
+              "description": "Vodka, Kahlua, sugar syrup, espresso",
+              "price": "16 ₼",
+              "order": 5
+            },
+            {
+              "id": "cocktails-6",
+              "name": "Pornstar Martini",
+              "description": "Vodka, passion fruit, lime, vanilla",
+              "price": "16 ₼",
+              "order": 6
+            },
+            {
+              "id": "cocktails-7",
+              "name": "Mai Tai",
+              "description": "White & dark rum, orange Curaçao, orgeat syrup, lime juice",
+              "price": "13 ₼",
+              "order": 7
+            },
+            {
+              "id": "cocktails-8",
+              "name": "Shot set",
+              "description": "Alcohol ...",
+              "price": "18 ₼",
+              "order": 8
+            }
+          ]
+        },
+        {
+          "id": "negroni",
+          "title": "Negroni Selection",
+          "order": 2,
+          "banner": true,
+          "items": [
+            {
+              "id": "negroni-1",
+              "name": "Negroni",
+              "description": "Gin, Campari, Martini Rosso",
+              "price": "13 ₼",
+              "order": 1
+            },
+            {
+              "id": "negroni-2",
+              "name": "Sbagliato",
+              "description": "Campari, Martini Rosso, Prosecco",
+              "price": "13 ₼",
+              "order": 2
+            },
+            {
+              "id": "negroni-3",
+              "name": "Americano",
+              "description": "Campari, Martini Rosso, soda",
+              "price": "13 ₼",
+              "order": 3
+            },
+            {
+              "id": "negroni-4",
+              "name": "Boulevardier",
+              "description": "Whiskey, Campari, Martini Rosso",
+              "price": "13 ₼",
+              "order": 4
+            },
+            {
+              "id": "negroni-5",
+              "name": "Negroski",
+              "description": "Vodka, Campari, Martini Rosso",
+              "price": "13 ₼",
+              "order": 5
+            }
+          ]
+        },
+        {
+          "id": "spritz",
+          "title": "Spritz Collection",
+          "order": 3,
+          "banner": true,
+          "items": [
+            {
+              "id": "spritz-1",
+              "name": "Aperol Spritz",
+              "description": "Aperol, Prosecco, soda",
+              "price": "15 ₼",
+              "order": 1
+            },
+            {
+              "id": "spritz-2",
+              "name": "Campari Spritz",
+              "description": "Campari, Prosecco, soda",
+              "price": "15 ₼",
+              "order": 2
+            },
+            {
+              "id": "spritz-3",
+              "name": "Elderflower Spritz",
+              "description": "Elderflower liqueur, Prosecco, soda",
+              "price": "15 ₼",
+              "order": 3
             }
           ]
         }
@@ -783,7 +1109,8 @@
         "src": "/uploads/venue/venue-hero-col-3.mp4?v=1793101847167",
         "poster": "/uploads/venue/venue-hero-col-3-poster.jpg?v=1793101847167"
       }
-    ]
+    ],
+    "logo": "/uploads/venue/venue-logo.jpg?v=1793106792486"
   },
   "media": []
 }

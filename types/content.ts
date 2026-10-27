@@ -103,6 +103,8 @@ export interface MenuCategory {
   title: string;
   order: number;
   items: MenuItem[];
+  /** Красная плашка-заголовок и правая колонка меню, как в макете. */
+  banner?: boolean;
 }
 
 export interface VenueImage {

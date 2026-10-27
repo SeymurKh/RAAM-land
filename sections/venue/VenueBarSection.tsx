@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown } from "lucide-react";
+import { FluidButton } from "@/components/FluidButton";
 import { MenuList } from "@/components/MenuList";
 import { MotionReveal } from "@/components/MotionReveal";
 import type { VenuePageContent } from "@/types/content";
@@ -10,6 +14,9 @@ interface VenueBarSectionProps {
 }
 
 export function VenueBarSection({ bar }: VenueBarSectionProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const hasMenu = bar.menu.length > 0;
+
   return (
     <section
       id="venue-bar"
@@ -25,14 +32,14 @@ export function VenueBarSection({ bar }: VenueBarSectionProps) {
               </p>
 
               <h2 className="mt-4 text-3xl font-semibold uppercase leading-[0.95] tracking-normal text-stone-100 sm:text-5xl">
-              {bar.title}
-            </h2>
+                {bar.title}
+              </h2>
 
-            {bar.description.map((paragraph, index) => (
-              <p key={index} className="mt-5 max-w-xl text-base leading-7 text-stone-200/65">
-                {paragraph}
-              </p>
-            ))}
+              {bar.description.map((paragraph, index) => (
+                <p key={index} className="mt-5 max-w-xl text-base leading-7 text-stone-200/65">
+                  {paragraph}
+                </p>
+              ))}
             </div>
           </MotionReveal>
 
@@ -66,10 +73,46 @@ export function VenueBarSection({ bar }: VenueBarSectionProps) {
           </MotionReveal>
         </div>
 
-        {/* Menu */}
-        <MotionReveal>
-          <MenuList menu={bar.menu} />
-        </MotionReveal>
+        {/* Menu: свёрнуто под кнопкой "View menu" */}
+        {hasMenu ? (
+          <MotionReveal>
+            <div className="mt-12 flex flex-col items-center">
+              <FluidButton
+                type="button"
+                onClick={() => setMenuOpen((open) => !open)}
+                aria-expanded={menuOpen}
+                aria-controls="venue-menu"
+              >
+                <span className="flex items-center gap-2">
+                  {menuOpen ? "Hide menu" : "View menu"}
+                  <motion.span
+                    animate={{ rotate: menuOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </motion.span>
+                </span>
+              </FluidButton>
+
+              <AnimatePresence initial={false}>
+                {menuOpen ? (
+                  <motion.div
+                    key="venue-menu"
+                    id="venue-menu"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                    className="w-full overflow-hidden"
+                  >
+                    <MenuList menu={bar.menu} />
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </div>
+          </MotionReveal>
+        ) : null}
       </div>
     </section>
   );

@@ -90,7 +90,18 @@ export function MenuEditor({ menu, onChange }: MenuEditorProps) {
                 }
               />
             </div>
-            <button
+                        <label className="flex h-11 items-center gap-2 text-xs uppercase tracking-[0.18em] text-stone-400">
+              <input
+                type="checkbox"
+                checked={Boolean(category.banner)}
+                onChange={(event) =>
+                  updateCategory(categoryIndex, { banner: event.target.checked })
+                }
+                className="h-4 w-4 accent-[#E82919]"
+              />
+              Banner
+            </label>
+<button
               type="button"
               onClick={() =>
                 onChange(menu.filter((_, i) => i !== categoryIndex))

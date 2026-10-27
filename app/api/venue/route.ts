@@ -163,6 +163,7 @@ function normalizeMenu(value: unknown): MenuCategory[] {
         id: str(category.id) || `category-${categoryIndex + 1}`,
         title: str(category.title),
         order: Number(category.order) || categoryIndex + 1,
+        banner: Boolean(category.banner),
         items,
       };
     })

@@ -39,7 +39,7 @@ function SoundWave({ className }: { className?: string }) {
 /** Одна колонка фона 9:16: фото, видео или градиент-заглушка. */
 function HeroColumn({ media }: { media?: HeroMedia }) {
   return (
-    <div className="relative aspect-[9/16] w-full shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 sm:rounded-3xl">
+    <div className="relative aspect-[9/16] w-full max-h-full shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 sm:rounded-3xl">
       {media?.kind === "video" ? (
         <video
           src={media.src}
@@ -71,7 +71,7 @@ function HeroColumns({ columns }: { columns: HeroMedia[] }) {
   const slots: (HeroMedia | undefined)[] = [0, 1, 2].map((i) => columns[i]);
 
   return (
-    <div className="absolute inset-x-0 bottom-0 top-16 flex justify-center overflow-hidden">
+    <div className="absolute inset-x-0 bottom-20 top-16 flex justify-center overflow-hidden">
       <div className="flex w-full max-w-7xl snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-4 sm:snap-none sm:gap-4 sm:overflow-visible sm:px-6 lg:px-12">
         {slots.map((media, index) => (
           <div
@@ -156,7 +156,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
 
         <a
           href="#venue-live"
-          className="group mt-16 inline-flex items-center gap-4"
+          className="group absolute bottom-4 left-4 z-20 inline-flex items-center gap-4 sm:left-6 lg:left-12"
         >
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-stone-100 transition group-hover:border-white/60 group-hover:bg-white/8">
             <ArrowDown

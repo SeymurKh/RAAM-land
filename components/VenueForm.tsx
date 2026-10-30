@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { ListEditor } from "@/components/venue-form/ListEditor";
+import { CoachingEditor } from "@/components/venue-form/CoachingEditor";
 import { MenuEditor } from "@/components/venue-form/MenuEditor";
+import { ProductionEditor } from "@/components/venue-form/ProductionEditor";
 import {
   HeroColumnsEditor,
   ImageSlotsEditor,
@@ -294,7 +296,25 @@ export function VenueForm({ venue, onSaved }: VenueFormProps) {
         </p>
       </div>
 
-      {/* ─── 03 The Bar ─── */}
+      {/* ─── 03 Production ─── */}
+      <div className={sectionClass}>
+        <p className={sectionTitleClass}>Production</p>
+        <ProductionEditor
+          production={form.production}
+          onChange={(production) => updateField("production", production)}
+        />
+      </div>
+
+      {/* ─── 04 Coaching ─── */}
+      <div className={sectionClass}>
+        <p className={sectionTitleClass}>Coaching</p>
+        <CoachingEditor
+          coaching={form.coaching}
+          onChange={(coaching) => updateField("coaching", coaching)}
+        />
+      </div>
+
+      {/* ─── 05 The Bar ─── */}
       <div className={sectionClass}>
         <p className={sectionTitleClass}>The Bar</p>
         <div className="grid gap-4 sm:grid-cols-2">

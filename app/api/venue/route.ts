@@ -12,6 +12,13 @@ import type {
   VenueImage,
   VenuePageContent,
   VenuePlatform,
+  Course,
+  CoursePrice,
+  CoachingSection,
+  ProductionPackage,
+  ProductionSection,
+  ServiceGroup,
+  ServiceItem,
 } from "@/types/content";
 
 export async function GET() {
@@ -169,6 +176,110 @@ function normalizeMenu(value: unknown): MenuCategory[] {
     .filter((category) => category.title);
 }
 
+function normalizePackages(value: unknown): ProductionPackage[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((entry, index) => {
+      const pkg = (entry ?? {}) as Partial<ProductionPackage> & { bullets?: unknown };
+      return {
+        id: str(pkg.id) || `package-${index + 1}`,
+        title: str(pkg.title),
+        label: opt(pkg.label),
+        tagline: opt(pkg.tagline),
+        description: opt(pkg.description),
+        bullets: strList(pkg.bullets),
+        result: opt(pkg.result),
+        price: opt(pkg.price),
+        order: Number(pkg.order) || index + 1,
+      };
+    })
+    .filter((pkg) => pkg.title);
+}
+
+function normalizeServiceGroups(value: unknown): ServiceGroup[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((entry, index) => {
+      const group = (entry ?? {}) as Partial<ServiceGroup> & { items?: unknown };
+      const items: ServiceItem[] = Array.isArray(group.items)
+        ? group.items
+            .map((itemEntry, itemIndex) => {
+              const item = (itemEntry ?? {}) as Partial<ServiceItem>;
+              return {
+                id: str(item.id) || `service-${itemIndex + 1}`,
+                name: str(item.name),
+                price: str(item.price),
+                order: Number(item.order) || itemIndex + 1,
+              };
+            })
+            .filter((item) => item.name)
+        : [];
+      return {
+        id: str(group.id) || `group-${index + 1}`,
+        title: str(group.title),
+        order: Number(group.order) || index + 1,
+        items,
+      };
+    })
+    .filter((group) => group.title);
+}
+
+function normalizeCourses(value: unknown): Course[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((entry, index) => {
+      const course = (entry ?? {}) as Partial<Course> & { prices?: unknown };
+      const prices: CoursePrice[] = Array.isArray(course.prices)
+        ? course.prices
+            .map((priceEntry, priceIndex) => {
+              const price = (priceEntry ?? {}) as Partial<CoursePrice>;
+              return {
+                id: str(price.id) || `price-${priceIndex + 1}`,
+                label: str(price.label),
+                price: str(price.price),
+                order: Number(price.order) || priceIndex + 1,
+              };
+            })
+            .filter((price) => price.label)
+        : [];
+      return {
+        id: str(course.id) || `course-${index + 1}`,
+        title: str(course.title),
+        note: opt(course.note),
+        order: Number(course.order) || index + 1,
+        prices,
+      };
+    })
+    .filter((course) => course.title);
+}
+
+function normalizeProduction(value: unknown, current: ProductionSection): ProductionSection {
+  const section = (value ?? {}) as Partial<ProductionSection>;
+  return {
+    eyebrow: "eyebrow" in section ? str(section.eyebrow) : current.eyebrow,
+    title: "title" in section ? str(section.title) : current.title,
+    description:
+      "description" in section ? strList(section.description) : current.description,
+    packages:
+      "packages" in section ? normalizePackages(section.packages) : current.packages,
+    servicesTitle:
+      "servicesTitle" in section ? str(section.servicesTitle) : current.servicesTitle,
+    services:
+      "services" in section ? normalizeServiceGroups(section.services) : current.services,
+  };
+}
+
+function normalizeCoaching(value: unknown, current: CoachingSection): CoachingSection {
+  const section = (value ?? {}) as Partial<CoachingSection>;
+  return {
+    eyebrow: "eyebrow" in section ? str(section.eyebrow) : current.eyebrow,
+    title: "title" in section ? str(section.title) : current.title,
+    description:
+      "description" in section ? strList(section.description) : current.description,
+    courses:
+      "courses" in section ? normalizeCourses(section.courses) : current.courses,
+  };
+}
 function normalizeVenue(
   body: Partial<VenuePageContent>,
   current: VenuePageContent,
@@ -180,6 +291,10 @@ function normalizeVenue(
   if ("tags" in body) result.tags = strList(body.tags);
   if ("heroImage" in body) result.heroImage = opt(body.heroImage);
   if ("heroColumns" in body) result.heroColumns = normalizeHeroColumns(body.heroColumns);
+  if ("production" in body)
+    result.production = normalizeProduction(body.production, current.production);
+  if ("coaching" in body)
+    result.coaching = normalizeCoaching(body.coaching, current.coaching);
 
   // Секции обновляются пополево: непереданные поля сохраняются из current.
   // Иначе частичный PUT (например, только gallery) затирает тексты секции.

@@ -669,10 +669,10 @@
   ],
   "stream": {
     "isLive": false,
-    "disabled": false,
+    "disabled": true,
     "source": "twitch",
     "streamTitle": "RAAM Live Session",
-    "nextStreamDate": "2026-10-17T18:00:00.000Z",
+    "nextStreamDate": "2026-10-30T18:00:00.000Z",
     "twitchChannel": "RAAMLabel"
   },
   "venue": {
@@ -1109,7 +1109,244 @@
         "src": "/uploads/venue/venue-hero-col-3.mp4?v=1793101847167",
         "poster": "/uploads/venue/venue-hero-col-3-poster.jpg?v=1793101847167"
       }
-    ]
+    ],
+    "production": {
+      "eyebrow": "Production",
+      "title": "Production packages",
+      "description": [
+        "Record, edit and release your set - from a single-camera capture to a full multi-camera production."
+      ],
+      "packages": [
+        {
+          "id": "basic",
+          "title": "BASIC",
+          "label": "Essential",
+          "tagline": "Record it.",
+          "description": "A basic DJ set recording for those who need high-quality source material.",
+          "bullets": [
+            "DJ set audio recording",
+            "Single-camera video shoot",
+            "Raw files delivered",
+            "No video editing",
+            "Audio mastering"
+          ],
+          "result": "Result: an audio recording and raw video.",
+          "price": "100 AZN",
+          "order": 1
+        },
+        {
+          "id": "standard",
+          "title": "STANDARD",
+          "label": "Complete",
+          "tagline": "Record it. Finish it.",
+          "description": "A complete DJ set with post-production, ready to publish.",
+          "bullets": [
+            "DJ set audio recording",
+            "Single-camera video",
+            "Full DJ set editing",
+            "Audio mastering",
+            "5 final highlights in 16:9"
+          ],
+          "result": "Result: a finished audio set and edited video.",
+          "price": "200 AZN",
+          "order": 2
+        },
+        {
+          "id": "premium",
+          "title": "PREMIUM",
+          "label": "Maximum",
+          "tagline": "Record it. Produce it. Share it.",
+          "description": "Extended production with multi-camera shooting and extra content for promotion.",
+          "bullets": [
+            "DJ set audio recording",
+            "Multi-camera video shoot (2 - DJI & Insta360)",
+            "Full DJ set editing",
+            "Audio mastering",
+            "Curated short Reels editing (3)",
+            "Extra horizontal highlights 16:9 (5)"
+          ],
+          "result": "Result: a full set release and extra content for socials.",
+          "price": "400 AZN",
+          "order": 3
+        }
+      ],
+      "servicesTitle": "Production services (for custom)",
+      "services": [
+        {
+          "id": "audio-production",
+          "title": "Audio Production",
+          "order": 1,
+          "items": [
+            {
+              "id": "ap-1",
+              "name": "Audio Recording + Free Mastering",
+              "price": "20 AZN",
+              "order": 1
+            },
+            {
+              "id": "ap-2",
+              "name": "Audio Editing",
+              "price": "20 AZN",
+              "order": 2
+            }
+          ]
+        },
+        {
+          "id": "video-recording",
+          "title": "Video Recording",
+          "order": 2,
+          "items": [
+            {
+              "id": "vr-1",
+              "name": "Single-Camera Recording DJI",
+              "price": "50 AZN",
+              "order": 1
+            },
+            {
+              "id": "vr-2",
+              "name": "Single-Camera Recording Insta360",
+              "price": "100 AZN",
+              "order": 2
+            },
+            {
+              "id": "vr-3",
+              "name": "Single-Camera Recording Sony Alpha 7",
+              "price": "150 AZN",
+              "order": 3
+            },
+            {
+              "id": "vr-4",
+              "name": "Single-Camera Recording Sony FX3",
+              "price": "200 AZN",
+              "order": 4
+            },
+            {
+              "id": "vr-5",
+              "name": "Multi-Camera Recording",
+              "price": "Custom",
+              "order": 5
+            },
+            {
+              "id": "vr-6",
+              "name": "Backstage Reel + Editing",
+              "price": "50 AZN",
+              "order": 6
+            },
+            {
+              "id": "vr-7",
+              "name": "Backstage Photo + Editing",
+              "price": "50 AZN",
+              "order": 7
+            }
+          ]
+        },
+        {
+          "id": "video-editing",
+          "title": "Video Editing & Delivery",
+          "order": 3,
+          "items": [
+            {
+              "id": "ve-1",
+              "name": "Live Stream Delivery",
+              "price": "20 AZN",
+              "order": 1
+            },
+            {
+              "id": "ve-2",
+              "name": "Raw Footage Delivery",
+              "price": "30 AZN",
+              "order": 2
+            },
+            {
+              "id": "ve-3",
+              "name": "Full DJ Set Editing",
+              "price": "Custom",
+              "order": 3
+            },
+            {
+              "id": "ve-4",
+              "name": "Multi-Camera Editing",
+              "price": "Custom",
+              "order": 4
+            }
+          ]
+        },
+        {
+          "id": "short-form",
+          "title": "Short-Form & Highlight Content",
+          "order": 4,
+          "items": [
+            {
+              "id": "sf-1",
+              "name": "Instagram Reel Editing",
+              "price": "30 AZN",
+              "order": 1
+            },
+            {
+              "id": "sf-2",
+              "name": "Instagram Highlights or Custom Reel",
+              "price": "Custom",
+              "order": 2
+            },
+            {
+              "id": "sf-3",
+              "name": "Horizontal Highlight Clip (16:9)",
+              "price": "30 AZN",
+              "order": 3
+            },
+            {
+              "id": "sf-4",
+              "name": "Horizontal Highlight Custom Reel",
+              "price": "Custom",
+              "order": 4
+            }
+          ]
+        }
+      ]
+    },
+    "coaching": {
+      "eyebrow": "Coaching",
+      "title": "DJ Courses by RAAM",
+      "description": [
+        "Two types of courses - Basic and Pro, each with 8 lessons."
+      ],
+      "courses": [
+        {
+          "id": "basic-course",
+          "title": "Basic",
+          "note": "8 lessons",
+          "order": 1,
+          "prices": [
+            {
+              "id": "bc-1",
+              "label": "Group (max. 3 people)",
+              "price": "200 AZN",
+              "order": 1
+            },
+            {
+              "id": "bc-2",
+              "label": "Individual",
+              "price": "300 AZN",
+              "order": 2
+            }
+          ]
+        },
+        {
+          "id": "pro-course",
+          "title": "Pro",
+          "note": "8 lessons + practice",
+          "order": 2,
+          "prices": [
+            {
+              "id": "pc-1",
+              "label": "Individual",
+              "price": "400 AZN",
+              "order": 1
+            }
+          ]
+        }
+      ]
+    }
   },
   "media": [
     {

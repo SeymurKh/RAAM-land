@@ -44,7 +44,10 @@ export function VantaBackground() {
 
   const [vh, setVh] = useState<number | null>(null);
   const lastWidthRef = useRef<number>(0);
-  const [p5Loaded, setP5Loaded] = useState(false);
+  const [p5Loaded, setP5Loaded] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return Boolean((window as any).p5);
+  });
 
   // Fixed pixel height
   useEffect(() => {
@@ -67,20 +70,19 @@ export function VantaBackground() {
 
   // Dynamically load p5.js (non-blocking, only on pages that render VantaBackground)
   useEffect(() => {
-    if (reducedMotion) return;
-    if ((window as any).p5) {
-      setP5Loaded(true);
-      return;
-    }
+    if (reducedMotion || p5Loaded) return;
+    if ((window as any).p5) return;
+    if (document.querySelector("script[data-vanta-p5]")) return;
 
     const script = document.createElement("script");
     script.src = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js";
     script.async = true;
+    script.setAttribute("data-vanta-p5", "");
     script.onload = () => setP5Loaded(true);
     document.head.appendChild(script);
-  }, [reducedMotion]);
+  }, [reducedMotion, p5Loaded]);
 
-  const animate = useCallback(() => {
+  const animate = useCallback(function step() {
     if (!effectRef.current) return;
 
     if (isScrollingRef.current) {
@@ -117,7 +119,7 @@ export function VantaBackground() {
       velocityRef.current > 0.3;
 
     if (needsMore) {
-      rafRef.current = requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(step);
     } else {
       rafRef.current = 0;
     }
@@ -140,6 +142,14 @@ export function VantaBackground() {
         return;
       }
 
+      // trunk работает на p5, но общий класс vanta всегда проверяет ветку
+      // three.js и печатает [VANTA]-warn - глушим шум только на время init
+      const originalWarn = console.warn;
+      console.warn = (...args: unknown[]) => {
+        if (String(args[0]).includes("[VANTA]")) return;
+        originalWarn(...args);
+      };
+      try {
       effectRef.current = VANTA.default({
         el: vantaRef.current,
         mouseControls: true,
@@ -154,6 +164,9 @@ export function VantaBackground() {
         spacing: 2.0,
         chaos: BASE_CHAOS,
       });
+      } finally {
+        console.warn = originalWarn;
+      }
     }
 
     initVanta();

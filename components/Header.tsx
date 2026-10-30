@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,22 @@ export function Header({ modalOpen }: HeaderProps) {
   const [shown, setShown] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const pendingHashRef = useRef<string | null>(null);
+
+  // Прокрутка к якорю после перехода с другой страницы
+  useEffect(() => {
+    if (!pendingHashRef.current || pathname !== "/") return;
+    const id = pendingHashRef.current;
+    pendingHashRef.current = null;
+    const timer = setTimeout(() => {
+      document
+        .getElementById(id)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", "/#" + id);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -39,6 +55,24 @@ export function Header({ modalOpen }: HeaderProps) {
   useScrollLock(open);
 
   const close = () => setOpen(false);
+
+  // Якорные ссылки главной: на самой главной прокручиваем сами (повторный клик
+  // тоже работает), с другой страницы - переходим и прокручиваем после раскладки
+  const goToHash = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    event.preventDefault();
+    close();
+    const id = href.split("#")[1];
+    if (!id) return;
+    if (pathname === "/") {
+      window.history.replaceState(null, "", "/#" + id);
+      document
+        .getElementById(id)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      pendingHashRef.current = id;
+      router.push("/");
+    }
+  };
 
   const shouldHide = modalOpen;
 
@@ -81,6 +115,7 @@ export function Header({ modalOpen }: HeaderProps) {
             <div className="flex items-center gap-2 sm:gap-2.5">
               <Link
                 href="/#live"
+                onClick={(event) => goToHash(event, "/#live")}
                 aria-label="Live"
                 className="inline-flex items-center justify-center rounded-full transition-transform duration-500 hover:scale-110"
               >
@@ -194,7 +229,7 @@ export function Header({ modalOpen }: HeaderProps) {
                   >
                     <Link
                       href={item.href}
-                      onClick={close}
+                      onClick={(event) => goToHash(event, item.href)}
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
                         "block border-b border-white/10 py-5 text-4xl font-semibold uppercase leading-none tracking-normal sm:text-5xl",
@@ -216,7 +251,7 @@ export function Header({ modalOpen }: HeaderProps) {
                 <div className="flex items-center gap-2.5">
                   <Link
                     href="/#live"
-                    onClick={close}
+                    onClick={(event) => goToHash(event, "/#live")}
                     aria-label="Live"
                     className="inline-flex items-center justify-center rounded-full transition-transform duration-500 hover:scale-110"
                   >

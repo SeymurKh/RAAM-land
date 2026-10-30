@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionSkeleton } from "@/components/SectionSkeleton";
@@ -22,6 +22,9 @@ interface LiveStatus {
 export function StreamPlayer() {
   const [config, setConfig] = useState<StreamConfig | null>(null);
   const [liveStatus, setLiveStatus] = useState<LiveStatus | null>(null);
+  const isLive = liveStatus?.isLive ?? false;
+  const playerWrapRef = useRef<HTMLDivElement>(null);
+  const [playerVisible, setPlayerVisible] = useState(false);
 
   useEffect(() => {
     fetch("/api/stream")
@@ -33,12 +36,30 @@ export function StreamPlayer() {
       .then((data) => setLiveStatus(data));
   }, []);
 
+  // Монтируем плеер только когда он виден во вьюпорте: Twitch требует
+  // видимости для автозапуска (иначе - ошибка встраивания в консоли)
+  useEffect(() => {
+    if (!isLive) return;
+    const el = playerWrapRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setPlayerVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isLive]);
+
   if (!config) {
     return <SectionSkeleton className="min-h-80 sm:min-h-125" />;
   }
 
   const { nextStreamDate, streamTitle } = config;
-  const isLive = liveStatus?.isLive ?? false;
   const liveVideoId = liveStatus?.videoId;
   const liveTitle = liveStatus?.title ?? streamTitle;
   const liveSource = liveStatus?.source;
@@ -58,14 +79,16 @@ export function StreamPlayer() {
     <div className="mx-auto w-full max-w-4xl overflow-hidden rounded-[1.75rem] border border-white/10">
       {isLive && embedUrl ? (
         <MotionReveal>
-          <div className="relative aspect-video w-full bg-black">
-            <iframe
-              src={embedUrl}
-              title={liveTitle}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="absolute inset-0 h-full w-full"
-            />
+          <div ref={playerWrapRef} className="relative aspect-video w-full bg-black">
+            {playerVisible ? (
+              <iframe
+                src={embedUrl}
+                title={liveTitle}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full"
+              />
+            ) : null}
           </div>
           <div className="flex items-center gap-3 bg-[#0b0a09]/92 px-6 py-4">
             <span className="relative flex h-3 w-3">

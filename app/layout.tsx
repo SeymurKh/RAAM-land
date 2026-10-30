@@ -50,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="relative h-full antialiased">
+    <html lang="en" className="relative h-full antialiased" data-scroll-behavior="smooth">
       <body className="min-h-full bg-black text-stone-50">
         <script
           dangerouslySetInnerHTML={{

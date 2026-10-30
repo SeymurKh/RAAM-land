@@ -72,6 +72,11 @@ async function ensureDbShape(data: DbData): Promise<DbData> {
 
   // Легаси: поле logo удалено из модели — вычищаем остатки старых db.json
   delete (data.venue as { logo?: string }).logo;
+  if (!data.venue.production || !data.venue.coaching) {
+    const { seedVenue } = await import("@/data/venue");
+    if (!data.venue.production) data.venue.production = seedVenue.production;
+    if (!data.venue.coaching) data.venue.coaching = seedVenue.coaching;
+  }
   if (!Array.isArray(data.media)) {
     data.media = [];
   }

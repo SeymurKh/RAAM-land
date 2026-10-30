@@ -6,7 +6,9 @@ import { ScrollReturnIndicator } from "@/components/ScrollReturnIndicator";
 import { SiteFooter } from "@/components/SiteFooter";
 import { VenueBarSection } from "@/sections/venue/VenueBarSection";
 import { VenueContacts } from "@/sections/venue/VenueContacts";
+import { VenueCoachingSection } from "@/sections/venue/VenueCoachingSection";
 import { VenueEventsSection } from "@/sections/venue/VenueEventsSection";
+import { VenueProductionSection } from "@/sections/venue/VenueProductionSection";
 import { VenueHero } from "@/sections/venue/VenueHero";
 import { VenueLiveSection } from "@/sections/venue/VenueLiveSection";
 import type { VenuePageContent } from "@/types/content";
@@ -36,6 +38,8 @@ export function VenuePageShell() {
             <VenueHero venue={venue} />
             <VenueLiveSection live={venue.live} />
             <VenueEventsSection events={venue.events} />
+            <VenueProductionSection production={venue.production} />
+            <VenueCoachingSection coaching={venue.coaching} />
             <VenueBarSection bar={venue.bar} />
             <VenueContacts contacts={venue.contacts} />
           </>

@@ -39,7 +39,7 @@ function SoundWave({ className }: { className?: string }) {
 /** Одна колонка фона 9:16: фото, видео или градиент-заглушка. */
 function HeroColumn({ media }: { media?: HeroMedia }) {
   return (
-    <div className="relative aspect-[9/16] w-full max-h-full shrink-0 snap-center overflow-hidden rounded-2xl border border-white/10 sm:rounded-3xl">
+    <div className="relative aspect-[9/16] w-full max-h-full shrink-0 snap-center overflow-hidden rounded-2xl border border-[#E82919]/55 sm:rounded-3xl">
       {media?.kind === "video" ? (
         <video
           src={media.src}
@@ -72,6 +72,12 @@ function HeroColumns({ columns }: { columns: HeroMedia[] }) {
 
   return (
     <div className="absolute inset-x-0 bottom-20 top-16 flex justify-center overflow-hidden">
+      {/* Красное свечение позади колонок в трёх местах */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[16%] top-[26%] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(232,41,25,0.55),transparent_65%)] blur-3xl" />
+        <div className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(232,41,25,0.5),transparent_65%)] blur-3xl" />
+        <div className="absolute bottom-[16%] right-[12%] h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(232,41,25,0.55),transparent_65%)] blur-3xl" />
+      </div>
       <div className="flex w-full max-w-7xl snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-4 sm:snap-none sm:gap-4 sm:overflow-visible sm:px-6 lg:px-12">
         {slots.map((media, index) => (
           <div

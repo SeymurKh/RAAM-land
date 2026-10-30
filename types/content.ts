@@ -107,6 +107,62 @@ export interface MenuCategory {
   banner?: boolean;
 }
 
+export interface ProductionPackage {
+  id: string;
+  title: string;
+  label?: string;
+  tagline?: string;
+  description?: string;
+  bullets: string[];
+  result?: string;
+  price?: string;
+  order: number;
+}
+
+export interface ServiceItem {
+  id: string;
+  name: string;
+  price: string;
+  order: number;
+}
+
+export interface ServiceGroup {
+  id: string;
+  title: string;
+  order: number;
+  items: ServiceItem[];
+}
+
+export interface CoursePrice {
+  id: string;
+  label: string;
+  price: string;
+  order: number;
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  note?: string;
+  order: number;
+  prices: CoursePrice[];
+}
+
+export interface ProductionSection {
+  eyebrow: string;
+  title: string;
+  description: string[];
+  packages: ProductionPackage[];
+  servicesTitle: string;
+  services: ServiceGroup[];
+}
+
+export interface CoachingSection {
+  eyebrow: string;
+  title: string;
+  description: string[];
+  courses: Course[];
+}
 export interface VenueImage {
   id: string;
   src: string;
@@ -162,6 +218,8 @@ export interface VenuePageContent {
     images: VenueImage[];
     menu: MenuCategory[];
   };
+  production: ProductionSection;
+  coaching: CoachingSection;
   contacts: {
     address: string;
     hours: string;

@@ -39,7 +39,7 @@ function SoundWave({ className }: { className?: string }) {
 /** Одна колонка фона 9:16: фото, видео или градиент-заглушка. */
 function HeroColumn({ media }: { media?: HeroMedia }) {
   return (
-    <div className="relative aspect-[9/16] w-full max-h-full shrink-0 snap-center overflow-hidden rounded-2xl border border-[#E82919]/55 sm:rounded-3xl">
+    <div className="relative aspect-auto h-[42vh] w-full shrink-0 snap-center overflow-hidden rounded-2xl border border-[#E82919]/55 sm:aspect-[9/16] sm:h-auto sm:max-h-full sm:rounded-3xl">
       {media?.kind === "video" ? (
         <video
           src={media.src}
@@ -71,7 +71,7 @@ function HeroColumns({ columns }: { columns: HeroMedia[] }) {
   const slots: (HeroMedia | undefined)[] = [0, 1, 2].map((i) => columns[i]);
 
   return (
-    <div className="absolute inset-x-0 bottom-20 top-16 flex justify-center overflow-hidden">
+    <div className="relative flex w-full justify-center overflow-hidden px-3 pb-2 pt-16 sm:absolute sm:inset-x-0 sm:bottom-20 sm:top-16 sm:px-0 sm:pb-0 sm:pt-0">
       {/* Красное свечение позади колонок в трёх местах */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[16%] top-[26%] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(232,41,25,0.55),transparent_65%)] blur-3xl" />
@@ -104,7 +104,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
   return (
     <section
       id="venue-hero"
-      className="relative isolate flex min-h-[100svh] w-full items-end overflow-hidden"
+      className="relative isolate flex min-h-[100svh] w-full flex-col items-stretch overflow-hidden sm:flex-row sm:items-end"
     >
       {/* Background: 3 колонки 9:16 (фото/видео), фолбэк — heroImage или градиент */}
       {venue.heroColumns.length > 0 ? (
@@ -130,7 +130,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
       {/* Content */}
       <MotionReveal
         direction="none"
-        className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 pt-28 sm:px-6 sm:pb-24 sm:pt-32 lg:px-12"
+        className="relative z-10 mx-auto w-full min-w-0 max-w-7xl px-5 pb-16 pt-8 sm:px-6 sm:pb-24 sm:pt-32 lg:px-12"
       >
         <h1 className="font-bebas text-[clamp(3.2rem,10vw,8.5rem)] leading-[0.86] tracking-wide text-stone-50">
           <span className="inline-flex flex-wrap items-center gap-x-5 gap-y-2">
@@ -142,7 +142,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
           ) : null}
         </h1>
 
-        <p className="mt-6 max-w-xl text-base uppercase leading-7 tracking-[0.06em] text-stone-100/85 sm:text-lg">
+        <p className="mt-6 max-w-xl break-words text-base uppercase leading-7 tracking-[0.06em] text-stone-100/85 sm:text-lg">
           {venue.headline}
         </p>
 
@@ -162,7 +162,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
 
         <a
           href="#venue-live"
-          className="group absolute bottom-4 left-4 z-20 inline-flex items-center gap-4 sm:left-6 lg:left-12"
+          className="group mt-8 inline-flex items-center gap-4 sm:absolute sm:bottom-4 sm:left-6 sm:z-20 lg:left-12"
         >
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/25 text-stone-100 transition group-hover:border-white/60 group-hover:bg-white/8">
             <ArrowDown

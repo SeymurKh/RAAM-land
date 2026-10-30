@@ -682,7 +682,8 @@
       "Streaming",
       "Music",
       "Events",
-      "Production"
+      "Production",
+      "Coaching"
     ],
     "live": {
       "eyebrow": "Live Streaming",
@@ -1371,6 +1372,14 @@
       "kind": "audio",
       "provider": "spotify",
       "url": "https://open.spotify.com/artist/4aBVLrgNVCSnksgrJf0Had"
+    },
+    {
+      "id": "https-soundcloud-com-melodicdancemusic-around-us-gai-barone-",
+      "title": "Shayyo on SoundCloud",
+      "date": "2026-10-30",
+      "kind": "audio",
+      "provider": "soundcloud",
+      "url": "https://soundcloud.com/shayyomusic"
     }
   ]
 }

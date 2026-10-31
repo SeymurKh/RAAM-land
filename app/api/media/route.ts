@@ -6,7 +6,11 @@ import {
   normalizeMediaItem,
   slugifyMediaId,
 } from "@/lib/media";
-import { finalizeMediaFiles } from "@/lib/media-files";
+import {
+  collectMediaFileRefs,
+  finalizeMediaFiles,
+  removeUnreferencedMediaFiles,
+} from "@/lib/media-files";
 import type { MediaItem } from "@/types/content";
 
 export async function GET(request: NextRequest) {
@@ -64,5 +68,6 @@ export async function POST(request: NextRequest) {
   const item = await createMedia(
     normalizeMediaItem({ ...body, id, url: files.url, image: files.image }),
   );
+  await removeUnreferencedMediaFiles(collectMediaFileRefs(await getMedia()));
   return NextResponse.json(item, { status: 201 });
 }

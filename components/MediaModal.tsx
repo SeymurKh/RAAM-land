@@ -85,7 +85,7 @@ export function MediaModal({ item, onClose }: MediaModalProps) {
                   poster={item.image}
                   controls
                   playsInline
-                  className="w-full rounded-xl border border-white/10"
+                  className="mx-auto max-h-[68vh] w-auto max-w-full rounded-xl border border-white/10"
                 />
               ) : (
                 <div>

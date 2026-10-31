@@ -730,16 +730,16 @@
       },
       "gallery": [
         {
-          "id": "img-1793106834726",
-          "src": "/uploads/venue/venue-img-1793106834726.jpg?v=1793106834903"
+          "id": "img-1793441752800",
+          "src": "/uploads/venue/venue-img-1793441752800.jpg?v=1793441753184"
         },
         {
-          "id": "img-1793106839319",
-          "src": "/uploads/venue/venue-img-1793106839319.jpg?v=1793106839513"
+          "id": "img-1793443883106",
+          "src": "/uploads/venue/venue-img-1793443883106.jpg?v=1793443883429"
         },
         {
-          "id": "img-1793106843940",
-          "src": "/uploads/venue/venue-img-1793106843940.jpg?v=1793106844097"
+          "id": "img-1793444349473",
+          "src": "/uploads/venue/venue-img-1793444349473.jpg?v=1793444349691"
         }
       ]
     },
@@ -749,7 +749,16 @@
       "description": [
         "Our bartender is one more reason to rewatch the stream you were part of."
       ],
-      "images": [],
+      "images": [
+        {
+          "id": "img-1793447200980",
+          "src": "/uploads/venue/venue-img-1793447200980.jpg?v=1793447201338"
+        },
+        {
+          "id": "img-1793447228356",
+          "src": "/uploads/venue/venue-img-1793447228356.jpg?v=1793447228541"
+        }
+      ],
       "menu": [
         {
           "id": "beer",
@@ -1351,21 +1360,6 @@
   },
   "media": [
     {
-      "id": "full-moon-party-tivat",
-      "title": "Full Moon Party (Tivat)",
-      "date": "2026-10-04",
-      "kind": "photo",
-      "image": "/uploads/media/new-media-filler-photo.jpg"
-    },
-    {
-      "id": "grape-grooves-ep-6-narahat",
-      "title": "Grape Grooves Ep.6 - Narahat",
-      "date": "2026-09-20",
-      "kind": "video",
-      "provider": "youtube",
-      "url": "https://youtu.be/e-EZITWzaDc"
-    },
-    {
       "id": "shayyo-on-spotify",
       "title": "Shayyo on Spotify",
       "date": "2026-09-06",
@@ -1380,6 +1374,14 @@
       "kind": "audio",
       "provider": "soundcloud",
       "url": "https://soundcloud.com/shayyomusic"
+    },
+    {
+      "id": "the-sound-is-already-here",
+      "title": "The sound is already here",
+      "date": "2026-06-25",
+      "kind": "video",
+      "url": "/uploads/media/the-sound-is-already-here.mp4?v=1793444856557",
+      "image": "/uploads/media/the-sound-is-already-here-poster.jpg?v=1793444856557"
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { unlink } from "fs/promises";
+import { readdir, stat, unlink } from "fs/promises";
 import { join, normalize } from "path";
 import { verifyToken } from "@/lib/auth";
 import { getVenue, updateVenue } from "@/lib/db";
@@ -65,6 +65,34 @@ async function removeOrphanedFiles(
   }
 }
 
+/** Удаляет загрузки uploads/venue, не упомянутые в контенте (в т.ч. отменённые). */
+async function removeUnreferencedVenueFiles(keep: Set<string>): Promise<void> {
+  const dir = join(UPLOADS_ROOT, "uploads", "venue");
+  let entries: string[];
+  try {
+    entries = await readdir(dir);
+  } catch {
+    return;
+  }
+  for (const name of entries) {
+    if (!name.startsWith("venue-img-") && !name.startsWith("venue-hero")) {
+      continue;
+    }
+    const url = "/uploads/venue/" + name;
+    if (keep.has(url)) continue;
+    const filePath = join(dir, name);
+    try {
+      const info = await stat(filePath);
+      // Свежие загрузки (возможно, ещё не сохранённые) не трогаем
+      if (Date.now() - info.mtimeMs < 5 * 60 * 1000) continue;
+      await unlink(filePath);
+      console.log("[PUT /api/venue] Removed unreferenced upload:", filePath);
+    } catch {
+      // уже удалён
+    }
+  }
+}
+
 export async function PUT(request: NextRequest) {
   const token = request.cookies.get("admin_token")?.value;
   if (!token || !(await verifyToken(token))) {
@@ -76,6 +104,7 @@ export async function PUT(request: NextRequest) {
   const before = collectVenueFiles(current);
   const venue = await updateVenue(normalizeVenue(body, current));
   await removeOrphanedFiles(before, collectVenueFiles(venue));
+  await removeUnreferencedVenueFiles(collectVenueFiles(venue));
   return NextResponse.json(venue);
 }
 

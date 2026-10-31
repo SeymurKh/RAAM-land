@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
-import { deleteMedia, getMediaItem, updateMedia } from "@/lib/db";
+import { deleteMedia, getMedia, getMediaItem, updateMedia } from "@/lib/db";
 import { cleanupTempFiles } from "@/lib/uploads";
 import { detectMediaKind, normalizeMediaItem } from "@/lib/media";
 import {
+  collectMediaFileRefs,
   finalizeMediaFiles,
   mediaUploadDir,
   removeMediaFiles,
+  removeUnreferencedMediaFiles,
 } from "@/lib/media-files";
 import type { MediaItem } from "@/types/content";
 
@@ -61,6 +63,7 @@ export async function PUT(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  await removeUnreferencedMediaFiles(collectMediaFileRefs(await getMedia()));
   return NextResponse.json(item);
 }
 
@@ -87,5 +90,6 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  await removeUnreferencedMediaFiles(collectMediaFileRefs(await getMedia()));
   return NextResponse.json({ success: true });
 }

@@ -63,13 +63,23 @@ export function VenueEventsSection({ events }: VenueEventsSectionProps) {
         {/* Photo collage */}
         <MotionReveal delay={0.1}>
           {events.gallery.length > 0 ? (
-            <div className="grid h-[360px] grid-cols-2 grid-rows-2 gap-3 sm:h-[460px]">
+            <div
+              className={
+                "grid h-[360px] gap-3 sm:h-[460px] " +
+                (events.gallery.length === 1
+                  ? "grid-cols-1"
+                  : events.gallery.length === 2
+                    ? "grid-cols-2"
+                    : "grid-cols-2 grid-rows-2")
+              }
+            >
               {events.gallery.slice(0, 3).map((image, index) => (
                 <div
                   key={image.id}
-                  className={`relative overflow-hidden rounded-2xl border border-white/10 ${
-                    index === 0 ? "row-span-2" : ""
-                  }`}
+                  className={
+                    "relative overflow-hidden rounded-2xl border border-white/10" +
+                    (events.gallery.length >= 3 && index === 0 ? " row-span-2" : "")
+                  }
                 >
                   <Image
                     src={image.src}

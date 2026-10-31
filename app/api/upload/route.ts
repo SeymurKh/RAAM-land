@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const maxBytes = isVideo ? VIDEO_MAX_BYTES : isAudio ? AUDIO_MAX_BYTES : 5 * 1024 * 1024;
+  const maxBytes = isVideo ? VIDEO_MAX_BYTES : isAudio ? AUDIO_MAX_BYTES : 15 * 1024 * 1024;
   if (file.size > maxBytes) {
     console.error("[upload] File too large:", file.size);
     return NextResponse.json(
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
           ? "Video size must be under 100MB"
           : isAudio
             ? "Audio size must be under 50MB"
-            : "File size must be under 5MB",
+            : "File size must be under 15MB",
       },
       { status: 400 },
     );

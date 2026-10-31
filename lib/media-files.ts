@@ -1,6 +1,7 @@
-import { rename, unlink } from "fs/promises";
+import { readdir, rename, stat, unlink } from "fs/promises";
 import { join } from "path";
 import { cleanUploadUrl, UPLOAD_EXTENSIONS } from "@/lib/uploads";
+import type { MediaItem } from "@/types/content";
 
 const MEDIA_FILE_EXTENSIONS = [
   ...UPLOAD_EXTENSIONS,
@@ -81,4 +82,41 @@ export async function finalizeMediaFiles(
     }
   }
   return out;
+}
+
+/** Очищенные (?v= отброшен) файловые ссылки всех записей медиа. */
+export function collectMediaFileRefs(items: MediaItem[]): Set<string> {
+  const refs = new Set<string>();
+  for (const item of items) {
+    for (const url of [item.url, item.image]) {
+      const clean = cleanUploadUrl(url);
+      if (clean) refs.add(clean);
+    }
+  }
+  return refs;
+}
+
+/** Удаляет загрузки uploads/media, не упомянутые ни в одной записи (в т.ч. отменённые). */
+export async function removeUnreferencedMediaFiles(keep: Set<string>): Promise<void> {
+  const dir = mediaUploadDir();
+  let entries: string[];
+  try {
+    entries = await readdir(dir);
+  } catch {
+    return;
+  }
+  for (const name of entries) {
+    const url = "/uploads/media/" + name;
+    if (keep.has(url)) continue;
+    const filePath = join(dir, name);
+    try {
+      const info = await stat(filePath);
+      // Свежие загрузки (возможно, ещё не сохранённые) не трогаем
+      if (Date.now() - info.mtimeMs < 5 * 60 * 1000) continue;
+      await unlink(filePath);
+      console.log("[media] Removed unreferenced upload:", filePath);
+    } catch {
+      // уже удалён
+    }
+  }
 }

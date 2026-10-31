@@ -146,7 +146,7 @@ export function MediaForm({ mode, item }: MediaFormProps) {
           className={inputClass}
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          placeholder="Grape Grooves Ep.6 - Narahat"
+          placeholder="Title"
           required
         />
       </div>
@@ -169,7 +169,7 @@ export function MediaForm({ mode, item }: MediaFormProps) {
             className={inputClass}
             value={content}
             onChange={(event) => setContent(event.target.value)}
-            placeholder="https://youtu.be/... or upload a file"
+            placeholder="Link or upload a file"
           />
           <input
             ref={fileInputRef}

@@ -4,20 +4,26 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import type { HeroMedia, VenueImage } from "@/types/content";
 
-async function uploadVenueImage(file: File, key: string): Promise<string | null> {
+async function uploadVenueImage(
+  file: File,
+  key: string,
+): Promise<{ url: string | null; error: string | null }> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("venueKey", key);
   try {
     const response = await fetch("/api/upload", { method: "POST", body: formData });
+    const data = await response.json().catch(() => ({}));
     if (response.ok) {
-      const data = await response.json();
-      return `${data.url}?v=${Date.now()}`;
+      return { url: `${data.url}?v=${Date.now()}`, error: null };
     }
+    return {
+      url: null,
+      error: (data && data.error) || "Upload failed",
+    };
   } catch {
-    // Upload failed silently
+    return { url: null, error: "Upload failed - check your connection" };
   }
-  return null;
 }
 
 const labelClass =
@@ -38,14 +44,17 @@ export function VenueImageUpload({
   onChange,
 }: VenueImageUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const url = await uploadVenueImage(file, imageKey);
-    if (url) onChange(url);
+    setError(null);
+    const result = await uploadVenueImage(file, imageKey);
+    if (result.url) onChange(result.url);
+    else setError(result.error);
     setUploading(false);
   }
 
@@ -78,6 +87,7 @@ export function VenueImageUpload({
           </button>
         ) : null}
       </div>
+      {error ? <p className="mt-2 text-xs text-red-400">{error}</p> : null}
       {value ? (
         <div className="relative mt-3 h-28 w-full max-w-xs overflow-hidden rounded-xl border border-white/10">
           <Image
@@ -108,6 +118,7 @@ export function ImageSlotsEditor({
   max = 8,
 }: ImageSlotsEditorProps) {
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
@@ -115,9 +126,12 @@ export function ImageSlotsEditor({
     if (!file) return;
     const key = `img-${Date.now()}`;
     setUploading(true);
-    const url = await uploadVenueImage(file, key);
-    if (url) {
-      onChange([...images, { id: key, src: url }]);
+    setError(null);
+    const result = await uploadVenueImage(file, key);
+    if (result.url) {
+      onChange([...images, { id: key, src: result.url }]);
+    } else {
+      setError(result.error);
     }
     setUploading(false);
     event.target.value = "";
@@ -145,6 +159,7 @@ export function ImageSlotsEditor({
         onChange={handleUpload}
         className="hidden"
       />
+      {error ? <p className="mt-2 text-xs text-red-400">{error}</p> : null}
       {images.length > 0 ? (
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {images.map((image, index) => (

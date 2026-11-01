@@ -27,6 +27,7 @@ export function Header({ modalOpen }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const pendingHashRef = useRef<string | null>(null);
+  const pendingTopRef = useRef(false);
 
   // Прокрутка к якорю после перехода с другой страницы
   useEffect(() => {
@@ -38,6 +39,17 @@ export function Header({ modalOpen }: HeaderProps) {
         .getElementById(id)
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
       window.history.replaceState(null, "", "/#" + id);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
+  // Прокрутка наверх после перехода на главную с другой страницы
+  useEffect(() => {
+    if (!pendingTopRef.current || pathname !== "/") return;
+    pendingTopRef.current = false;
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.history.replaceState(null, "", "/");
     }, 400);
     return () => clearTimeout(timer);
   }, [pathname]);
@@ -74,6 +86,19 @@ export function Header({ modalOpen }: HeaderProps) {
     }
   };
 
+  // Переход на главную/наверх: повторный клик тоже работает
+  const goToTop = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    close();
+    if (pathname === "/") {
+      window.history.replaceState(null, "", "/");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      pendingTopRef.current = true;
+      router.push("/");
+    }
+  };
+
   const shouldHide = modalOpen;
 
   return (
@@ -92,7 +117,12 @@ export function Header({ modalOpen }: HeaderProps) {
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-black/30 px-4 py-3 shadow-[0_16px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
           <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center" aria-label="RAAM home">
+            <Link
+              href="/"
+              onClick={goToTop}
+              className="flex items-center"
+              aria-label="RAAM home"
+            >
               <Image
                 src="/assets/images/logoheader.png"
                 alt="RAAM"
@@ -132,7 +162,11 @@ export function Header({ modalOpen }: HeaderProps) {
                 href="/radio-stream-bar"
                 aria-label="Radio Stream Bar"
                 aria-current={pathname === "/radio-stream-bar" ? "page" : undefined}
-                className="inline-flex items-center transition duration-500 hover:opacity-75"
+                className={cn(
+                  "inline-flex items-center rounded-full transition duration-500 hover:opacity-75",
+                  pathname === "/radio-stream-bar" &&
+                    "border border-[#E82919] px-2.5 py-1",
+                )}
               >
                 <Image
                   src="/assets/images/rsb-wordmark.png"
@@ -149,23 +183,16 @@ export function Header({ modalOpen }: HeaderProps) {
             </div>
 
             <div className="hidden items-center gap-3 lg:flex">
-              {navItems.map((item) => {
-                const isActive = item.href === pathname;
-                return (
-                  <FluidButton
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive ? "page" : undefined}
-                    className={cn(
-                      "min-w-30 text-center text-xs tracking-[0.2em]",
-                      isActive &&
-                        "border-[#E82919]/60 text-white shadow-[0_0_28px_rgba(232,41,25,0.22)]",
-                    )}
-                  >
-                    {item.label}
-                  </FluidButton>
-                );
-              })}
+              {navItems.map((item) => (
+                <FluidButton
+                  key={item.href}
+                  href={item.href}
+                  onClick={(event) => goToHash(event, item.href)}
+                  className="min-w-30 text-center text-xs tracking-[0.2em]"
+                >
+                  {item.label}
+                </FluidButton>
+              ))}
             </div>
 
             <button
@@ -189,7 +216,7 @@ export function Header({ modalOpen }: HeaderProps) {
             className="fixed inset-0 z-60 bg-black/88 backdrop-blur-2xl lg:hidden"
           >
             <div className="flex items-center justify-between px-5 py-5">
-              <Link href="/" onClick={close} className="flex items-center gap-3">
+              <Link href="/" onClick={goToTop} className="flex items-center gap-3">
                 <Image
                   src="/assets/images/logoheader.png"
                   alt="RAAM"
@@ -217,30 +244,23 @@ export function Header({ modalOpen }: HeaderProps) {
               }}
               className="flex h-[calc(100vh-84px)] flex-col justify-center gap-5 px-6"
             >
-              {navItems.map((item) => {
-                const isActive = item.href === pathname;
-                return (
-                  <motion.div
-                    key={item.href}
-                    variants={{
-                      hidden: { opacity: 0, y: 24 },
-                      show: { opacity: 1, y: 0 },
-                    }}
+              {navItems.map((item) => (
+                <motion.div
+                  key={item.href}
+                  variants={{
+                    hidden: { opacity: 0, y: 24 },
+                    show: { opacity: 1, y: 0 },
+                  }}
+                >
+                  <Link
+                    href={item.href}
+                    onClick={(event) => goToHash(event, item.href)}
+                    className="block border-b border-white/10 py-5 text-4xl font-semibold uppercase leading-none tracking-normal sm:text-5xl text-stone-100"
                   >
-                    <Link
-                      href={item.href}
-                      onClick={(event) => goToHash(event, item.href)}
-                      aria-current={isActive ? "page" : undefined}
-                      className={cn(
-                        "block border-b border-white/10 py-5 text-4xl font-semibold uppercase leading-none tracking-normal sm:text-5xl",
-                        isActive ? "text-[#E82919]" : "text-stone-100",
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                );
-              })}
+                    {item.label}
+                  </Link>
+                </motion.div>
+              ))}
               <motion.div
                 variants={{
                   hidden: { opacity: 0, y: 24 },
@@ -271,7 +291,11 @@ export function Header({ modalOpen }: HeaderProps) {
                     aria-current={
                       pathname === "/radio-stream-bar" ? "page" : undefined
                     }
-                    className="inline-flex items-center transition duration-500 hover:opacity-75"
+                    className={cn(
+                      "inline-flex items-center rounded-full transition duration-500 hover:opacity-75",
+                      pathname === "/radio-stream-bar" &&
+                        "border border-[#E82919] px-2.5 py-1",
+                    )}
                   >
                     <Image
                       src="/assets/images/rsb-wordmark.png"

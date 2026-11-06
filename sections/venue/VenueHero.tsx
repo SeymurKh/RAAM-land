@@ -133,7 +133,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
         className="relative z-10 mx-auto w-full min-w-0 max-w-7xl px-5 pb-16 pt-8 sm:px-6 sm:pb-24 sm:pt-32 lg:px-12"
       >
         <h1 className="font-bebas text-[clamp(3.2rem,10vw,8.5rem)] leading-[0.86] tracking-wide text-stone-50">
-          <span className="inline-flex flex-wrap items-center gap-x-5 gap-y-2">
+          <span className="inline-flex flex-wrap items-center gap-x-[0.1em] gap-y-2 sm:gap-x-[0.16em]">
             {firstWord.toUpperCase()}
             <SoundWave className="h-7 w-28 text-[#E82919] sm:h-9 sm:w-40" />
           </span>

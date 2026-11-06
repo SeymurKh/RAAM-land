@@ -1,13 +1,60 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionFrame } from "@/components/SectionFrame";
 import { YouTubeModal } from "@/components/YouTubeModal";
-import { parseImagePosition } from "@/lib/utils";
+import { cn, parseImagePosition } from "@/lib/utils";
 import type { Project } from "@/types/content";
+
+/**
+ * Описание проекта. Скролл с fade-маской — только на мобиле (max-sm), где текст
+ * не влезает в карточку; на десктопе текст идёт целиком, без overflow, поэтому
+ * колесо мыши над текстом скроллит страницу как обычно. Вертикальный жест на
+ * мобиле не переключает слайды — см. swipe-хендлеры сцены: свайп засчитывается
+ * только для горизонтально-доминантных жестов.
+ */
+function ScrollableDescription({ paragraphs }: { paragraphs: string[] }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [overflowing, setOverflowing] = useState(false);
+
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+
+    const check = () => {
+      setOverflowing(scroller.scrollHeight > scroller.clientHeight + 1);
+    };
+    check();
+
+    // Перенос строк (контент) и вьюпорт (max-h) меняются — следим за обоими
+    const observer = new ResizeObserver(check);
+    observer.observe(scroller);
+    const content = scroller.firstElementChild;
+    if (content) observer.observe(content);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={scrollRef}
+      className={cn(
+        "scroll-hide max-sm:max-h-44 max-sm:overflow-y-auto max-sm:overscroll-contain",
+        overflowing &&
+          "[-webkit-mask-image:linear-gradient(to_bottom,#000_75%,transparent)] [mask-image:linear-gradient(to_bottom,#000_75%,transparent)]",
+      )}
+      style={{ touchAction: "pan-y" }}
+    >
+      <div className="space-y-3 text-base leading-8 text-stone-100/72 sm:text-lg sm:leading-9">
+        {paragraphs.map((p) => (
+          <p key={p}>{p}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function ProjectsSection() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -94,6 +141,7 @@ export function ProjectsSection() {
               onPointerDown={(e) => {
                 const el = e.currentTarget;
                 el.dataset.swipeX = String(e.clientX);
+                el.dataset.swipeY = String(e.clientY);
               }}
               onPointerMove={(e) => {
                 const el = e.currentTarget;
@@ -102,10 +150,21 @@ export function ProjectsSection() {
               onPointerUp={(e) => {
                 const el = e.currentTarget;
                 const startX = Number(el.dataset.swipeX || 0);
-                const delta = e.clientX - startX;
+                const startY = Number(el.dataset.swipeY || 0);
                 el.dataset.swipeX = "";
-                if (delta < -60) goTo(1);
-                if (delta > 60) goTo(-1);
+                el.dataset.swipeY = "";
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                // Свайп засчитываем только для горизонтально-доминантных жестов:
+                // вертикальный скролл описания внутри карточки не переключает слайды
+                if (Math.abs(dx) < 60 || Math.abs(dx) <= Math.abs(dy)) return;
+                if (dx < 0) goTo(1);
+                if (dx > 0) goTo(-1);
+              }}
+              onPointerCancel={(e) => {
+                const el = e.currentTarget;
+                el.dataset.swipeX = "";
+                el.dataset.swipeY = "";
               }}
             >
               {projects.map((project, index) => {
@@ -170,10 +229,8 @@ export function ProjectsSection() {
                               {project.title}
                             </h3>
                           </div>
-                          <div className="mt-5 flex-1 space-y-3 text-base leading-8 text-stone-100/72 sm:mt-6 sm:text-lg sm:leading-9 line-clamp-4">
-                            {project.description.map((p) => (
-                              <p key={p}>{p}</p>
-                            ))}
+                          <div className="mt-5 flex-1 sm:mt-6">
+                            <ScrollableDescription paragraphs={project.description} />
                           </div>
 
                           <div className="mt-auto pt-4 flex flex-wrap gap-2">

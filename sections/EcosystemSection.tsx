@@ -1,62 +1,12 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useInView } from "framer-motion";
 import { capabilities, siteConfig } from "@/data/site";
 import { MotionReveal } from "@/components/MotionReveal";
 import { SectionTransition } from "@/components/SectionTransition";
-
-function TiltCard({
-  children,
-  index,
-}: {
-  children: React.ReactNode;
-  index: number;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateY = ((x - centerX) / centerX) * 6;
-    const rotateX = ((centerY - y) / centerY) * 6;
-
-    card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-  }
-
-  function handleMouseLeave() {
-    const card = cardRef.current;
-    if (!card) return;
-    card.style.transform = "perspective(600px) rotateX(0deg) rotateY(0deg)";
-  }
-
-  return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 30, rotateY: 8 }}
-      whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-      viewport={{ once: true, margin: "-8% 0px" }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.08,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ transformStyle: "preserve-3d", transition: "transform 0.15s ease-out", willChange: "transform" }}
-      className="group rounded-[1.25rem] border border-white/10 bg-white/3.5 p-3 backdrop-blur-xl transition duration-500 hover:-translate-y-1 hover:border-stone-100/24 hover:bg-white/6.5 sm:rounded-3xl sm:p-5"
-    >
-      {children}
-    </motion.div>
-  );
-}
+import { TiltCard } from "@/components/TiltCard";
+import { VenueTeaser } from "@/components/VenueTeaser";
 
 export function EcosystemSection() {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -68,17 +18,24 @@ export function EcosystemSection() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.08),transparent_23%),linear-gradient(180deg,#080706_0%,rgba(8,7,6,0.55)_42%,#080706_100%)]" />
 
       <div className="relative mx-auto grid max-w-7xl gap-4 border-t border-white/10 py-5 sm:gap-10 sm:py-16 lg:grid-cols-[0.9fr_1.1fr]">
-        <MotionReveal direction="left">
-          <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
-            We are building
-          </p>
-          <h2 className="mt-3 max-w-2xl text-3xl font-semibold uppercase leading-[0.92] tracking-normal text-stone-100 sm:mt-4 sm:text-6xl">
-            The ecosystem
-          </h2>
-          <p className="mt-4 max-w-xl text-base leading-7 text-stone-200/64 sm:mt-7 sm:text-lg sm:leading-8">
-            {siteConfig.tagline}
-          </p>
-        </MotionReveal>
+        <div className="flex flex-col">
+          <MotionReveal direction="left">
+            <p className="text-xs uppercase tracking-[0.48em] text-stone-300/55">
+              We are building
+            </p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-semibold uppercase leading-[0.92] tracking-normal text-stone-100 sm:mt-4 sm:text-6xl">
+              The ecosystem
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-7 text-stone-200/64 sm:mt-7 sm:text-lg sm:leading-8">
+              {siteConfig.tagline}
+            </p>
+          </MotionReveal>
+          {/* Тизер ВНЕ MotionReveal: filter/transform у framer-контейнера
+              создают backdrop root и глушат backdrop-blur карточки */}
+          <div className="mt-6 grid flex-1 sm:mt-10">
+            <VenueTeaser />
+          </div>
+        </div>
 
         <div ref={gridRef} className="grid grid-cols-2 gap-1.5 sm:gap-3">
           {capabilities.map((item, index) => {
